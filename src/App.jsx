@@ -477,7 +477,7 @@ function PrayersTab() {
       {section==="prayers"&&(
         <div style={{display:"flex",flexDirection:"column",gap:12}}>
           {PRAYERS.map((p,i)=>(
-            <div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"50":BORDER}`,borderRadius:16,padding:20,cursor:"pointer"}}>
+            <div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"50":BORDER}`,borderRadius:16,padding:20,cursor:"pointer",width:"100%"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
                   <div style={{fontFamily:CINZEL,fontSize:14,color:WHITE,marginBottom:3,letterSpacing:"0.06em",fontWeight:600,textShadow:EMBOSS}}>{p.t}</div>

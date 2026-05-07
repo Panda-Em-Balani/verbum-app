@@ -586,7 +586,7 @@ export default function BibleApp() {
   ];
 
   return (
-    <div style={{background:DARK,minHeight:"100vh",maxWidth:430,margin:"0 auto",fontFamily:"'Lato',-apple-system,sans-serif",color:WHITE,position:"relative"}}>
+    <div style={{background:DARK,minHeight:"100vh",width:"100%",fontFamily:"'Lato',-apple-system,sans-serif",color:WHITE,position:"relative"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Lato:wght@300;400;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
@@ -620,4 +620,3 @@ export default function BibleApp() {
     </div>
   );
 }
-

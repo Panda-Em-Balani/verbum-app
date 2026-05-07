@@ -460,7 +460,7 @@ function PrayersTab() {
   const MYSTERY_TYPES=["Joyful","Sorrowful","Glorious","Luminous"];
 
   return (
-    <div style={{padding:"0 20px 20px", width:"100%"}}>
+    <div style={{padding:"0 20px 20px"}}>
       <div style={{padding:"24px 0 16px"}}>
         <div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,marginBottom:3,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{section==="prayers"?"Catholic Prayers":"The Holy Rosary"}</div>
         <div style={{fontSize:12,color:MUTED,fontFamily:"'Lato',sans-serif"}}>{section==="prayers"?"Traditional prayers of the faith":"A decade-by-decade guide"}</div>
@@ -475,9 +475,9 @@ function PrayersTab() {
 
       {/* ── PRAYERS LIST ── */}
       {section==="prayers"&&(
-        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+        <div style={{display:"flex",flexDirection:"column",gap:12,width:"100%"}}>
           {PRAYERS.map((p,i)=>(
-            <div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"50":BORDER}`,borderRadius:16,padding:20,cursor:"pointer",width:"100%"}}>
+            <div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"50":BORDER}`,borderRadius:16,padding:20,cursor:"pointer"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
                   <div style={{fontFamily:CINZEL,fontSize:14,color:WHITE,marginBottom:3,letterSpacing:"0.06em",fontWeight:600,textShadow:EMBOSS}}>{p.t}</div>
@@ -590,7 +590,6 @@ export default function BibleApp() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Lato:wght@300;400;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
-        html,body{background:#0D0D0D;min-height:100vh;}
         ::-webkit-scrollbar{width:0}
         textarea::placeholder{color:#555}
         button{font-family:'Lato',-apple-system,sans-serif}

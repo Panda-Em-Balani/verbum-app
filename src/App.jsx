@@ -590,6 +590,7 @@ export default function BibleApp() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Lato:wght@300;400;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
+        html,body{background:#0D0D0D;min-height:100vh;}
         ::-webkit-scrollbar{width:0}
         textarea::placeholder{color:#555}
         button{font-family:'Lato',-apple-system,sans-serif}

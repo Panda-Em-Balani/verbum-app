@@ -5,15 +5,17 @@ import { supabase } from "./supabase.js";
 
 const GOLD = "#9A6B1F";
 const GOLD_BRIGHT = "#7A5218";
-const DARK = "#F5EFE4";
-const SURFACE = "#EDE5D6";
-const CARD = "#FFFFFF";
-const BORDER = "#D9CEBC";
-const CREAM = "#5A3E1B";
-const MUTED = "#A0907A";
-const WHITE = "#2E1F0E";
+const DARK = "#EDE4D0";
+const SURFACE = "#E4D9C4";
+const CARD = "#FDFAF4";
+const BORDER = "#C8BAA0";
+const CREAM = "#3D2A10";
+const MUTED = "#7A6A54";
+const WHITE = "#1E1208";
 const CINZEL = "'Cinzel', serif";
-const EMBOSS = "0 1px 0 rgba(255,255,255,0.8), 0 -1px 0 rgba(0,0,0,0.08)";
+const EMBOSS = "0 1px 0 rgba(255,255,255,0.9), 0 -1px 0 rgba(0,0,0,0.12)";
+const CARD_SHADOW = "0 2px 12px rgba(100,70,20,0.10), 0 1px 3px rgba(100,70,20,0.08)";
+const CARD_SHADOW_STRONG = "0 4px 20px rgba(100,70,20,0.14), 0 2px 6px rgba(100,70,20,0.10)";
 
 // ─── MASS STREAM CONFIG ──────────────────────────────────────────────────────
 // Update MASS_STREAM_URL to your parish's YouTube channel live stream URL.
@@ -274,10 +276,10 @@ const LockIco=()=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><r
 // ─── VERSE CARD ──────────────────────────────────────────────────────────────
 function VerseCard({verse,expanded,onToggle,isFav,onFav}) {
   return (
-    <div onClick={onToggle} style={{background:CARD,border:`1px solid ${expanded?GOLD+"44":BORDER}`,borderRadius:16,padding:20,cursor:"pointer",transition:"border-color 0.2s"}}>
+    <div onClick={onToggle} style={{background:CARD,border:`1px solid ${expanded?GOLD+"88":BORDER}`,borderRadius:18,padding:20,cursor:"pointer",transition:"all 0.2s",boxShadow:expanded?CARD_SHADOW_STRONG:CARD_SHADOW}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:12}}>
         <div style={{flex:1}}>
-          <div style={{fontFamily:CINZEL,fontSize:13,color:CREAM,lineHeight:1.88,marginBottom:11,letterSpacing:"0.04em",fontWeight:500,textShadow:EMBOSS}}>"{verse.text}"</div>
+          <div style={{fontFamily:CINZEL,fontSize:14,color:WHITE,lineHeight:1.9,marginBottom:12,letterSpacing:"0.04em",fontWeight:600,textShadow:EMBOSS}}>"{verse.text}"</div>
           <div style={{fontSize:11,color:GOLD,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:CINZEL}}>{verse.ref}</div>
         </div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8,flexShrink:0}}>
@@ -380,7 +382,7 @@ function PaidUserModal({ onClose, onProceed }) {
 function ThreeOClockBanner() {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div style={{background:"#F5EEF8",border:`1px solid #9B59C0`,borderRadius:18,padding:18,marginBottom:12,position:"relative",overflow:"hidden"}}>
+    <div style={{background:"linear-gradient(135deg,#F5EEF8,#EDE0F5)",border:`1px solid #9B59C0`,borderRadius:18,padding:18,marginBottom:14,position:"relative",overflow:"hidden",boxShadow:"0 4px 16px rgba(155,89,192,0.12)"}}>
       <div style={{position:"absolute",top:-30,right:-30,width:100,height:100,borderRadius:"50%",background:"rgba(155,89,192,0.05)"}}/>
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
         <div style={{width:36,height:36,borderRadius:"50%",background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.35)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{fontSize:16}}>🕒</span></div>
@@ -458,21 +460,21 @@ function HomeTab({favorites,onFav,user}) {
   const timeStr=time.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",second:"2-digit",hour12:true});
   const isFav=favorites.has(verse.id);
   const refresh=()=>{ setRefreshing(true); setTimeout(()=>{ const pool=VERSES.filter(v=>!usedIds.has(v.id)||usedIds.size>=VERSES.length); const next=(pool.length?pool:VERSES)[Math.floor(Math.random()*(pool.length||VERSES.length))]; setVerse(next);setExpanded(false);setShowFavPanel(false); setUsedIds(p=>{const s=new Set(p.size>=VERSES.length?[]:p);s.add(next.id);return s;}); setRefreshing(false); },400); };
-  const S={ sectionLabel:{fontSize:9,color:GOLD,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:12,fontFamily:CINZEL}, card:{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:20,marginBottom:12,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"} };
+  const S={ sectionLabel:{fontSize:10,color:GOLD_BRIGHT,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:12,fontFamily:CINZEL}, card:{background:CARD,border:`1px solid ${BORDER}`,borderRadius:18,padding:20,marginBottom:14,boxShadow:CARD_SHADOW} };
   return (
     <div style={{padding:"0 20px 20px"}}>
       <div style={{textAlign:"center",padding:"26px 0 20px"}}>
         <div style={{display:"flex",justifyContent:"center",marginBottom:14}}><Cross size={28}/></div>
         <div style={{fontSize:10,color:MUTED,letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:2}}>{dateStr}</div>
         <div style={{fontSize:13,color:MUTED,fontFamily:"'Lato',sans-serif",marginBottom:8,letterSpacing:"0.06em"}}>{timeStr}</div>
-        <div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.08em",fontWeight:600,textShadow:EMBOSS}}>{moment.g}</div>
+        <div style={{fontFamily:CINZEL,fontSize:24,color:WHITE,marginBottom:4,letterSpacing:"0.08em",fontWeight:600,textShadow:EMBOSS}}>{moment.g}</div>
         <div style={{fontSize:12,color:MUTED,fontFamily:"'Lato',sans-serif"}}>{moment.l}</div>
       </div>
-      <div style={{background:"#FBF6ED",border:`1px solid #D4B97A`,borderRadius:20,padding:22,marginBottom:10,position:"relative",overflow:"hidden",boxShadow:"0 2px 8px rgba(180,140,60,0.10)"}}>
+      <div style={{background:"linear-gradient(135deg,#FDF6E3,#F5E9C8)",border:`1px solid ${GOLD}60`,borderRadius:20,padding:22,marginBottom:12,position:"relative",overflow:"hidden",boxShadow:CARD_SHADOW_STRONG}}>
         <div style={{position:"absolute",top:-24,right:-24,width:80,height:80,borderRadius:"50%",background:"rgba(180,140,60,0.07)"}}/>
         <div style={S.sectionLabel}>✦ Daily Verse</div>
-        <div style={{fontFamily:CINZEL,fontSize:14,color:"#4A3010",lineHeight:1.92,marginBottom:14,letterSpacing:"0.04em",fontWeight:500,textShadow:EMBOSS}}>"{verse.text}"</div>
-        <div style={{fontFamily:CINZEL,fontSize:10,color:GOLD,fontWeight:700,letterSpacing:"0.16em"}}>— {verse.ref}</div>
+        <div style={{fontFamily:CINZEL,fontSize:15,color:WHITE,lineHeight:1.95,marginBottom:14,letterSpacing:"0.04em",fontWeight:600,textShadow:EMBOSS}}>"{verse.text}"</div>
+        <div style={{fontFamily:CINZEL,fontSize:11,color:GOLD_BRIGHT,fontWeight:700,letterSpacing:"0.16em"}}>— {verse.ref}</div>
       </div>
       <div style={{display:"flex",gap:8,marginBottom:showFavPanel||expanded?8:14}}>
         <button onClick={()=>{setExpanded(!expanded);setShowFavPanel(false);}} style={{flex:1,background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:"11px 0",color:WHITE,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,fontFamily:"'Lato',sans-serif",boxShadow:"0 1px 3px rgba(0,0,0,0.05)"}}><span>📖</span>{expanded?"Hide":"Read"} Explanation</button>
@@ -483,7 +485,7 @@ function HomeTab({favorites,onFav,user}) {
       {showFavPanel&&<div style={{background:"#FDF8F0",border:`1px solid ${GOLD}60`,borderRadius:14,padding:16,marginBottom:12}}><p style={{fontSize:12,color:MUTED,marginBottom:12,fontFamily:"'Lato',sans-serif",lineHeight:1.6}}>{isFav?"This verse is already in your Favorites.":"Add this verse to your personal Favorites."}</p><button onClick={()=>{onFav(verse.id);setShowFavPanel(false);}} style={{width:"100%",background:isFav?"#FFF0F0":"#F0FFF4",border:`1px solid ${isFav?"#E08080":"#80C080"}`,borderRadius:10,padding:"10px",color:isFav?"#C06060":GOLD,fontSize:12,cursor:"pointer",fontFamily:CINZEL,letterSpacing:"0.07em",fontWeight:600}}>{isFav?"♡  Remove from Favorites":"♡  Add to Favorites"}</button></div>}
       {is3oclock && <ThreeOClockBanner />}
       <DailyCatholicHappening />
-      <div style={{background:season.bg,border:`1px solid ${season.border}`,borderRadius:16,padding:18,marginBottom:12}}>
+      <div style={{background:season.bg,border:`1px solid ${season.border}`,borderRadius:18,padding:20,marginBottom:14,boxShadow:CARD_SHADOW}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}><div style={{...S.sectionLabel,marginBottom:0}}>Liturgical Season</div><div style={{width:8,height:8,borderRadius:"50%",background:season.light}}/></div>
         <div style={{fontFamily:CINZEL,fontSize:16,color:WHITE,fontWeight:600,letterSpacing:"0.08em",marginBottom:6,textShadow:EMBOSS}}>{season.name}</div>
         <p style={{fontSize:12,color:CREAM,lineHeight:1.75,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{season.desc}</p>
@@ -491,10 +493,10 @@ function HomeTab({favorites,onFav,user}) {
       </div>
       <div style={S.card}>
         <div style={S.sectionLabel}>✦ Saint of the Day</div>
-        <div style={{fontFamily:CINZEL,fontSize:15,color:WHITE,fontWeight:600,letterSpacing:"0.06em",marginBottom:3,textShadow:EMBOSS}}>{saint.name}</div>
+        <div style={{fontFamily:CINZEL,fontSize:16,color:WHITE,fontWeight:600,letterSpacing:"0.06em",marginBottom:4,textShadow:EMBOSS}}>{saint.name}</div>
         <div style={{fontSize:10,color:MUTED,marginBottom:10,fontFamily:"'Lato',sans-serif"}}>Feast Day: {new Date(2024,saint.feast.m-1,saint.feast.d).toLocaleDateString("en-US",{month:"long",day:"numeric"})}</div>
         <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>{saint.themes.map(t=><Pill key={t} label={t}/>)}</div>
-        <p style={{fontSize:12,color:CREAM,lineHeight:1.82,marginBottom:14,fontFamily:"'Lato',sans-serif"}}>{saint.bio}</p>
+        <p style={{fontSize:13,color:CREAM,lineHeight:1.85,marginBottom:14,fontFamily:"'Lato',sans-serif"}}>{saint.bio}</p>
         <div style={{borderLeft:`3px solid ${GOLD}`,padding:"10px 14px",background:SURFACE,borderRadius:"0 8px 8px 0"}}><div style={{fontFamily:CINZEL,fontSize:12,color:"#4A3010",lineHeight:1.85,fontWeight:400,textShadow:EMBOSS}}>"{saint.quote}"</div></div>
       </div>
       <div style={S.card}>
@@ -518,7 +520,7 @@ function SoulCheckTab() {
   return (
     <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 120px)",minHeight:520}}>
       <div style={{padding:"20px 20px 0",borderBottom:`1px solid ${BORDER}`}}>
-        <div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,marginBottom:3,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>Soul Check</div>
+        <div style={{fontFamily:CINZEL,fontSize:19,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>Soul Check</div>
         <div style={{fontSize:12,color:MUTED,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>Share your heart — receive God's Word</div>
         {showGuide&&(
           <div style={{background:SURFACE,border:`1px solid ${BORDER}`,borderRadius:12,padding:14,marginBottom:12}}>
@@ -600,7 +602,7 @@ function ExploreTab({favorites,onFav}) {
   const favVerses=VERSES.filter(v=>favorites.has(v.id));
   return (
     <div style={{padding:"0 20px 20px"}}>
-      <div style={{padding:"24px 0 16px"}}><div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,marginBottom:3,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{view==="browse"?"Verse Library":view==="search"?"Bible Search":"My Favorites"}</div><div style={{fontSize:12,color:MUTED,fontFamily:"'Lato',sans-serif"}}>{view==="browse"?"Browse by theme or feeling":view==="search"?"All 73 books of the Catholic Bible":"Your personal collection"}</div></div>
+      <div style={{padding:"24px 0 16px"}}><div style={{fontFamily:CINZEL,fontSize:19,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{view==="browse"?"Verse Library":view==="search"?"Bible Search":"My Favorites"}</div><div style={{fontSize:12,color:MUTED,fontFamily:"'Lato',sans-serif"}}>{view==="browse"?"Browse by theme or feeling":view==="search"?"All 73 books of the Catholic Bible":"Your personal collection"}</div></div>
       <div style={{display:"flex",background:SURFACE,borderRadius:12,padding:3,marginBottom:18,border:`1px solid ${BORDER}`,gap:2}}>
         {[{id:"browse",label:"📖 Browse"},{id:"search",label:"🔍 Bible"},{id:"favorites",label:`♡ Saved${favVerses.length?" ("+favVerses.length+")":""}`}].map(t=><button key={t.id} onClick={()=>{setView(t.id);setExpandedId(null);}} style={{flex:1,background:view===t.id?CARD:"none",border:view===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:view===t.id?GOLD_BRIGHT:MUTED,fontSize:11,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
       </div>
@@ -687,7 +689,7 @@ function PrayersTab() {
   if (subSection==="three-oclock") return <div style={{padding:"0 20px 20px"}}><ThreeOClockView onBack={()=>setSubSection(null)}/></div>;
   return (
     <div style={{padding:"0 20px 20px"}}>
-      <div style={{padding:"24px 0 16px"}}><div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,marginBottom:3,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{section==="prayers"?"Catholic Prayers":"The Holy Rosary"}</div><div style={{fontSize:12,color:MUTED,fontFamily:"'Lato',sans-serif"}}>{section==="prayers"?"Traditional prayers of the faith":"A decade-by-decade guide"}</div></div>
+      <div style={{padding:"24px 0 16px"}}><div style={{fontFamily:CINZEL,fontSize:19,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{section==="prayers"?"Catholic Prayers":"The Holy Rosary"}</div><div style={{fontSize:12,color:MUTED,fontFamily:"'Lato',sans-serif"}}>{section==="prayers"?"Traditional prayers of the faith":"A decade-by-decade guide"}</div></div>
       <div style={{display:"flex",background:SURFACE,borderRadius:12,padding:3,marginBottom:18,border:`1px solid ${BORDER}`}}>
         {[{id:"prayers",label:"🙏  Prayers"},{id:"rosary",label:"📿  Rosary"}].map(t=><button key={t.id} onClick={()=>setSection(t.id)} style={{flex:1,background:section===t.id?CARD:"none",border:section===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:section===t.id?GOLD_BRIGHT:MUTED,fontSize:12,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
       </div>
@@ -695,7 +697,7 @@ function PrayersTab() {
         <div style={{display:"flex",flexDirection:"column",gap:12,width:"100%"}}>
           <button onClick={()=>setSubSection("three-oclock")} style={{background:"#F5EEF8",border:"1px solid #9B59C0",borderRadius:16,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.35)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>🕒</div><div><div style={{fontFamily:CINZEL,fontSize:14,color:"#4A2070",fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:2}}>Three O'Clock Prayer</div><div style={{fontSize:10,color:"#7040A0",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>Hour of Mercy · Divine Mercy Chaplet</div></div></div><ChevIco/></div>{isThreeOClockHour()&&<div style={{marginTop:10,background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.25)",borderRadius:8,padding:"6px 12px",display:"inline-block"}}><span style={{fontSize:10,color:"#7040A0",fontFamily:CINZEL}}>🕒 It is the Hour of Mercy now</span></div>}</button>
           <button onClick={()=>setSubSection("novenas")} style={{background:"#F0EAF8",border:`1px solid #8060C0`,borderRadius:16,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:"rgba(100,60,180,0.12)",border:"1px solid rgba(100,60,180,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>🕯</div><div><div style={{fontFamily:CINZEL,fontSize:14,color:"#3A1860",fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:2}}>Novenas</div><div style={{fontSize:10,color:"#6040A0",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>Nine Days of Prayer · 4 Novenas</div></div></div><ChevIco/></div></button>
-          {PRAYERS.map((p,i)=><div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"50":BORDER}`,borderRadius:16,padding:20,cursor:"pointer"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontFamily:CINZEL,fontSize:14,color:WHITE,marginBottom:3,letterSpacing:"0.06em",fontWeight:600,textShadow:EMBOSS}}>{p.t}</div><div style={{fontSize:10,color:GOLD,letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>{p.s}</div></div><span style={{color:MUTED,fontSize:12}}>{expandedPrayer===i?"▲":"▼"}</span></div>{expandedPrayer===i&&<div style={{marginTop:16,paddingTop:16,borderTop:`1px solid ${BORDER}`}}><div style={{fontFamily:CINZEL,fontSize:11,color:CREAM,lineHeight:2.1,marginBottom:14,letterSpacing:"0.04em",whiteSpace:"pre-line",textShadow:EMBOSS}}>{p.text}</div><div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}`,borderRadius:"0 8px 8px 0",padding:"10px 14px"}}><div style={{fontSize:9,color:GOLD,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:5}}>Note & CCC</div><p style={{fontSize:11,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif"}}>{p.note}</p></div></div>}</div>)}
+          {PRAYERS.map((p,i)=><div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"88":BORDER}`,borderRadius:18,padding:20,cursor:"pointer",boxShadow:expandedPrayer===i?CARD_SHADOW_STRONG:CARD_SHADOW,transition:"all 0.2s"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontFamily:CINZEL,fontSize:15,color:WHITE,marginBottom:4,letterSpacing:"0.06em",fontWeight:600,textShadow:EMBOSS}}>{p.t}</div><div style={{fontSize:10,color:GOLD,letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>{p.s}</div></div><span style={{color:MUTED,fontSize:12}}>{expandedPrayer===i?"▲":"▼"}</span></div>{expandedPrayer===i&&<div style={{marginTop:16,paddingTop:16,borderTop:`1px solid ${BORDER}`}}><div style={{fontFamily:CINZEL,fontSize:11,color:CREAM,lineHeight:2.1,marginBottom:14,letterSpacing:"0.04em",whiteSpace:"pre-line",textShadow:EMBOSS}}>{p.text}</div><div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}`,borderRadius:"0 8px 8px 0",padding:"10px 14px"}}><div style={{fontSize:9,color:GOLD,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:5}}>Note & CCC</div><p style={{fontSize:11,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif"}}>{p.note}</p></div></div>}</div>)}
         </div>
       )}
       {section==="rosary"&&(
@@ -726,151 +728,113 @@ function PrayersTab() {
 
 // ─── MASS TAB ─────────────────────────────────────────────────────────────────
 function MassTab() {
-  const [selectedStream, setSelectedStream] = useState(0);
-  const [streamLoaded, setStreamLoaded] = useState(false);
-  const [customUrl, setCustomUrl] = useState(() => localStorage.getItem("verbum_custom_stream") || "");
-  const [showCustom, setShowCustom] = useState(false);
-  const [editUrl, setEditUrl] = useState("");
+  const STREAMS = [
+    {
+      label: "Vatican News — Papal Mass",
+      embedUrl: "https://www.youtube.com/embed/live_stream?channel=UCz6g_U1LHLQNR6vT0ENPMbA",
+      note: "Live Masses from St. Peter's Basilica, including Papal celebrations and daily Vatican liturgies.",
+      icon: "⛪",
+    },
+    {
+      label: "EWTN — Global Catholic Network",
+      embedUrl: "https://www.youtube.com/embed/7RbAWZRMqBI",
+      note: "Daily Mass, the Holy Rosary, and Catholic programming broadcast 24 hours a day worldwide.",
+      icon: "📺",
+    },
+    {
+      label: "Salt + Light — Catholic TV",
+      embedUrl: "https://www.youtube.com/embed/live_stream?channel=UCHHmjz7kliVPUCkqMxRLWlA",
+      note: "Daily Mass and Catholic news from Salt + Light Television in Canada.",
+      icon: "🕯",
+    },
+  ];
 
-  const activeStream = selectedStream === -1
-    ? { label: "Custom Parish Stream", url: customUrl, note: "Your saved parish stream." }
-    : MASS_STREAMS[selectedStream];
+  const [selected, setSelected] = useState(null);
+  const [loaded, setLoaded] = useState(false);
 
-  const saveCustom = () => {
-    if (!editUrl.trim()) return;
-    const saved = editUrl.trim();
-    localStorage.setItem("verbum_custom_stream", saved);
-    setCustomUrl(saved);
-    setSelectedStream(-1);
-    setShowCustom(false);
-    setStreamLoaded(false);
-    setEditUrl("");
-  };
-
-  // Convert standard YouTube watch URL to embed URL if needed
-  const getEmbedUrl = (url) => {
-    if (!url) return "";
-    if (url.includes("youtube.com/watch?v=")) {
-      const id = url.split("v=")[1]?.split("&")[0];
-      return `https://www.youtube.com/embed/${id}?rel=0`;
-    }
-    if (url.includes("youtu.be/")) {
-      const id = url.split("youtu.be/")[1]?.split("?")[0];
-      return `https://www.youtube.com/embed/${id}?rel=0`;
-    }
-    return url;
-  };
-
-  const embedUrl = getEmbedUrl(activeStream?.url || "");
+  const activeStream = selected !== null ? STREAMS[selected] : null;
 
   return (
     <div style={{ padding: "0 0 20px" }}>
       {/* Header */}
-      <div style={{ padding: "24px 20px 16px" }}>
-        <div style={{ fontFamily: CINZEL, fontSize: 17, color: WHITE, marginBottom: 3, letterSpacing: "0.07em", fontWeight: 600, textShadow: EMBOSS }}>Virtual Mass</div>
-        <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif" }}>Join the celebration of the Eucharist online</div>
+      <div style={{ padding: "24px 20px 20px", borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⛪</div>
+          <div>
+            <div style={{ fontFamily: CINZEL, fontSize: 19, color: WHITE, fontWeight: 600, letterSpacing: "0.07em", textShadow: EMBOSS }}>Virtual Mass</div>
+            <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif", marginTop: 2 }}>Join the celebration of the Eucharist</div>
+          </div>
+        </div>
       </div>
 
-      {/* Stream selector */}
-      <div style={{ padding: "0 20px", marginBottom: 14 }}>
-        <div style={{ fontSize: 9, color: GOLD, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 10 }}>Select a Stream</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {MASS_STREAMS.map((stream, i) => (
-            <button key={i} onClick={() => { setSelectedStream(i); setStreamLoaded(false); }} style={{ background: selectedStream === i ? "#FBF6ED" : CARD, border: `1.5px solid ${selectedStream === i ? GOLD : BORDER}`, borderRadius: 12, padding: "11px 14px", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
-              <div style={{ fontFamily: CINZEL, fontSize: 12, color: selectedStream === i ? GOLD_BRIGHT : WHITE, fontWeight: selectedStream === i ? 600 : 400, letterSpacing: "0.05em", marginBottom: 2, textShadow: selectedStream === i ? EMBOSS : "none" }}>{stream.label}</div>
-              <div style={{ fontSize: 10, color: MUTED, fontFamily: "'Lato',sans-serif", lineHeight: 1.5 }}>{stream.note}</div>
+      {/* Stream list */}
+      <div style={{ padding: "18px 20px 0" }}>
+        <div style={{ fontSize: 10, color: GOLD_BRIGHT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 12 }}>Available Streams</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
+          {STREAMS.map((stream, i) => (
+            <button key={i} onClick={() => { setSelected(i); setLoaded(false); }} style={{ background: selected === i ? "linear-gradient(135deg,#FDF6E3,#F5E9C8)" : CARD, border: `1.5px solid ${selected === i ? GOLD : BORDER}`, borderRadius: 16, padding: "14px 16px", cursor: "pointer", textAlign: "left", transition: "all 0.2s", boxShadow: selected === i ? CARD_SHADOW_STRONG : CARD_SHADOW }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: selected === i ? `${GOLD}20` : SURFACE, border: `1px solid ${selected === i ? GOLD + "60" : BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>{stream.icon}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontFamily: CINZEL, fontSize: 13, color: selected === i ? GOLD_BRIGHT : WHITE, fontWeight: 600, letterSpacing: "0.05em", textShadow: selected === i ? EMBOSS : "none", marginBottom: 3 }}>{stream.label}</div>
+                  <div style={{ fontSize: 11, color: MUTED, fontFamily: "'Lato',sans-serif", lineHeight: 1.5 }}>{stream.note}</div>
+                </div>
+                {selected === i && <div style={{ width: 8, height: 8, borderRadius: "50%", background: GOLD, flexShrink: 0 }} />}
+              </div>
             </button>
           ))}
-          {customUrl && (
-            <button onClick={() => { setSelectedStream(-1); setStreamLoaded(false); }} style={{ background: selectedStream === -1 ? "#FBF6ED" : CARD, border: `1.5px solid ${selectedStream === -1 ? GOLD : BORDER}`, borderRadius: 12, padding: "11px 14px", cursor: "pointer", textAlign: "left" }}>
-              <div style={{ fontFamily: CINZEL, fontSize: 12, color: selectedStream === -1 ? GOLD_BRIGHT : WHITE, fontWeight: 600, letterSpacing: "0.05em", marginBottom: 2 }}>My Parish Stream</div>
-              <div style={{ fontSize: 10, color: MUTED, fontFamily: "'Lato',sans-serif" }}>Custom saved stream</div>
-            </button>
-          )}
         </div>
 
-        {/* Custom stream input */}
-        {!showCustom ? (
-          <button onClick={() => { setShowCustom(true); setEditUrl(customUrl); }} style={{ marginTop: 10, width: "100%", background: "none", border: `1px dashed ${BORDER}`, borderRadius: 12, padding: "10px", color: MUTED, fontSize: 11, cursor: "pointer", fontFamily: "'Lato',sans-serif" }}>
-            + Add your parish YouTube stream
-          </button>
-        ) : (
-          <div style={{ marginTop: 10, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: 14 }}>
-            <div style={{ fontSize: 10, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8 }}>Parish Stream URL</div>
-            <input value={editUrl} onChange={e => setEditUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." style={{ width: "100%", background: CARD, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "9px 12px", fontSize: 12, color: WHITE, outline: "none", fontFamily: "'Lato',sans-serif", marginBottom: 10 }} />
-            <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={saveCustom} style={{ flex: 1, background: GOLD, border: "none", borderRadius: 8, padding: "9px", color: "#FFF", fontSize: 11, fontFamily: CINZEL, letterSpacing: "0.07em", cursor: "pointer", fontWeight: 600 }}>Save Stream</button>
-              <button onClick={() => setShowCustom(false)} style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "9px 14px", color: MUTED, fontSize: 11, cursor: "pointer", fontFamily: "'Lato',sans-serif" }}>Cancel</button>
+        {/* Player */}
+        {activeStream ? (
+          <>
+            <div style={{ fontSize: 10, color: GOLD_BRIGHT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 10 }}>Now Watching</div>
+            <div style={{ position: "relative", width: "100%", paddingTop: "56.25%", borderRadius: 16, overflow: "hidden", border: `1.5px solid ${BORDER}`, background: "#0A0806", boxShadow: CARD_SHADOW_STRONG, marginBottom: 14 }}>
+              {!loaded && (
+                <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+                  <Cross size={28} />
+                  <div style={{ fontFamily: CINZEL, fontSize: 11, color: MUTED, letterSpacing: "0.1em" }}>Loading stream...</div>
+                </div>
+              )}
+              <iframe
+                key={activeStream.embedUrl}
+                src={activeStream.embedUrl}
+                title={activeStream.label}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                onLoad={() => setLoaded(true)}
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+              />
             </div>
-            <p style={{ fontSize: 10, color: MUTED, marginTop: 8, lineHeight: 1.6 }}>Paste the YouTube live stream URL for your parish. Both youtube.com/watch and youtu.be links are supported.</p>
+          </>
+        ) : (
+          <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px 20px", textAlign: "center", boxShadow: CARD_SHADOW, marginBottom: 14 }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>🕊</div>
+            <div style={{ fontFamily: CINZEL, fontSize: 14, color: WHITE, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 8, textShadow: EMBOSS }}>Select a Stream Above</div>
+            <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.75, fontFamily: "'Lato',sans-serif" }}>Choose one of the available Catholic streams to begin watching Mass online.</p>
           </div>
         )}
-      </div>
 
-      {/* Divider */}
-      <div style={{ height: 1, background: BORDER, margin: "0 20px 14px" }} />
-
-      {/* Player */}
-      {embedUrl ? (
-        <div style={{ padding: "0 20px" }}>
-          <div style={{ position: "relative", width: "100%", paddingTop: "56.25%", borderRadius: 16, overflow: "hidden", border: `1px solid ${BORDER}`, background: "#000", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }}>
-            {!streamLoaded && (
-              <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#0A0806", gap: 12 }}>
-                <Cross size={32} />
-                <div style={{ fontFamily: CINZEL, fontSize: 12, color: MUTED, letterSpacing: "0.1em" }}>Loading stream...</div>
-              </div>
-            )}
-            <iframe
-              key={embedUrl}
-              src={embedUrl}
-              title="Catholic Mass Live Stream"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              onLoad={() => setStreamLoaded(true)}
-              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
-            />
-          </div>
-
-          {/* Stream info */}
-          <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 16, marginTop: 12 }}>
-            <div style={{ fontFamily: CINZEL, fontSize: 13, color: WHITE, fontWeight: 600, letterSpacing: "0.05em", textShadow: EMBOSS, marginBottom: 4 }}>{activeStream?.label}</div>
-            <p style={{ fontSize: 11, color: MUTED, lineHeight: 1.7, fontFamily: "'Lato',sans-serif", marginBottom: 10 }}>{activeStream?.note}</p>
-            <div style={{ display: "inline-block", background: `${GOLD}12`, border: `1px solid ${GOLD}40`, borderRadius: 20, padding: "3px 12px" }}>
-              <span style={{ fontSize: 9, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.12em" }}>✦ Stream may vary based on schedule</span>
-            </div>
-          </div>
+        {/* Parish stream note */}
+        <div style={{ background: "linear-gradient(135deg,#F5EEF8,#EDE0F5)", border: "1px solid #C0A0D8", borderRadius: 16, padding: 16, marginBottom: 14, boxShadow: CARD_SHADOW }}>
+          <div style={{ fontSize: 10, color: "#7040A0", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 8 }}>Parish Stream — Coming Soon</div>
+          <p style={{ fontSize: 12, color: "#4A2870", lineHeight: 1.78, fontFamily: "'Lato',sans-serif" }}>
+            A dedicated stream from your parish will be added here once a platform is confirmed. Check back soon — we are working on bringing your local community's Mass directly into the app.
+          </p>
         </div>
-      ) : (
-        <div style={{ padding: "0 20px", textAlign: "center" }}>
-          <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 32 }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>⛪</div>
-            <div style={{ fontFamily: CINZEL, fontSize: 13, color: WHITE, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 8, textShadow: EMBOSS }}>Select a Stream Above</div>
-            <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.7, fontFamily: "'Lato',sans-serif" }}>Choose one of the available streams or add your own parish YouTube link to begin watching.</p>
-          </div>
-        </div>
-      )}
 
-      {/* Spiritual note */}
-      <div style={{ padding: "14px 20px 0" }}>
-        <div style={{ background: "#FBF6ED", border: `1px solid ${GOLD}50`, borderRadius: 14, padding: 16 }}>
-          <div style={{ fontSize: 9, color: GOLD, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 8 }}>A Note on Virtual Mass</div>
-          <p style={{ fontSize: 11, color: CREAM, lineHeight: 1.78, fontFamily: "'Lato',sans-serif" }}>
-            The Church encourages physical attendance at Mass whenever possible — it is there that we receive the Body and Blood of Christ truly present in the Eucharist. Watching a live stream is a spiritually meaningful act of worship when in-person attendance is not possible, and many bishops have encouraged it for the sick, homebound, and those in difficult circumstances. If you are able, please attend Mass in your local parish.
+        {/* Spiritual note */}
+        <div style={{ background: "linear-gradient(135deg,#FDF6E3,#F5E9C8)", border: `1px solid ${GOLD}50`, borderRadius: 16, padding: 16, boxShadow: CARD_SHADOW }}>
+          <div style={{ fontSize: 10, color: GOLD_BRIGHT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 8 }}>A Note on Virtual Mass</div>
+          <p style={{ fontSize: 12, color: CREAM, lineHeight: 1.78, fontFamily: "'Lato',sans-serif" }}>
+            The Church encourages physical attendance at Mass whenever possible — it is there we receive Christ truly present in the Eucharist. Watching a live stream is a meaningful act of worship when in-person attendance is not possible. If you are able, please attend Mass at your local parish.
           </p>
         </div>
       </div>
     </div>
   );
 }
-
 // ─── APP SHELL ────────────────────────────────────────────────────────────────
-// ADD THIS IMPORT at the very top of App.jsx, after the existing imports
-// (line 1, before anything else)
-//
-// import { supabase } from "./supabase.js"
-//
-// Then REPLACE the entire BibleApp function at the bottom with this:
-
 export default function BibleApp() {
   const [user, setUser] = useState(null)
   const [userChecked, setUserChecked] = useState(false)
@@ -893,14 +857,9 @@ export default function BibleApp() {
       }
       setUserChecked(true)
     })
-
-    // Listen for auth changes (login/logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_OUT") {
-        setUser(null)
-      }
+      if (event === "SIGNED_OUT") setUser(null)
     })
-
     return () => subscription.unsubscribe()
   }, [])
 
@@ -909,9 +868,7 @@ export default function BibleApp() {
     const handler = (e) => {
       e.preventDefault()
       setInstallPrompt(e)
-      if (!localStorage.getItem("verbum_install_dismissed")) {
-        setShowInstallBanner(true)
-      }
+      if (!localStorage.getItem("verbum_install_dismissed")) setShowInstallBanner(true)
     }
     window.addEventListener("beforeinstallprompt", handler)
     return () => window.removeEventListener("beforeinstallprompt", handler)
@@ -953,7 +910,7 @@ export default function BibleApp() {
     { id: "mass",    label: "Mass",    I: MassIco },
   ]
 
-  // ── Wait for session check before rendering ───────────────────────────────
+  // ── Wait for session check ────────────────────────────────────────────────
   if (!userChecked) {
     return (
       <div style={{ minHeight: "100vh", background: "#F5EFE4", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -975,18 +932,21 @@ export default function BibleApp() {
   }
 
   return (
-    <div style={{ background: "#F5EFE4", minHeight: "100vh", width: "100%", fontFamily: "'Lato',-apple-system,sans-serif", color: "#2E1F0E", position: "relative" }}>
+    <div style={{ background: DARK, minHeight: "100vh", width: "100%", fontFamily: "'Lato',-apple-system,sans-serif", color: WHITE, position: "relative" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Lato:wght@300;400;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:0}
         textarea::placeholder{color:#B0A090}
-        input::placeholder{color:#B0A090}
+        input::placeholder{color:#9A8A74}
+        input{font-size:16px !important;-webkit-user-select:text;user-select:text}
         input[type=number]{-moz-appearance:textfield;}
         input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
         button{font-family:'Lato',-apple-system,sans-serif}
         p{margin:0}
-        select option{background:#FFFDF8;color:#2E1F0E}
+        select option{background:#FFFDF8;color:#1E1208}
+        html{touch-action:manipulation}
+        body{background:#EDE4D0}
       `}</style>
 
       <div style={{ overflowY: "auto", paddingBottom: 84 }}>
@@ -1011,36 +971,36 @@ export default function BibleApp() {
       </div>
 
       {/* Bottom nav */}
-      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(245,239,228,0.96)", backdropFilter: "blur(14px)", borderTop: "1px solid #D9CEBC", display: "flex", padding: "8px 0 12px", boxShadow: "0 -2px 12px rgba(0,0,0,0.07)" }}>
+      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(245,239,228,0.96)", backdropFilter: "blur(14px)", borderTop: `1px solid ${BORDER}`, display: "flex", padding: "8px 0 12px", boxShadow: "0 -2px 12px rgba(0,0,0,0.07)" }}>
         {TABS.map(({ id, label, I }) => (
           <button key={id} onClick={() => setTab(id)} style={{ flex: 1, background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "4px 0", position: "relative" }}>
             {id === "explore" && favorites.size > 0 && (
-              <div style={{ position: "absolute", top: 0, right: "calc(50% - 20px)", width: 15, height: 15, borderRadius: "50%", background: "#9A6B1F", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: "#FFFFFF", fontWeight: 700 }}>{favorites.size}</div>
+              <div style={{ position: "absolute", top: 0, right: "calc(50% - 20px)", width: 15, height: 15, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: "#FFFFFF", fontWeight: 700 }}>{favorites.size}</div>
             )}
             <I on={tab === id} />
-            <span style={{ fontSize: 9, color: tab === id ? "#9A6B1F" : "#B8A898", letterSpacing: "0.05em", fontWeight: tab === id ? 700 : 400 }}>{label}</span>
+            <span style={{ fontSize: 9, color: tab === id ? GOLD : MUTED, letterSpacing: "0.05em", fontWeight: tab === id ? 700 : 400 }}>{label}</span>
           </button>
         ))}
       </div>
 
-      {/* Sign out button — visible on all tabs, top right */}
+      {/* Sign out button — visible, top right */}
       <button
         onClick={handleSignOut}
         style={{
           position: "fixed",
           top: 14,
           right: 16,
-          background: "#9A6B1F",
+          background: GOLD,
           border: "none",
           borderRadius: 20,
           padding: "6px 14px",
           color: "#FFFFFF",
           fontSize: 11,
           cursor: "pointer",
-          fontFamily: "'Cinzel', serif",
+          fontFamily: CINZEL,
           letterSpacing: "0.07em",
           fontWeight: 600,
-          boxShadow: "0 2px 8px rgba(154,107,31,0.3)",
+          boxShadow: `0 2px 8px ${GOLD}50`,
           zIndex: 100,
         }}
       >

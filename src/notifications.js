@@ -143,7 +143,7 @@ export function scheduleVerseOfDay() {
   if (Notification.permission !== 'granted') return;
   if (alreadySentToday('verse')) return;
 
-  const delay = msUntil(7, 0);
+  const delay = msUntil(20, 4);
   setTimeout(() => {
     const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
     const verse = DAILY_VERSE_NOTIFICATIONS[dayOfYear % DAILY_VERSE_NOTIFICATIONS.length];

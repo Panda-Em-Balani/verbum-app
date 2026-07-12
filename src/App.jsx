@@ -581,7 +581,7 @@ Return ONLY the JSON. No markdown.`,
       setLoading(false);
     })
     .catch(() => {
-      setVerse({ ref: 'Psalm 46:10', text: 'Be still and know that I am God!', category: ['peace','trust'], explanation: 'An invitation to cease striving and rest in God's presence.', example: 'Spend five quiet minutes with this verse before your day begins.' });
+      setVerse({ ref: "Psalm 46:10", text: "Be still and know that I am God!", category: ["peace","trust"], explanation: "An invitation to cease striving and rest in God's presence.", example: "Spend five quiet minutes with this verse before your day begins." });
       setLoading(false);
     });
   }, []);

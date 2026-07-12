@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import LoginPage, { getUser, saveUser, clearUser } from "./LoginPage.jsx";
+import LoginPage from "./LoginPage.jsx";
 import { requestNotificationPermission, initNotifications, getNotificationPermission } from "./notifications.js";
+import { supabase } from "./supabase.js";
 
 const GOLD = "#9A6B1F";
 const GOLD_BRIGHT = "#7A5218";
@@ -863,48 +864,86 @@ function MassTab() {
 }
 
 // ─── APP SHELL ────────────────────────────────────────────────────────────────
+// ADD THIS IMPORT at the very top of App.jsx, after the existing imports
+// (line 1, before anything else)
+//
+// import { supabase } from "./supabase.js"
+//
+// Then REPLACE the entire BibleApp function at the bottom with this:
+
 export default function BibleApp() {
-  const [user, setUser] = useState(() => getUser());
-  const [tab, setTab] = useState("home");
-  const [favorites, setFavorites] = useState(new Set());
-  const [showNotifBanner, setShowNotifBanner] = useState(false);
-  const [installPrompt, setInstallPrompt] = useState(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [user, setUser] = useState(null)
+  const [userChecked, setUserChecked] = useState(false)
+  const [tab, setTab] = useState("home")
+  const [favorites, setFavorites] = useState(new Set())
+  const [showNotifBanner, setShowNotifBanner] = useState(false)
+  const [installPrompt, setInstallPrompt] = useState(null)
+  const [showInstallBanner, setShowInstallBanner] = useState(false)
+
+  // ── Check Supabase session on load ────────────────────────────────────────
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("name")
+          .eq("id", session.user.id)
+          .single()
+        setUser({ name: profile?.name || session.user.email.split("@")[0], email: session.user.email })
+      }
+      setUserChecked(true)
+    })
+
+    // Listen for auth changes (login/logout)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_OUT") {
+        setUser(null)
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   // ── PWA Install prompt ────────────────────────────────────────────────────
   useEffect(() => {
     const handler = (e) => {
-      e.preventDefault();
-      setInstallPrompt(e);
+      e.preventDefault()
+      setInstallPrompt(e)
       if (!localStorage.getItem("verbum_install_dismissed")) {
-        setShowInstallBanner(true);
+        setShowInstallBanner(true)
       }
-    };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
-
-  // ── Notification setup (runs once after login) ─────────────────────────────
-  useEffect(() => {
-    if (!user) return;
-    const permission = getNotificationPermission();
-    if (permission === "granted") {
-      initNotifications();
-    } else if (permission === "default" && !localStorage.getItem("verbum_notif_dismissed")) {
-      // Show banner after a short delay so the app can settle
-      const t = setTimeout(() => setShowNotifBanner(true), 2000);
-      return () => clearTimeout(t);
     }
-  }, [user]);
+    window.addEventListener("beforeinstallprompt", handler)
+    return () => window.removeEventListener("beforeinstallprompt", handler)
+  }, [])
 
-  const onFav = (id) => setFavorites(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+  // ── Notification setup ────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!user) return
+    const permission = getNotificationPermission()
+    if (permission === "granted") {
+      initNotifications()
+    } else if (permission === "default" && !localStorage.getItem("verbum_notif_dismissed")) {
+      const t = setTimeout(() => setShowNotifBanner(true), 2000)
+      return () => clearTimeout(t)
+    }
+  }, [user])
+
+  const onFav = (id) => setFavorites(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
 
   const handleInstall = async () => {
-    if (!installPrompt) return;
-    installPrompt.prompt();
-    const { outcome } = await installPrompt.userChoice;
-    if (outcome === "accepted") { setInstallPrompt(null); setShowInstallBanner(false); }
-  };
+    if (!installPrompt) return
+    installPrompt.prompt()
+    const { outcome } = await installPrompt.userChoice
+    if (outcome === "accepted") { setInstallPrompt(null); setShowInstallBanner(false) }
+  }
+
+  const handleSignOut = async () => {
+    if (window.confirm("Sign out of Verbum?")) {
+      await supabase.auth.signOut()
+      setUser(null)
+    }
+  }
 
   const TABS = [
     { id: "home",    label: "Home",    I: HomeIco },
@@ -912,15 +951,31 @@ export default function BibleApp() {
     { id: "explore", label: "Explore", I: BookIco },
     { id: "prayers", label: "Prayers", I: PrayIco },
     { id: "mass",    label: "Mass",    I: MassIco },
-  ];
+  ]
+
+  // ── Wait for session check before rendering ───────────────────────────────
+  if (!userChecked) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#F5EFE4", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap')`}</style>
+        <div style={{ textAlign: "center" }}>
+          <svg width="32" height="32" viewBox="0 0 20 20" fill="none" style={{ marginBottom: 16 }}>
+            <rect x="8.5" y="2" width="3" height="16" rx="1" fill="#9A6B1F"/>
+            <rect x="2" y="7.5" width="16" height="3" rx="1" fill="#9A6B1F"/>
+          </svg>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: "#A0907A", letterSpacing: "0.1em" }}>Loading...</div>
+        </div>
+      </div>
+    )
+  }
 
   // ── Show login if not authenticated ───────────────────────────────────────
   if (!user) {
-    return <LoginPage onLogin={(u) => setUser(u)} />;
+    return <LoginPage onLogin={(u) => setUser(u)} />
   }
 
   return (
-    <div style={{ background: DARK, minHeight: "100vh", width: "100%", fontFamily: "'Lato',-apple-system,sans-serif", color: WHITE, position: "relative" }}>
+    <div style={{ background: "#F5EFE4", minHeight: "100vh", width: "100%", fontFamily: "'Lato',-apple-system,sans-serif", color: "#2E1F0E", position: "relative" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Lato:wght@300;400;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
@@ -935,17 +990,16 @@ export default function BibleApp() {
       `}</style>
 
       <div style={{ overflowY: "auto", paddingBottom: 84 }}>
-        {/* Banners — shown above current tab content */}
         {showInstallBanner && tab === "home" && (
           <InstallBanner
             onInstall={handleInstall}
-            onDismiss={() => { setShowInstallBanner(false); localStorage.setItem("verbum_install_dismissed", "1"); }}
+            onDismiss={() => { setShowInstallBanner(false); localStorage.setItem("verbum_install_dismissed", "1") }}
           />
         )}
         {showNotifBanner && tab === "home" && (
           <NotificationBanner
             onGranted={() => setShowNotifBanner(false)}
-            onDismiss={() => { setShowNotifBanner(false); localStorage.setItem("verbum_notif_dismissed", "1"); }}
+            onDismiss={() => { setShowNotifBanner(false); localStorage.setItem("verbum_notif_dismissed", "1") }}
           />
         )}
 
@@ -957,27 +1011,41 @@ export default function BibleApp() {
       </div>
 
       {/* Bottom nav */}
-      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(245,239,228,0.96)", backdropFilter: "blur(14px)", borderTop: `1px solid ${BORDER}`, display: "flex", padding: "8px 0 12px", boxShadow: "0 -2px 12px rgba(0,0,0,0.07)" }}>
+      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(245,239,228,0.96)", backdropFilter: "blur(14px)", borderTop: "1px solid #D9CEBC", display: "flex", padding: "8px 0 12px", boxShadow: "0 -2px 12px rgba(0,0,0,0.07)" }}>
         {TABS.map(({ id, label, I }) => (
           <button key={id} onClick={() => setTab(id)} style={{ flex: 1, background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "4px 0", position: "relative" }}>
             {id === "explore" && favorites.size > 0 && (
-              <div style={{ position: "absolute", top: 0, right: "calc(50% - 20px)", width: 15, height: 15, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: "#FFFFFF", fontWeight: 700 }}>{favorites.size}</div>
+              <div style={{ position: "absolute", top: 0, right: "calc(50% - 20px)", width: 15, height: 15, borderRadius: "50%", background: "#9A6B1F", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: "#FFFFFF", fontWeight: 700 }}>{favorites.size}</div>
             )}
             <I on={tab === id} />
-            <span style={{ fontSize: 9, color: tab === id ? GOLD : MUTED, letterSpacing: "0.05em", fontWeight: tab === id ? 700 : 400 }}>{label}</span>
+            <span style={{ fontSize: 9, color: tab === id ? "#9A6B1F" : "#B8A898", letterSpacing: "0.05em", fontWeight: tab === id ? 700 : 400 }}>{label}</span>
           </button>
         ))}
       </div>
 
-      {/* Sign out — small link in home header area */}
-      {tab === "home" && (
-        <button
-          onClick={() => { if (window.confirm("Sign out of Verbum?")) { clearUser(); setUser(null); } }}
-          style={{ position: "fixed", top: 14, right: 16, background: "none", border: "none", color: MUTED, fontSize: 10, cursor: "pointer", fontFamily: CINZEL, letterSpacing: "0.08em", opacity: 0.6 }}
-        >
-          Sign out
-        </button>
-      )}
+      {/* Sign out button — visible on all tabs, top right */}
+      <button
+        onClick={handleSignOut}
+        style={{
+          position: "fixed",
+          top: 14,
+          right: 16,
+          background: "#9A6B1F",
+          border: "none",
+          borderRadius: 20,
+          padding: "6px 14px",
+          color: "#FFFFFF",
+          fontSize: 11,
+          cursor: "pointer",
+          fontFamily: "'Cinzel', serif",
+          letterSpacing: "0.07em",
+          fontWeight: 600,
+          boxShadow: "0 2px 8px rgba(154,107,31,0.3)",
+          zIndex: 100,
+        }}
+      >
+        Sign out
+      </button>
     </div>
-  );
+  )
 }

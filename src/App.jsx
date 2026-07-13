@@ -409,128 +409,146 @@ function ThreeOClockBanner() {
 
 //  DAILY CATHOLIC HAPPENING 
 function DailyCatholicHappening() {
-  const [happening, setHappening] = useState(null);
-  const [loading, setLoading] = useState(true);
-  useEffect(()=>{
-    const today = new Date();
-    const cacheKey = `verbum-happening-${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) { setHappening(JSON.parse(cached)); setLoading(false); return; }
-    const dateStr = today.toLocaleDateString("en-US",{month:"long",day:"numeric"});
-    fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:`You generate a single Catholic "Good to Know" trivia card for today's date. Return ONLY a valid JSON object:\n{\n  "title": "short catchy title (max 6 words)",\n  "type": "one of: Feast Day, Historical Moment, Marian Apparition, Papal Event, Martyrdom, Miracle, Church Teaching, Canonization",\n  "year": "the year this happened (or empty string)",\n  "body": "2-3 sentences. Warm, accessible, educational tone.",\n  "ccc": "one sentence connecting to CCC, include paragraph number.",\n  "emoji": "one relevant emoji"\n}\nReturn ONLY the JSON. No markdown, no preamble.`,messages:[{role:"user",content:`Today is ${dateStr}. Generate the JSON card.`}]})})
-    .then(r=>r.json()).then(data=>{
-      const text = data.content?.[0]?.text||"{}";
-      const clean = text.replace(/```json|```/g,"").trim();
-      const parsed = JSON.parse(clean);
-      sessionStorage.setItem(cacheKey,JSON.stringify(parsed));
-      setHappening(parsed); setLoading(false);
-    }).catch(()=>{ setLoading(false); });
-  },[]);
+  // Static Catholic Calendar — one entry per day of year, cycling through key feasts and moments
+  const HAPPENINGS = [
+    { month:1,  day:1,  emoji:"M", title:"Solemnity of Mary", type:"Feast Day", year:"", body:"The Church begins each new year under the mantle of Mary, Mother of God. This solemnity, one of the oldest Marian feasts, celebrates her divine motherhood proclaimed at the Council of Ephesus in 431 AD.", ccc:"The Catechism teaches that Mary's divine motherhood is the reason for all her other privileges (CCC 495)." },
+    { month:1,  day:6,  emoji:"S", title:"The Epiphany of the Lord", type:"Feast Day", year:"", body:"The Magi follow the star to Bethlehem, presenting gold, frankincense, and myrrh to the Christ Child. The Epiphany reveals Jesus as the Savior of all nations, not Israel alone.", ccc:"The CCC presents the Epiphany as the manifestation of Jesus as Messiah of Israel, Son of God, and Savior of the world (CCC 528)." },
+    { month:1,  day:13, emoji:"B", title:"Baptism of the Lord", type:"Feast Day", year:"", body:"At the Jordan River, Jesus is baptized by John, and the Trinity is revealed: the Father speaks, the Spirit descends as a dove, and the Son is immersed. This event inaugurates His public ministry.", ccc:"The CCC teaches that Jesus' baptism is a prefiguring of our own, and that He sanctifies the waters for all Christian baptism (CCC 536)." },
+    { month:1,  day:28, emoji:"T", title:"Feast of Saint Thomas Aquinas", type:"Feast Day", year:"1274", body:"The Angelic Doctor, Thomas Aquinas, synthesized faith and reason in his monumental Summa Theologiae, still the foundation of Catholic philosophical theology. Despite his brilliance, he described all his writings as straw compared to God.", ccc:"The CCC draws extensively on Aquinas, reflecting his teaching that faith and reason are complementary paths to truth (CCC 159)." },
+    { month:2,  day:2,  emoji:"C", title:"Presentation of the Lord", type:"Feast Day", year:"", body:"Mary and Joseph present the infant Jesus at the Temple, fulfilling the Law. The elderly Simeon holds the child and proclaims him the light of the nations, foretelling the sword that will pierce Mary's heart.", ccc:"The CCC sees the Presentation as a sign of Jesus' complete dedication to the Father and His acceptance of the Cross (CCC 529)." },
+    { month:2,  day:11, emoji:"M", title:"Our Lady of Lourdes", type:"Marian Apparition", year:"1858", body:"In 1858, the Blessed Virgin Mary appeared eighteen times to fourteen-year-old Bernadette Soubirous in Lourdes, France, identifying herself as the Immaculate Conception. The shrine at Lourdes has since received over 200 million pilgrims.", ccc:"The CCC affirms that private revelations like Lourdes can help us live the faith more fully, though they do not add to the deposit of faith (CCC 67)." },
+    { month:2,  day:22, emoji:"P", title:"Chair of Saint Peter", type:"Feast Day", year:"", body:"The Church celebrates the authority given to Peter and his successors. The physical chair (cathedra) of Peter in St. Peter's Basilica symbolizes the teaching authority of the Pope — the Magisterium in its fullest expression.", ccc:"The CCC teaches that the Bishop of Rome, as successor of Peter, has full, supreme, and universal power over the whole Church (CCC 882)." },
+    { month:3,  day:4,  emoji:"C", title:"Feast of Saint Casimir", type:"Feast Day", year:"1484", body:"A Polish prince who renounced a throne offered to him in order to live a life of prayer, fasting, and charity. He is patron of Poland and Lithuania, and a model of how holiness can flourish in the midst of royal power.", ccc:"The CCC teaches that the call to holiness is universal and extends to every state of life, including rulers and those in positions of power (CCC 2105)." },
+    { month:3,  day:17, emoji:"P", title:"Feast of Saint Patrick", type:"Feast Day", year:"461", body:"Captured as a slave from Britain and brought to Ireland, Patrick later returned as a missionary bishop who evangelized the entire island. His Confessions reveal a man of extraordinary faith shaped by suffering.", ccc:"The CCC highlights the missionary character of the Church — every baptized person is called to share the faith as Patrick did (CCC 849)." },
+    { month:3,  day:19, emoji:"J", title:"Solemnity of Saint Joseph", type:"Feast Day", year:"", body:"Joseph, the earthly father of Jesus and husband of Mary, is patron of the Universal Church, workers, fathers, and a happy death. His silent faithfulness in Scripture — he never speaks a single recorded word — has made him a model of humble obedience.", ccc:"The CCC honors Joseph as the one entrusted by God with the guardianship of the Holy Family (CCC 1014)." },
+    { month:3,  day:25, emoji:"A", title:"The Annunciation of the Lord", type:"Feast Day", year:"", body:"The Angel Gabriel appears to Mary in Nazareth and announces that she will conceive the Son of God by the Holy Spirit. Mary's fiat — let it be done to me — is the pivotal moment of salvation history.", ccc:"The CCC calls the Annunciation the moment the Eternal Son of God became incarnate in the womb of the Virgin Mary (CCC 484)." },
+    { month:4,  day:2,  emoji:"J", title:"Memorial of Saint John Paul II", type:"Papal Event", year:"2005", body:"Karol Wojtyla of Poland became Pope John Paul II in 1978, serving for 27 years. He traveled to 129 countries, survived an assassination attempt, canonized more saints than all his predecessors combined, and helped bring down communism through faith and diplomacy.", ccc:"His encyclical Veritatis Splendor reaffirmed the CCC's teaching on the objectivity of moral truth (CCC 1956)." },
+    { month:4,  day:13, emoji:"M", title:"Memorial of Saint Martin I", type:"Martyrdom", year:"655", body:"Pope Martin I was the last pope to be martyred, exiled to Crimea by the Byzantine Emperor Constans II for defending orthodox Christology against the Monothelite heresy. He died of mistreatment and starvation, yet his final letters radiate joy.", ccc:"The CCC affirms that the martyrs give the supreme witness to the truth of the faith (CCC 2473)." },
+    { month:4,  day:23, emoji:"G", title:"Feast of Saint George", type:"Feast Day", year:"303", body:"A Roman soldier martyred for his Christian faith around 303 AD, George became one of the most venerated saints in both East and West. The dragon legend, a medieval allegory, symbolizes the victory of faith over evil.", ccc:"The CCC honors the martyrs as those who by their death gave the most perfect witness to the truth (CCC 2506)." },
+    { month:4,  day:29, emoji:"C", title:"Feast of Saint Catherine of Siena", type:"Feast Day", year:"1380", body:"A Dominican tertiary and Doctor of the Church, Catherine convinced Pope Gregory XI to return from Avignon to Rome in 1377. Her Dialogue and her letters remain classics of Catholic mystical theology.", ccc:"Her life embodies the CCC's teaching that holiness and prophetic witness are inseparable charisms in the Church (CCC 798)." },
+    { month:5,  day:1,  emoji:"J", title:"Feast of Saint Joseph the Worker", type:"Feast Day", year:"", body:"Pope Pius XII established this feast in 1955 to honor the dignity of human labor through the patron of workers. Joseph's carpenter shop in Nazareth sanctified ordinary work for all time.", ccc:"The CCC teaches that work is a participation in the Creator's activity and a means of sanctification (CCC 2427)." },
+    { month:5,  day:13, emoji:"F", title:"Our Lady of Fatima", type:"Marian Apparition", year:"1917", body:"From May to October 1917, Mary appeared six times to three shepherd children — Lucia, Francisco, and Jacinta — in Fatima, Portugal. She called for prayer, penance, and the consecration of Russia.", ccc:"The CCC teaches that Fatima belongs to the tradition of private revelations that can assist the faithful in living the faith (CCC 67)." },
+    { month:5,  day:31, emoji:"V", title:"Visitation of the Blessed Virgin Mary", type:"Feast Day", year:"", body:"Mary travels to visit her elderly cousin Elizabeth after the Annunciation. At Mary's greeting, the unborn John the Baptist leaps with joy, and Elizabeth proclaims Mary blessed among women. The Magnificat pours forth from Mary's lips.", ccc:"The CCC presents the Visitation as a moment when the Holy Spirit fills Elizabeth through Mary's greeting (CCC 717)." },
+    { month:6,  day:3,  emoji:"U", title:"Feast of the Uganda Martyrs", type:"Martyrdom", year:"1886", body:"Twenty-two Catholic young men were martyred in Uganda in 1886 on the orders of King Mwanga, refusing to abandon their faith or submit to sexual abuse. They are the first canonized martyrs of sub-Saharan Africa.", ccc:"The CCC affirms that martyrdom is the supreme witness to the truth of faith and a participation in the Cross of Christ (CCC 2473)." },
+    { month:6,  day:13, emoji:"A", title:"Feast of Saint Anthony of Padua", type:"Feast Day", year:"1231", body:"A Franciscan friar renowned for powerful preaching and encyclopedic knowledge of Scripture, Anthony died at 35 yet is one of the most beloved saints in the world. He is invoked for help finding lost items.", ccc:"The CCC honors the preaching office as a primary means by which the Gospel is transmitted through the generations (CCC 2033)." },
+    { month:6,  day:24, emoji:"J", title:"Birth of Saint John the Baptist", type:"Feast Day", year:"", body:"One of only three birthdays the Church celebrates — the others being Our Lord and Our Lady — this feast honors John, the last of the prophets and the voice crying in the wilderness to prepare the way of the Lord.", ccc:"The CCC teaches that John the Baptist is the greatest of the prophets and the herald who announces Christ's arrival (CCC 523)." },
+    { month:6,  day:29, emoji:"P", title:"Solemnity of Saints Peter and Paul", type:"Feast Day", year:"", body:"The twin pillars of the Church are honored together on this solemnity. Peter, the fisherman made a rock; Paul, the persecutor made an apostle. Both were martyred in Rome and their witness built the universal Church.", ccc:"The CCC teaches that the apostolic succession continues from Peter and Paul through their successors, the bishops (CCC 861)." },
+    { month:7,  day:11, emoji:"B", title:"Feast of Saint Benedict", type:"Feast Day", year:"547", body:"The father of Western monasticism, Benedict wrote his Rule in the 6th century — a balanced guide to prayer and work that shaped European civilization. His motto, Ora et Labora, remains a summary of the contemplative life.", ccc:"The CCC honors the monastic life as a special form of participation in the mystery of Christ's prayer and service (CCC 916)." },
+    { month:7,  day:22, emoji:"M", title:"Feast of Saint Mary Magdalene", type:"Feast Day", year:"", body:"The Apostle to the Apostles, Mary Magdalene was the first to see the Risen Christ and the first to announce His resurrection. Pope Francis elevated her feast to the rank of feast in 2016, honoring her missionary role.", ccc:"The CCC affirms that Mary Magdalene represents the primacy of love and personal encounter with the Risen Lord (CCC 641)." },
+    { month:7,  day:25, emoji:"J", title:"Feast of Saint James the Apostle", type:"Feast Day", year:"44", body:"The first apostle to be martyred, James was beheaded by King Herod Agrippa around 44 AD. His shrine at Santiago de Compostela in Spain has been one of the great pilgrimage destinations of Christendom for over a thousand years.", ccc:"The CCC honors the apostolic witness as the foundation on which the Church is built (CCC 857)." },
+    { month:7,  day:31, emoji:"I", title:"Feast of Saint Ignatius of Loyola", type:"Feast Day", year:"1556", body:"A Spanish Basque soldier whose conversion after battlefield injury led him to found the Society of Jesus (Jesuits) and develop the Spiritual Exercises, a systematic method of prayer still used worldwide by millions.", ccc:"The CCC affirms that the particular charism of religious institutes like the Jesuits enriches the Church's holiness (CCC 914)." },
+    { month:8,  day:6,  emoji:"T", title:"Transfiguration of the Lord", type:"Feast Day", year:"", body:"On Mount Tabor, Jesus is transfigured before Peter, James, and John — His face shining like the sun and His garments white as light. Moses and Elijah appear beside Him. This event strengthens the disciples for the coming Passion.", ccc:"The CCC teaches that the Transfiguration is an anticipation of the resurrection and the glory to which Christ calls His disciples (CCC 555)." },
+    { month:8,  day:9,  emoji:"E", title:"Feast of Saint Teresa Benedicta of the Cross", type:"Martyrdom", year:"1942", body:"Edith Stein, a Jewish philosopher who converted to Catholicism and became a Carmelite nun, was martyred at Auschwitz in 1942. Her life is a bridge between the Jewish and Christian traditions and a witness to love in the face of evil.", ccc:"The CCC teaches that the Church honors those who gave their lives in witness to the faith across every era and culture (CCC 2473)." },
+    { month:8,  day:15, emoji:"A", title:"Assumption of the Blessed Virgin Mary", type:"Feast Day", year:"", body:"At the end of her earthly life, Mary was taken up body and soul into heavenly glory. Defined as dogma by Pope Pius XII in 1950, this feast is the oldest Marian feast and the crowning of her earthly journey.", ccc:"The CCC teaches that the Assumption is a singular participation in her Son's Resurrection and an anticipation of the resurrection of all Christians (CCC 966)." },
+    { month:8,  day:28, emoji:"A", title:"Feast of Saint Augustine of Hippo", type:"Feast Day", year:"430", body:"One of the greatest theologians in Church history, Augustine lived a dissolute youth before his dramatic conversion at 32. His Confessions and City of God shaped Western Christianity. His famous line: 'Our heart is restless until it rests in Thee.'", ccc:"The CCC draws on Augustine extensively, especially regarding grace, original sin, and the nature of the Church (CCC 400)." },
+    { month:9,  day:8,  emoji:"N", title:"Nativity of the Blessed Virgin Mary", type:"Feast Day", year:"", body:"The Church celebrates the birth of Mary, though Scripture does not record the event. Tradition names her parents as Joachim and Anne. Her birth is the dawn before the rising of the Sun of Justice — Christ.", ccc:"The CCC honors Mary as chosen before all ages to be the Mother of God, her birth prepared by God's grace (CCC 490)." },
+    { month:9,  day:14, emoji:"E", title:"Exaltation of the Holy Cross", type:"Feast Day", year:"", body:"This feast commemorates the discovery of the True Cross by Saint Helena in Jerusalem around 326 AD, and the dedication of the Basilica of the Holy Sepulchre. The Cross, once an instrument of shame, becomes a throne of glory.", ccc:"The CCC teaches that the Cross is the unique sacrifice of Christ, the one mediator, which can never be repeated or supplemented (CCC 618)." },
+    { month:9,  day:29, emoji:"M", title:"Feast of the Archangels", type:"Feast Day", year:"", body:"Michael, Gabriel, and Raphael are honored together. Michael leads the heavenly armies, Gabriel announces the Incarnation, and Raphael guides Tobias. The Church venerates these powerful spirits as ministers of God's providence.", ccc:"The CCC teaches that the existence of angels is a truth of faith, and that they surround Christ and serve in the history of salvation (CCC 331)." },
+    { month:10, day:1,  emoji:"T", title:"Feast of Saint Therese of Lisieux", type:"Feast Day", year:"1897", body:"The Little Flower died at 24, yet Pope Pius XI called her the greatest saint of modern times. Her autobiography, Story of a Soul, revealed her little way of spiritual childhood — doing small things with great love.", ccc:"Her life embodies the CCC's teaching that holiness is for everyone through charity lived in ordinary circumstances (CCC 826)." },
+    { month:10, day:4,  emoji:"F", title:"Feast of Saint Francis of Assisi", type:"Feast Day", year:"1226", body:"Born into wealth, Francis gave up everything to follow Christ radically — embracing poverty, founding the Franciscans, receiving the stigmata. His Canticle of the Creatures is one of the earliest poems in Italian literature.", ccc:"The CCC honors Francis as a model of care for creation, reflecting its teaching on the universal destination of goods (CCC 2402)." },
+    { month:10, day:7,  emoji:"R", title:"Our Lady of the Rosary", type:"Feast Day", year:"", body:"Established to commemorate the Christian victory at Lepanto in 1571, attributed to the intercession of Our Lady through the Rosary. The feast honors Mary and the ancient prayer that meditates on the life of Christ through her eyes.", ccc:"The CCC honors the Rosary as an excellent prayer through which we contemplate the mysteries of Christ in union with Mary (CCC 971)." },
+    { month:10, day:15, emoji:"T", title:"Feast of Saint Teresa of Avila", type:"Feast Day", year:"1582", body:"A 16th-century Spanish Carmelite and Doctor of the Church, Teresa reformed the Carmelite Order and wrote the Interior Castle, one of the greatest works on contemplative prayer in any language.", ccc:"The CCC draws on Teresa's mystical teaching, recognizing that prayer is the life of the new heart (CCC 2697)." },
+    { month:10, day:22, emoji:"J", title:"Memorial of Saint John Paul II", type:"Feast Day", year:"2005", body:"Pope John Paul II is honored on this day, the anniversary of his papal inauguration in 1978. His pontificate of 27 years was marked by extraordinary travels, profound writings, and a witness to suffering united with Christ's Cross.", ccc:"His encyclicals, especially Veritatis Splendor and Fides et Ratio, are extensively cited in the CCC's treatment of moral theology." },
+    { month:11, day:1,  emoji:"A", title:"Solemnity of All Saints", type:"Feast Day", year:"", body:"The Church celebrates all the saints, known and unknown, who now enjoy the vision of God in heaven. This feast reminds us that holiness is not the exception but the universal vocation — and that the Church triumphant is vast.", ccc:"The CCC teaches that all the faithful are called to holiness and the fullness of Christian life (CCC 2013)." },
+    { month:11, day:2,  emoji:"S", title:"All Souls Day — Commemoration of the Faithful Departed", type:"Feast Day", year:"", body:"The Church prays for all the faithful departed, especially those in Purgatory. This day reflects the Catholic teaching that the bonds of love are not broken by death and that our prayers can aid those still being purified.", ccc:"The CCC teaches that Purgatory is a final purification of the elect before the beatific vision, and that our prayers assist them (CCC 1030)." },
+    { month:11, day:22, emoji:"C", title:"Feast of Saint Cecilia", type:"Feast Day", year:"230", body:"A Roman martyr of the 3rd century, Cecilia is the patron saint of musicians. According to tradition, as the organs played at her wedding, she sang in her heart to God alone. Her name is invoked at the beginning of all sacred music.", ccc:"The CCC affirms that sacred music and song are important means of expressing and deepening faith in the liturgy (CCC 1156)." },
+    { month:12, day:3,  emoji:"F", title:"Feast of Saint Francis Xavier", type:"Feast Day", year:"1552", body:"The great Jesuit missionary, Francis Xavier baptized over thirty thousand people in India, the Malay Archipelago, and Japan. He died on the island of Shanghuan, his eyes fixed on China, where he hoped to bring the faith next.", ccc:"The CCC teaches that mission is a requirement of the Church's catholicity — a command received from Christ Himself (CCC 849)." },
+    { month:12, day:8,  emoji:"I", title:"Immaculate Conception of the Blessed Virgin Mary", type:"Feast Day", year:"", body:"Defined as dogma by Pope Pius IX in 1854, the Immaculate Conception teaches that Mary was preserved from original sin from the first moment of her conception, in anticipation of Christ's saving merits.", ccc:"The CCC teaches that Mary was redeemed in a more excellent fashion, preserved from all stain of original sin (CCC 492)." },
+    { month:12, day:12, emoji:"G", title:"Our Lady of Guadalupe", type:"Marian Apparition", year:"1531", body:"In 1531, the Blessed Virgin Mary appeared to Saint Juan Diego at Tepeyac Hill near Mexico City, leaving her image miraculously imprinted on his tilma. She is patroness of the Americas and of the unborn.", ccc:"The CCC affirms that Marian apparitions can serve as signs that help the faithful live the Gospel more fully (CCC 67)." },
+    { month:12, day:25, emoji:"N", title:"Nativity of Our Lord Jesus Christ", type:"Feast Day", year:"", body:"The Word was made flesh and dwelt among us. God enters human history as a helpless infant in a manger in Bethlehem. Christmas is the celebration of the Incarnation — the most extraordinary event in all of history.", ccc:"The CCC teaches that the Son of God became man so that we might know God's love, have a model of holiness, and become partakers of the divine nature (CCC 458)." },
+    { month:12, day:26, emoji:"S", title:"Feast of Saint Stephen, First Martyr", type:"Martyrdom", year:"34", body:"The first martyr of the Christian faith, Stephen was stoned to death for his witness to the Risen Christ. As he died, he prayed for his executioners: Lord, do not hold this sin against them. The young man Saul watched and approved.", ccc:"The CCC honors the martyrs as the supreme witnesses to the truth of the faith (CCC 2473)." },
+    { month:12, day:27, emoji:"J", title:"Feast of Saint John the Apostle", type:"Feast Day", year:"100", body:"The Beloved Disciple who stood at the Cross, received the Blessed Mother into his care, and outlived all the other apostles. Author of the fourth Gospel, three letters, and the Book of Revelation. His message: God is love.", ccc:"The CCC affirms that Sacred Scripture, including John's Gospel, is the Word of God expressed in human language (CCC 101)." },
+  ];
 
-  if (loading) return <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:20,marginBottom:12,display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:`${GOLD}15`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{fontSize:17}}></span></div><div style={{fontFamily:CINZEL,fontSize:14,color:MUTED}}>Loading today's happening...</div></div>;
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+
+  // Find today's feast, or pick one based on day of year
+  let happening = HAPPENINGS.find(h => h.month === month && h.day === day);
+  if (!happening) {
+    const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+    happening = HAPPENINGS[dayOfYear % HAPPENINGS.length];
+  }
+
   if (!happening) return null;
+
   return (
-    <div style={{background:"#FFFBF2",border:`1px solid #D4B97A`,borderRadius:18,padding:20,marginBottom:12,position:"relative",overflow:"hidden"}}>
-      <div style={{position:"absolute",top:-20,right:-20,width:80,height:80,borderRadius:"50%",background:"rgba(180,140,60,0.05)"}}/>
-      <div style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:14}}>
-        <div style={{width:40,height:40,borderRadius:12,background:`${GOLD}15`,border:`1px solid ${GOLD}40`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:21}}>{happening.emoji||""}</div>
-        <div style={{flex:1}}>
-          <div style={{fontSize:12,color:GOLD,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:4}}> Today in the Church {happening.year?`· ${happening.year}`:""}</div>
-          <div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,fontWeight:600,letterSpacing:"0.05em",lineHeight:1.4,textShadow:EMBOSS}}>{happening.title}</div>
+    <div style={{ background: "linear-gradient(135deg,#FFFBF0,#FFF3D6)", border: `1px solid ${GOLD}50`, borderRadius: 18, padding: 20, marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: CARD_SHADOW_STRONG }}>
+      <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: "rgba(180,140,60,0.05)" }} />
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
+        <div style={{ width: 42, height: 42, borderRadius: 12, background: `${GOLD}15`, border: `1px solid ${GOLD}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <CalendarIco />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 12, color: GOLD, letterSpacing: "0.2em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 4, fontWeight: 700 }}>
+            Today in the Church {happening.year ? `· ${happening.year}` : ""}
+          </div>
+          <div style={{ fontFamily: CINZEL, fontSize: 16, color: WHITE, fontWeight: 600, letterSpacing: "0.05em", lineHeight: 1.4, textShadow: EMBOSS }}>{happening.title}</div>
         </div>
       </div>
-      {happening.type&&<div style={{display:"inline-block",background:`${GOLD}15`,border:`1px solid ${GOLD}40`,borderRadius:20,padding:"3px 12px",marginBottom:12}}><span style={{fontSize:13,color:GOLD,fontFamily:CINZEL,letterSpacing:"0.1em"}}>{happening.type}</span></div>}
-      <p style={{fontSize:15,color:CREAM,lineHeight:1.85,fontFamily:"'Lato',sans-serif",marginBottom:12}}>{happening.body}</p>
-      {happening.ccc&&<div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}80`,borderRadius:"0 10px 10px 0",padding:"10px 14px"}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.18em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:5}}>Catechism Connection</div><p style={{fontSize:14,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif"}}>{happening.ccc}</p></div>}
+      {happening.type && (
+        <div style={{ display: "inline-block", background: `${GOLD}15`, border: `1px solid ${GOLD}40`, borderRadius: 20, padding: "4px 14px", marginBottom: 12 }}>
+          <span style={{ fontSize: 12, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.1em", fontWeight: 600 }}>{happening.type}</span>
+        </div>
+      )}
+      <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.88, fontFamily: "'Lato',sans-serif", marginBottom: 12, fontWeight: 500 }}>{happening.body}</p>
+      {happening.ccc && (
+        <div style={{ background: SURFACE, borderLeft: `3px solid ${GOLD}80`, borderRadius: "0 10px 10px 0", padding: "11px 14px" }}>
+          <div style={{ fontSize: 11, color: GOLD, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 5, fontWeight: 700 }}>Catechism Connection</div>
+          <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.78, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{happening.ccc}</p>
+        </div>
+      )}
     </div>
   );
 }
 
-// ─── SVG ICONS (replacing emojis) ───────────────────────────────────────────
+// ─── SVG ICONS ───────────────────────────────────────────────────────────────
 const CalendarIco = () => <svg width="20" height="20" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="2" stroke={GOLD} strokeWidth="1.5" fill="none"/><line x1="2" y1="7" x2="16" y2="7" stroke={GOLD} strokeWidth="1.5"/><line x1="6" y1="1" x2="6" y2="5" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><line x1="12" y1="1" x2="12" y2="5" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/></svg>;
 const VerseIco = () => <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 2h8l4 4v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke={GOLD} strokeWidth="1.5" fill="none"/><line x1="5" y1="8" x2="13" y2="8" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><line x1="5" y1="11" x2="11" y2="11" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/></svg>;
 const StarIco = () => <svg width="16" height="16" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 4H13l-3.5 2.5 1.3 4L7 9.5 3.2 11.5l1.3-4L1 5h4.5L7 1z" fill="rgba(255,255,255,0.85)"/></svg>;
 const UserIco = () => <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="3" stroke="rgba(255,255,255,0.9)" strokeWidth="1.3" fill="none"/><path d="M2 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="rgba(255,255,255,0.9)" strokeWidth="1.3" strokeLinecap="round" fill="none"/></svg>;
-const ClockIco = () => <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="#9B59C0" strokeWidth="1.5" fill="none"/><path d="M9 5v4l3 2" stroke="#9B59C0" strokeWidth="1.5" strokeLinecap="round"/></svg>;
-const CandleIco = () => <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="7" y="7" width="4" height="9" rx="1" stroke="#8060C0" strokeWidth="1.5" fill="none"/><path d="M9 3c0 2-2 2-2 4" stroke="#8060C0" strokeWidth="1.5" strokeLinecap="round" fill="none"/><path d="M9 3c0 2 2 2 2 4" stroke="#8060C0" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>;
-const RosaryIco = () => <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke={GOLD} strokeWidth="1.5" fill="none"/><circle cx="9" cy="9" r="2" fill={GOLD}/><circle cx="9" cy="2" r="1.5" fill={GOLD}/><circle cx="9" cy="16" r="1.5" fill={GOLD}/><circle cx="2" cy="9" r="1.5" fill={GOLD}/><circle cx="16" cy="9" r="1.5" fill={GOLD}/></svg>;
-const PlayIco = () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="12" rx="2" stroke={GOLD} strokeWidth="1.5" fill="none"/><path d="M8 8l5 2.5L8 13V8z" fill={GOLD}/></svg>;
-const ChurchIco = () => <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 10h14v10H4z" stroke={GOLD} strokeWidth="1.5" fill="none"/><path d="M2 10l9-7 9 7" stroke={GOLD} strokeWidth="1.5" strokeLinejoin="round" fill="none"/><rect x="9" y="14" width="4" height="6" fill={GOLD}/><line x1="11" y1="1" x2="11" y2="4" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><line x1="9" y1="2.5" x2="13" y2="2.5" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/></svg>;
 
 // ─── FIXED HEADER BAR ────────────────────────────────────────────────────────
 function AppHeader({ tab, user, onSignOut }) {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const firstName = user?.name?.split(' ')[0] || '';
-
   return (
     <>
-      <div style={{
-        position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
-        width: '100%', maxWidth: 430, height: HEADER_H,
-        background: HEADER_BG, zIndex: 200,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 16px',
-        boxShadow: '0 2px 20px rgba(0,0,0,0.30)',
-      }}>
-        {/* Left */}
+      <div style={{ position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 430, height: HEADER_H, background: HEADER_BG, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', boxShadow: '0 2px 20px rgba(0,0,0,0.30)' }}>
         <div style={{ width: 105 }}>
           {tab === 'home' && (
-            <button onClick={() => setShowPremiumModal(true)} style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)',
-              borderRadius: 20, padding: '6px 11px', cursor: 'pointer',
-            }}>
+            <button onClick={() => setShowPremiumModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 20, padding: '6px 11px', cursor: 'pointer' }}>
               <StarIco />
               <span style={{ fontSize: 12, color: '#F5E6C8', fontFamily: CINZEL, letterSpacing: '0.07em', fontWeight: 600 }}>Premium</span>
             </button>
           )}
         </div>
-
-        {/* Center */}
-        <div style={{ fontFamily: CINZEL, fontSize: 17, color: '#F5E6C8', fontWeight: 600, letterSpacing: '0.2em', textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
-          VERBUM
-        </div>
-
-        {/* Right */}
+        <div style={{ fontFamily: CINZEL, fontSize: 17, color: '#F5E6C8', fontWeight: 600, letterSpacing: '0.2em', textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>VERBUM</div>
         <div style={{ width: 105, display: 'flex', justifyContent: 'flex-end' }}>
           {tab === 'home' ? (
-            <button onClick={onSignOut} style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)',
-              borderRadius: 20, padding: '6px 11px', cursor: 'pointer',
-            }}>
+            <button onClick={onSignOut} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 20, padding: '6px 11px', cursor: 'pointer' }}>
               <UserIco />
               <span style={{ fontSize: 12, color: '#F5E6C8', fontFamily: CINZEL, letterSpacing: '0.06em', fontWeight: 600 }}>{firstName}</span>
             </button>
           ) : (
-            <button onClick={onSignOut} style={{
-              background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)',
-              borderRadius: 20, padding: '6px 12px', cursor: 'pointer',
-            }}>
+            <button onClick={onSignOut} style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 20, padding: '6px 12px', cursor: 'pointer' }}>
               <span style={{ fontSize: 12, color: '#F5E6C8', fontFamily: CINZEL, letterSpacing: '0.06em', fontWeight: 600 }}>Sign out</span>
             </button>
           )}
         </div>
       </div>
-
-      {/* Premium modal */}
       {showPremiumModal && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)' }}>
           <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 24, padding: 32, maxWidth: 340, width: '100%', boxShadow: CARD_SHADOW_STRONG, position: 'relative' }}>
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 100, height: 2, background: `linear-gradient(90deg,transparent,${GOLD},transparent)` }} />
             <div style={{ textAlign: 'center', marginBottom: 20 }}>
-              <div style={{ width: 56, height: 56, borderRadius: '50%', background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-                <StarIco />
-              </div>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}><StarIco /></div>
               <div style={{ fontFamily: CINZEL, fontSize: 20, color: WHITE, fontWeight: 700, letterSpacing: '0.08em', textShadow: EMBOSS, marginBottom: 6 }}>Verbum Premium</div>
-              <div style={{ fontSize: 13, color: GOLD, fontFamily: CINZEL, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>Coming Soon</div>
-              <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>
-                Verbum Premium is being prepared with additional features for our community. It will be announced through your parish once it is ready. Stay tuned.
-              </p>
+              <div style={{ fontSize: 13, color: GOLD, fontFamily: CINZEL, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16, fontWeight: 600 }}>Coming Soon</div>
+              <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>Verbum Premium is being prepared with additional features for our community. It will be announced through your parish once it is ready. Stay tuned.</p>
             </div>
-            <button onClick={() => setShowPremiumModal(false)} style={{ width: '100%', background: HEADER_BG, border: 'none', borderRadius: 14, padding: '14px', color: '#F5E6C8', fontSize: 15, fontFamily: CINZEL, fontWeight: 600, letterSpacing: '0.08em', cursor: 'pointer' }}>
-              Got it
-            </button>
+            <button onClick={() => setShowPremiumModal(false)} style={{ width: '100%', background: HEADER_BG, border: 'none', borderRadius: 14, padding: '14px', color: '#F5E6C8', fontSize: 15, fontFamily: CINZEL, fontWeight: 600, letterSpacing: '0.08em', cursor: 'pointer' }}>Got it</button>
           </div>
         </div>
       )}
@@ -538,61 +556,70 @@ function AppHeader({ tab, user, onSignOut }) {
   );
 }
 
-// ─── DYNAMIC DAILY VERSE CARD ─────────────────────────────────────────────────
+// ─── STATIC DAILY VERSE CARD ─────────────────────────────────────────────────
+const DAILY_VERSES = [
+  { ref:"Psalm 23:1", text:"The Lord is my shepherd; I shall not want.", category:["peace","trust"], explanation:"King David meditates on God as a shepherd who tends to every need, knowing each sheep by name and leading them to green pastures. For us today, it is a reminder that God is not a distant ruler but a loving guide.", example:"When anxiety rises today, pray this verse slowly and let it anchor you." },
+  { ref:"John 3:16", text:"For God so loved the world that he gave his only Son, so that everyone who believes in him might not perish but might have eternal life.", category:["love","hope"], explanation:"Called the Gospel in miniature, this verse captures the entire mystery of salvation. God's love is not passive — it moves Him to give His most precious gift for our sake.", example:"When you doubt whether you are loved, return to this verse. You were worth the Cross." },
+  { ref:"Philippians 4:13", text:"I have the strength for everything through him who empowers me.", category:["strength","courage"], explanation:"Paul wrote this from prison, yet radiating joy. The strength he speaks of is not willpower but a supernatural grace that flows from union with Christ.", example:"Whatever you are facing today, claim this promise. Not your strength — His." },
+  { ref:"Jeremiah 29:11", text:"For I know the plans I have for you, says the Lord, plans for your welfare and not for evil, to give you a future and a hope.", category:["hope","trust"], explanation:"Spoken to Israel in exile, this promise shines brightest in darkness. God's plan is always oriented toward our true flourishing, even when we cannot see it.", example:"In uncertainty, write this verse somewhere visible as a daily anchor." },
+  { ref:"Matthew 11:28", text:"Come to me, all you who labor and are burdened, and I will give you rest.", category:["comfort","rest"], explanation:"Jesus offers radical rest — not laziness, but the deep refreshment that comes from abiding with Him. Catholic spirituality finds this rest especially in prayer and the Eucharist.", example:"Spend five quiet minutes today simply resting in God's presence." },
+  { ref:"Romans 8:28", text:"We know that all things work for good for those who love God, who are called according to his purpose.", category:["trust","hope"], explanation:"Paul does not say all things are good — he says God works all things for good. Even suffering is not wasted in His economy.", example:"Name one difficult thing in your life and offer it to God with trust." },
+  { ref:"Isaiah 40:31", text:"Those who hope in the Lord will renew their strength. They will soar on wings like eagles.", category:["strength","renewal"], explanation:"Eagles soar by letting thermal winds lift them. Hoping in God is just like that — an act of surrender that allows His wind to carry us.", example:"Instead of striving harder today, try surrendering more deeply." },
+  { ref:"Psalm 46:10", text:"Be still and know that I am God!", category:["peace","prayer"], explanation:"Eight words that capture the entire spirituality of contemplative prayer. The Hebrew word for still means to let go, to release, to slacken.", example:"Set a timer for three minutes. Sit in silence with just this verse." },
+  { ref:"Proverbs 3:5-6", text:"Trust in the Lord with all your heart, on your own intelligence do not rely. In all your ways be mindful of him, and he will make straight your paths.", category:["trust","wisdom"], explanation:"The Hebrew word for trust implies leaning on something — the way you lean against a wall. True wisdom begins with humble openness to God.", example:"Before making a decision today, pause and ask God to illumine your thinking." },
+  { ref:"John 14:27", text:"Peace I leave with you; my peace I give to you. Not as the world gives do I give it to you.", category:["peace","comfort"], explanation:"Spoken at the Last Supper, hours before His arrest. Even in that shadow, Jesus offered His own divine peace — not the world's fragile peace of favorable circumstances.", example:"When worry grips you, pray these words slowly and let Christ's peace settle in." },
+  { ref:"Lamentations 3:22-23", text:"The Lord's acts of mercy are not exhausted, his compassion is not spent; they are renewed each morning — great is your faithfulness!", category:["mercy","hope"], explanation:"Written in the ruins of Jerusalem, yet discovering something unshakeable: God's mercies are new every morning. Yesterday's failures do not exhaust today's grace.", example:"Begin today by receiving God's mercy fresh, whatever yesterday looked like." },
+  { ref:"Luke 1:37", text:"For nothing will be impossible for God.", category:["faith","hope"], explanation:"Gabriel's words to Mary at the Annunciation — the great declaration of divine omnipotence, spoken to reassure a young woman asked to do the humanly impossible.", example:"Name the one thing that seems impossible in your life and pray this verse over it." },
+  { ref:"Psalm 34:18", text:"The Lord is close to the brokenhearted, saves those whose spirit is crushed.", category:["grief","comfort"], explanation:"God does not observe our suffering from a distance — He draws near to it. Brokenhearted in Hebrew describes a heart shattered like a clay pot, and it is precisely there God is closest.", example:"If your heart is heavy today, know that this is exactly where God chooses to dwell." },
+  { ref:"Romans 8:38-39", text:"Nothing will be able to separate us from the love of God in Christ Jesus our Lord.", category:["love","faith"], explanation:"Paul lists every conceivable power and declares that none of them can sever the bond of God's love for us.", example:"Recite this verse as a declaration today, especially over your greatest fear." },
+  { ref:"Isaiah 41:10", text:"Do not fear, for I am with you; do not be afraid, for I am your God. I will strengthen you, I will help you.", category:["courage","trust"], explanation:"God speaks directly into fear. The command not to fear is an invitation to anchor in a deeper reality — His presence and power.", example:"Write down what you are afraid of, then read this verse over it as a prayer." },
+  { ref:"Psalm 121:1-2", text:"I lift up my eyes to the mountains — where does my help come from? My help comes from the Lord, the maker of heaven and earth.", category:["trust","strength"], explanation:"A pilgrim's prayer lifting eyes above the immediate terrain to the God who transcends all created things and yet is personally close.", example:"When overwhelmed today, literally look upward and pray this verse." },
+  { ref:"Matthew 6:33", text:"Seek first the kingdom of God and his righteousness, and all these things will be given you besides.", category:["trust","wisdom"], explanation:"Jesus reorders our priorities entirely. Anxiety about provision is addressed not by earning more but by seeking God first.", example:"Before checking your phone this morning, spend five minutes with God." },
+  { ref:"1 Corinthians 13:4-5", text:"Love is patient, love is kind. It is not jealous, it is not pompous, it is not inflated, it is not rude.", category:["love","virtue"], explanation:"Written to a quarreling church, not as poetry but as a challenge. Every quality described is not a feeling but a concrete daily choice.", example:"Replace the word love with your own name and see where it challenges you today." },
+  { ref:"Hebrews 11:1", text:"Faith is the realization of what is hoped for and evidence of things not seen.", category:["faith","hope"], explanation:"The great definition of faith — not blind optimism but a real participation in realities that transcend our physical senses, grounded in God's proven faithfulness.", example:"Name one thing you are hoping for that you cannot yet see and place it in God's hands." },
+  { ref:"1 Peter 5:7", text:"Cast all your worries upon him because he cares for you.", category:["trust","peace"], explanation:"Peter invites us to throw our anxieties onto God — not politely hand them over, but cast them with force. The reason is simply: He cares for you personally.", example:"Name your worries one by one today and deliberately cast each one to God in prayer." },
+  { ref:"Psalm 27:1", text:"The Lord is my light and my salvation; whom do I fear? The Lord is my life's refuge; of whom am I afraid?", category:["courage","faith"], explanation:"David faces real enemies and real danger yet speaks with remarkable calm. His security comes not from circumstances but from confidence in God.", example:"Face your greatest fear today and let this verse be your response to it." },
+  { ref:"John 15:5", text:"I am the vine, you are the branches. Whoever remains in me and I in him will bear much fruit, because without me you can do nothing.", category:["faith","wisdom"], explanation:"Jesus uses the most organic of images to describe our relationship with Him. Fruitfulness is not effort but connection.", example:"Ask yourself: am I staying connected to the vine, or am I trying to bear fruit on my own?" },
+  { ref:"Micah 6:8", text:"You have been told, O mortal, what is good, and what the Lord requires of you: only to do justice and to love goodness, and to walk humbly with your God.", category:["wisdom","virtue"], explanation:"The prophet distills the entire Law to three things. Justice, mercy, and humility are not additions to faith — they are its natural expression.", example:"Choose one of these three to focus on deliberately today." },
+  { ref:"Zephaniah 3:17", text:"The Lord your God is in your midst, a mighty savior. He will rejoice over you with gladness and renew you in his love.", category:["love","peace"], explanation:"One of Scripture's most tender images — God rejoicing over us. Not tolerating us, not merely forgiving us, but delighting in us with gladness.", example:"Sit quietly and let yourself receive this: God rejoices over you right now, today." },
+  { ref:"Sirach 2:6", text:"Trust in God, and he will help you; make straight your ways and hope in him.", category:["trust","hope"], explanation:"From the Wisdom tradition of the Catholic Bible, this verse offers a simple and direct path through difficulty: trust, straighten your path, and hope.", example:"Is there an area of your life where your path needs straightening? Bring it to God today." },
+  { ref:"Wisdom 3:1", text:"The souls of the righteous are in the hand of God, and no torment shall touch them.", category:["comfort","faith"], explanation:"A profound source of consolation for those grieving the loss of loved ones. Death does not have the final word — the righteous are held safely in God's own hand.", example:"If you have lost someone you love, pray this verse for them today." },
+  { ref:"Psalm 139:14", text:"I praise you, because I am wonderfully made; wonderful are your works! My very self you know.", category:["love","faith"], explanation:"David meditates on God's intimate knowledge of him. You are not an accident but a deliberate and wonderful work of God.", example:"Say this verse about yourself today, even if it feels difficult to believe." },
+  { ref:"Isaiah 43:1", text:"Do not fear, for I have redeemed you; I have called you by name: you are mine.", category:["love","comfort"], explanation:"God addresses each person not as a number or a category but by name. You are personally known, personally called, and personally claimed by God.", example:"Hear God speak your own name as you read this verse. You belong to Him." },
+  { ref:"Colossians 3:23", text:"Whatever you do, do from the heart, as for the Lord and not for others.", category:["wisdom","strength"], explanation:"Paul elevates every form of work to an act of worship. The dishwasher, the caregiver, the clerk: all can work as for the Lord.", example:"Offer your work today — all of it — as a prayer to God." },
+  { ref:"Galatians 5:22-23", text:"The fruit of the Spirit is love, joy, peace, patience, kindness, generosity, faithfulness, gentleness, self-control.", category:["virtue","renewal"], explanation:"Paul lists not achievements but fruit — something that grows naturally from a living connection with the Spirit. These qualities are not manufactured but cultivated.", example:"Which fruit of the Spirit do you most need to grow right now? Ask the Spirit for it." },
+  { ref:"Ephesians 2:10", text:"We are God's handiwork, created in Christ Jesus for the good works that God has prepared in advance.", category:["purpose","faith"], explanation:"The Greek word for handiwork is poiema — poem. You are God's poem, composed with care and intention, created for works He already has in mind for you.", example:"Ask God today what good work He has prepared for you and take one step toward it." },
+  { ref:"Psalm 103:8", text:"Merciful and gracious is the Lord, slow to anger, abounding in kindness.", category:["mercy","love"], explanation:"This description of God's character appears repeatedly in Scripture. God is not reluctant to show mercy; He abounds in it.", example:"Receive this truth personally today: God abounds in kindness toward you." },
+  { ref:"2 Corinthians 12:9", text:"My grace is sufficient for you, for power is made perfect in weakness.", category:["strength","trust"], explanation:"God's response to Paul's suffering is not removal of the thorn but the gift of grace within it. Divine power reaches its fullest expression through human weakness.", example:"Name your greatest weakness today and offer it to God as the place where His power can work." },
+  { ref:"Psalm 16:8", text:"I keep the Lord always before me; with the Lord at my right hand, I shall never be shaken.", category:["peace","faith"], explanation:"David's secret of stability is not the absence of threats but the constancy of God's presence.", example:"Set a reminder today to pause three times and simply acknowledge God's presence with you." },
+  { ref:"Romans 15:13", text:"May the God of hope fill you with all joy and peace in believing, so that you may abound in hope by the power of the Holy Spirit.", category:["hope","peace"], explanation:"Paul prays for an overflowing of hope — not a cautious optimism but an abundance, powered not by willpower but by the Holy Spirit.", example:"Pray this verse over yourself and over someone you know who needs hope today." },
+  { ref:"2 Maccabees 12:46", text:"It is a holy and wholesome thought to pray for the dead, that they may be loosed from sins.", category:["faith","mercy"], explanation:"This deuterocanonical text is the scriptural foundation for the Church's teaching on prayer for the dead — a uniquely Catholic and deeply consoling doctrine.", example:"Pray for someone who has died today — a family member, a friend, or a forgotten soul." },
+  { ref:"Matthew 18:20", text:"For where two or three are gathered together in my name, there am I in the midst of them.", category:["faith","community"], explanation:"Jesus promises His presence not only in solitary prayer but in the gathered community. The Church is a place where Christ is personally present.", example:"Pray with at least one other person today, even briefly, claiming this promise." },
+  { ref:"Psalm 118:24", text:"This is the day the Lord has made; let us rejoice in it and be glad.", category:["joy","gratitude"], explanation:"Originally a liturgical shout at the Temple, now prayed by the whole Church. Every day — even a difficult one — is a gift made by God and worthy of gratitude.", example:"Say this verse aloud when you wake up tomorrow and mean it, whatever the day holds." },
+  { ref:"Tobit 4:15", text:"Do to no one what you yourself dislike. Give to the hungry some of your bread, and to the naked some of your clothing.", category:["virtue","love"], explanation:"From the deuterocanonical book of Tobit, a father's wisdom to his son. The golden rule and concrete charity — two pillars of a life well-lived.", example:"Do one concrete act of generosity today for someone who cannot repay you." },
+  { ref:"Isaiah 55:8-9", text:"For my thoughts are not your thoughts, nor are your ways my ways, says the Lord. For as the heavens are higher than the earth, so are my ways higher than your ways.", category:["trust","wisdom"], explanation:"A radical invitation to humility before the mystery of God. What seems like failure or loss may be part of a design too large for us to see from where we stand.", example:"Release something today that you have been trying to control and trust God's higher way." },
+  { ref:"Revelation 21:4", text:"He will wipe every tear from their eyes, and there shall be no more death or mourning, wailing or pain, for the old order has passed away.", category:["hope","comfort"], explanation:"The final vision of Scripture — God personally wiping every tear. This is not escapism but the ultimate destination of all Christian hope.", example:"Let this vision of the end comfort you in whatever you are suffering today. This is where we are headed." },
+  { ref:"Psalm 91:1-2", text:"You who dwell in the shelter of the Most High, who abide in the shade of the Almighty, say to the Lord: my refuge and fortress, my God in whom I trust.", category:["trust","peace"], explanation:"An image of profound safety — dwelling not just near God but within Him, sheltered by His very presence.", example:"Begin your day by consciously placing yourself within God's shelter through prayer." },
+  { ref:"John 8:12", text:"I am the light of the world. Whoever follows me will not walk in darkness, but will have the light of life.", category:["faith","hope"], explanation:"One of the great I AM statements of Jesus. He does not merely show a path — He is the light that makes the path visible.", example:"In whatever feels dark in your life today, ask Jesus to be your light in it." },
+  { ref:"Acts 1:8", text:"You will receive power when the Holy Spirit comes upon you, and you will be my witnesses.", category:["faith","courage"], explanation:"The last words of Jesus before the Ascension. The disciples are sent not in their own strength but promised the power of the Holy Spirit.", example:"Ask the Holy Spirit today to empower you as a witness in your ordinary life." },
+  { ref:"1 John 4:18", text:"There is no fear in love, but perfect love drives out fear.", category:["love","peace"], explanation:"The logic of love and fear are mutually exclusive. As we grow in the experience of God's love, fear loses its grip.", example:"Identify one fear you carry and ask God to replace it with a deeper awareness of His love." },
+  { ref:"Deuteronomy 31:6", text:"Be strong and steadfast; do not fear or be dismayed, for the Lord, your God, who goes before you, will be with you.", category:["courage","trust"], explanation:"Moses speaks to a people entering unknown territory. The basis for courage is not the absence of danger but the presence of God who goes before them.", example:"Whatever you are entering into today, remember: God goes before you." },
+  { ref:"James 1:17", text:"Every good gift and every perfect gift is from above, coming down from the Father of lights.", category:["gratitude","love"], explanation:"James roots all goodness in God's generous nature. The gifts of life, beauty, love, friendship, talent — all are expressions of the Father's lavish generosity.", example:"Name three good things in your life today and trace them back to God as their source." },
+  { ref:"Psalm 62:1-2", text:"My soul rests in God alone, from whom comes my salvation. God alone is my rock and salvation, my fortress; I shall never fall.", category:["trust","peace"], explanation:"The Hebrew for rests means a silence of complete surrender. Not passive resignation but active trust that has found its resting place in God alone.", example:"Practice resting in God today — not solving, not striving, just trusting." },
+  { ref:"Sirach 3:17", text:"My child, conduct your affairs with humility, and you will be loved more than a giver of gifts.", category:["wisdom","virtue"], explanation:"Ben Sira's wisdom cuts against the grain of a world that prizes power and display. Genuine humility draws love that no gift can purchase.", example:"Practice one act of genuine humility today, unseen and unannounced." },
+  { ref:"Matthew 5:9", text:"Blessed are the peacemakers, for they will be called children of God.", category:["peace","virtue"], explanation:"Peacemakers in the ancient world actively worked to reconcile divided parties, often at personal cost. This is the family resemblance of God's children.", example:"Is there a relationship in your life that needs a peacemaker today? Could that be you?" },
+];
+
+function getDailyVerseStatic() {
+  const now = new Date();
+  const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  return DAILY_VERSES[dayOfYear % DAILY_VERSES.length];
+}
+
 function DailyVerseCard({ onFav, favorites }) {
-  const [verse, setVerse] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const verse = getDailyVerseStatic();
   const [expanded, setExpanded] = useState(false);
   const [showFavPanel, setShowFavPanel] = useState(false);
-
-  useEffect(() => {
-    const today = new Date();
-    const cacheKey = `verbum-verse-${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) { setVerse(JSON.parse(cached)); setLoading(false); return; }
-
-    const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-    const seed = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
-
-    fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 800,
-        system: `You are a Catholic Scripture resource. Generate a unique Verse of the Day from the full Catholic Bible (all 73 books including deuterocanonical books). Vary broadly across Old Testament, New Testament, Psalms, Wisdom, Prophets, and Epistles. Avoid the most commonly repeated verses. Return ONLY a valid JSON object:
-{
-  "ref": "Book Chapter:Verse",
-  "text": "Full verse text in the New American Bible (NAB) translation",
-  "category": ["theme1","theme2"],
-  "explanation": "2-3 sentences of Catholic spiritual reflection grounded in Church teaching",
-  "example": "1-2 sentences on how to apply this verse today"
-}
-Return ONLY the JSON. No markdown.`,
-        messages: [{ role: 'user', content: `Today is ${dateStr}. Seed: ${seed}. Generate a unique verse that draws from a wide variety of Scripture books.` }]
-      })
-    })
-    .then(r => r.json())
-    .then(data => {
-      const text = data.content?.[0]?.text || '{}';
-      const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-      sessionStorage.setItem(cacheKey, JSON.stringify(parsed));
-      setVerse(parsed);
-      setLoading(false);
-    })
-    .catch(() => {
-      setVerse({ ref: "Psalm 46:10", text: "Be still and know that I am God!", category: ["peace","trust"], explanation: "An invitation to cease striving and rest in God's presence.", example: "Spend five quiet minutes with this verse before your day begins." });
-      setLoading(false);
-    });
-  }, []);
-
-  if (loading) return (
-    <div style={{ background: 'linear-gradient(135deg,#FDF6E3,#F5E9C8)', border: `1px solid ${GOLD}60`, borderRadius: 20, padding: 24, marginBottom: 14, boxShadow: CARD_SHADOW_STRONG }}>
-      <div style={{ fontSize: 14, color: GOLD_BRIGHT, fontFamily: CINZEL, letterSpacing: '0.12em', fontWeight: 600 }}>Loading today's verse...</div>
-    </div>
-  );
-
-  if (!verse) return null;
   const isFav = favorites.has(verse.ref);
 
   return (
@@ -611,7 +638,6 @@ Return ONLY the JSON. No markdown.`,
           </button>
         </div>
       </div>
-
       {expanded && (
         <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 22, marginTop: 8, boxShadow: CARD_SHADOW }}>
           <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.95, marginBottom: 16, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{verse.explanation}</p>
@@ -624,7 +650,6 @@ Return ONLY the JSON. No markdown.`,
           {verse.category && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>{verse.category.map(c => <Pill key={c} label={c} />)}</div>}
         </div>
       )}
-
       {showFavPanel && (
         <div style={{ background: '#FDF8F0', border: `1px solid ${GOLD}60`, borderRadius: 14, padding: 18, marginTop: 8, boxShadow: CARD_SHADOW }}>
           <p style={{ fontSize: 14, color: MUTED, marginBottom: 12, fontFamily: "'Lato',sans-serif", lineHeight: 1.75, fontWeight: 500 }}>{isFav ? 'This verse is in your Favorites.' : 'Save this verse to your Favorites.'}</p>
@@ -637,7 +662,6 @@ Return ONLY the JSON. No markdown.`,
   );
 }
 
-//  HOME TAB 
 function HomeTab({favorites,onFav,user}) {
   // Note: top padding accounts for fixed header
   const [verse,setVerse]=useState(getDailyVerse());
@@ -742,44 +766,20 @@ function SoulCheckTab() {
 }
 
 //  BIBLE SEARCH (EXPLORE) 
-function BibleSearchView({ favorites, onFav }) {
-  const [searchBook,setSearchBook]=useState(""); const [searchChapter,setSearchChapter]=useState(""); const [searchVerse,setSearchVerse]=useState(""); const [result,setResult]=useState(null); const [loading,setLoading]=useState(false); const [testament,setTestament]=useState("NT");
-  const fetchVerse = async () => {
-    if (!searchBook) return; setLoading(true); setResult(null);
-    const ref = `${searchBook}${searchChapter?" "+searchChapter:""}${searchVerse?":"+searchVerse:""}`;
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:`You are a Catholic Scripture resource. When given a reference, return ONLY a JSON object:\n{\n  "ref": "full reference",\n  "text": "verse text in NAB translation",\n  "context": "1-2 sentences of context",\n  "reflection": "2-3 sentences of Catholic reflection",\n  "ccc": "one sentence connecting to CCC paragraph or empty string",\n  "categories": ["array","of","themes"]\n}\nReturn ONLY the JSON. No markdown.`,messages:[{role:"user",content:`Verse and reflection for: ${ref}`}]})});
-      const data = await res.json(); const text = data.content?.[0]?.text||"{}";
-      setResult(JSON.parse(text.replace(/```json|```/g,"").trim()));
-    } catch(e) { setResult({ref,text:"Unable to retrieve. Check the reference and try again.",context:"",reflection:"",ccc:"",categories:[]}); }
-    setLoading(false);
-  };
-  const books = BIBLE_BOOKS[testament];
+function BibleSearchView() {
   return (
-    <div>
-      <div style={{fontSize:12,color:MUTED,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:10}}>Search Any Verse</div>
-      <div style={{display:"flex",background:SURFACE,borderRadius:10,padding:3,marginBottom:12,border:`1px solid ${BORDER}`}}>
-        {["OT","NT"].map(t=><button key={t} onClick={()=>{setTestament(t);setSearchBook("");}} style={{flex:1,background:testament===t?CARD:"none",border:testament===t?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:8,padding:"7px 0",color:testament===t?GOLD_BRIGHT:MUTED,fontSize:14,cursor:"pointer",fontFamily:CINZEL,letterSpacing:"0.07em",transition:"all 0.2s"}}>{t==="OT"?"Old Testament":"New Testament"}</button>)}
+    <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 32, textAlign: "center", boxShadow: CARD_SHADOW_STRONG }}>
+      <div style={{ width: 60, height: 60, borderRadius: "50%", background: `${GOLD}15`, border: `1.5px solid ${GOLD}50`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
+        <BookIco on={true} />
       </div>
-      <select value={searchBook} onChange={e=>setSearchBook(e.target.value)} style={{width:"100%",background:CARD,border:`1px solid ${BORDER}`,borderRadius:10,padding:"10px 14px",color:searchBook?WHITE:MUTED,fontSize:16,marginBottom:10,outline:"none",fontFamily:"'Lato',sans-serif",appearance:"none"}}>
-        <option value="">Select a Book...</option>
-        {books.map(b=><option key={b} value={b}>{b}</option>)}
-      </select>
-      <div style={{display:"flex",gap:8,marginBottom:14}}>
-        <input value={searchChapter} onChange={e=>setSearchChapter(e.target.value)} placeholder="Chapter" type="number" min="1" style={{flex:1,background:CARD,border:`1px solid ${BORDER}`,borderRadius:10,padding:"10px 14px",color:WHITE,fontSize:16,outline:"none",fontFamily:"'Lato',sans-serif"}}/>
-        <input value={searchVerse} onChange={e=>setSearchVerse(e.target.value)} placeholder="Verse" type="number" min="1" style={{flex:1,background:CARD,border:`1px solid ${BORDER}`,borderRadius:10,padding:"10px 14px",color:WHITE,fontSize:16,outline:"none",fontFamily:"'Lato',sans-serif"}}/>
-        <button onClick={fetchVerse} disabled={!searchBook||loading} style={{background:searchBook&&!loading?GOLD:CARD,border:`1px solid ${searchBook&&!loading?GOLD:BORDER}`,borderRadius:10,padding:"10px 16px",color:searchBook&&!loading?"#1A1000":MUTED,fontSize:15,cursor:searchBook&&!loading?"pointer":"default",fontFamily:CINZEL,fontWeight:600,transition:"all 0.2s",flexShrink:0}}>{loading?"...":"Search"}</button>
-      </div>
-      {result&&(
-        <div style={{background:"#FFFBF2",border:`1px solid ${GOLD}60`,borderRadius:16,padding:20}}>
-          <div style={{fontFamily:CINZEL,fontSize:13,color:GOLD,letterSpacing:"0.16em",fontWeight:700,marginBottom:10,textTransform:"uppercase"}}>{result.ref}</div>
-          <div style={{fontFamily:CINZEL,fontSize:16,color:"#4A3010",lineHeight:1.9,marginBottom:14,textShadow:EMBOSS}}>"{result.text}"</div>
-          {result.context&&<p style={{fontSize:15,color:MUTED,lineHeight:1.78,marginBottom:12,fontFamily:"'Lato',sans-serif",fontStyle:"italic"}}>{result.context}</p>}
-          {result.reflection&&<p style={{fontSize:15,color:CREAM,lineHeight:1.85,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{result.reflection}</p>}
-          {result.ccc&&<div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}80`,borderRadius:"0 8px 8px 0",padding:"10px 14px",marginBottom:12}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:4}}>Catechism (CCC)</div><p style={{fontSize:14,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif"}}>{result.ccc}</p></div>}
-          {result.categories?.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:6}}>{result.categories.map(c=><Pill key={c} label={c}/>)}</div>}
-        </div>
-      )}
+      <div style={{ fontFamily: CINZEL, fontSize: 20, color: WHITE, fontWeight: 700, letterSpacing: "0.08em", textShadow: EMBOSS, marginBottom: 8 }}>Bible Search</div>
+      <div style={{ fontSize: 13, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 18, fontWeight: 600 }}>Coming in Premium</div>
+      <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500, marginBottom: 20 }}>
+        Full Bible Search across all 73 books of the Catholic Bible — with verse text, Catholic reflection, and Catechism connection — is being prepared for Verbum Premium.
+      </p>
+      <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.78, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>
+        In the meantime, browse the verse library below or explore the Prayers tab for Scripture embedded in our prayer guides.
+      </p>
     </div>
   );
 }

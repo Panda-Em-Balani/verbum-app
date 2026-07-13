@@ -3,20 +3,20 @@ import LoginPage from "./LoginPage.jsx";
 import { requestNotificationPermission, initNotifications, getNotificationPermission } from "./notifications.js";
 import { supabase } from "./supabase.js";
 
-const GOLD = "#9A6B1F";
-const GOLD_BRIGHT = "#7A5218";
-const DARK = "#EDE4D0";
-const SURFACE = "#E4D9C4";
-const CARD = "#FDFAF4";
-const BORDER = "#C8BAA0";
-const CREAM = "#3D2A10";
-const MUTED = "#7A6A54";
-const WHITE = "#1E1208";
+const GOLD = "#DBBC57";
+const GOLD_BRIGHT = "#D4AF35";
+const DARK = "#F1E4BC";
+const SURFACE = "#F8F0DC";
+const CARD = "#FEFCF5";
+const BORDER = "#E2CA78";
+const CREAM = "#2E1E08";
+const MUTED = "#6B5535";
+const WHITE = "#1A0E04";
 const CINZEL = "'Cinzel', serif";
 const EMBOSS = "0 1px 0 rgba(255,255,255,0.9), 0 -1px 0 rgba(0,0,0,0.12)";
 const CARD_SHADOW = "0 2px 12px rgba(100,70,20,0.10), 0 1px 3px rgba(100,70,20,0.08)";
 const CARD_SHADOW_STRONG = "0 4px 20px rgba(100,70,20,0.14), 0 2px 6px rgba(100,70,20,0.10)";
-const HEADER_BG = "#5A3A0A";
+const HEADER_BG = "#3D2200";
 const HEADER_H = 56; // fixed header height px
 
 //  MASS STREAM CONFIG 
@@ -64,26 +64,36 @@ const VERSES = [
 
 //  SAINTS 
 const SAINTS = [
-  { name:"Saint Francis of Assisi", feast:{m:10,d:4}, themes:["Nature","Poverty","Peace","Animals"], bio:"Born into wealth in 13th-century Italy, Francis gave up everything to follow Christ radically. He founded the Franciscan Order, composed the Canticle of the Creatures, and received the stigmata.", quote:"Start by doing what is necessary, then what is possible, and suddenly you are doing the impossible." },
-  { name:"Saint Teresa of Ávila", feast:{m:10,d:15}, themes:["Prayer","Mysticism","Interior Life","Reform"], bio:"A 16th-century Spanish Carmelite mystic and Doctor of the Church. Her Interior Castle remains one of the greatest works on contemplative prayer. She reformed the Carmelite Order with courage.", quote:"Let nothing disturb you, let nothing frighten you. All things pass. God never changes." },
-  { name:"Saint Thérèse of Lisieux", feast:{m:10,d:1}, themes:["Simplicity","Childhood","Suffering","Mission"], bio:"The 'Little Flower,' who died at 24, is a Doctor of the Church. Her 'little way' of spiritual childhood — trusting God completely in small things — has transformed millions.", quote:"Miss no single opportunity of making some small sacrifice, here by a smiling look, there by a kindly word." },
-  { name:"Saint Joseph", feast:{m:3,d:19}, themes:["Work","Family","Protection","Fatherhood"], bio:"The earthly father of Jesus and husband of Mary. A carpenter by trade, Joseph protected the Holy Family through the flight into Egypt and raised the Son of God in Nazareth.", quote:"He did as the angel of the Lord commanded him." },
-  { name:"Saint Mary Magdalene", feast:{m:7,d:22}, themes:["Repentance","Devotion","Witness","Mercy"], bio:"The first witness of the Resurrection, called 'Apostle to the Apostles' by the Church. Her devotion to Christ never wavered even at the foot of the Cross when the disciples had fled.", quote:"She stood outside the tomb weeping — and then she saw Him." },
-  { name:"Saint Augustine", feast:{m:8,d:28}, themes:["Conversion","Grace","Truth","Theology"], bio:"One of the greatest theologians in Church history, Augustine lived a dissolute youth before his dramatic conversion. His Confessions and City of God shaped Western Christianity profoundly.", quote:"Our heart is restless until it rests in Thee." },
-  { name:"Saint Monica", feast:{m:8,d:27}, themes:["Mothers","Perseverance","Prayer","Hope"], bio:"Mother of Saint Augustine, Monica prayed and wept for her son's conversion for seventeen years. Her patient, faithful intercession is a model for all who pray for wayward loved ones.", quote:"Nothing is far from God." },
-  { name:"Saint Thomas Aquinas", feast:{m:1,d:28}, themes:["Wisdom","Theology","Truth","Study"], bio:"The 'Angelic Doctor,' Thomas was the greatest theologian of the medieval Church. Despite his brilliance, he described all his writings as 'straw' compared to God.", quote:"To one who has faith, no explanation is necessary." },
-  { name:"Saint Peter", feast:{m:6,d:29}, themes:["Leadership","Courage","Repentance","Faith"], bio:"The fisherman chosen by Christ as the rock of His Church. Despite his denials, Peter's repentance and restoration by the Risen Christ show that no failure is final in God's mercy.", quote:"Lord, you know everything. You know that I love you." },
-  { name:"Saint Paul", feast:{m:6,d:29}, themes:["Mission","Conversion","Courage","Suffering"], bio:"The persecutor turned apostle, Paul spread the Gospel across the known world through extraordinary suffering. His letters form a large portion of the New Testament.", quote:"I can do all things through Christ who strengthens me." },
-  { name:"Saint Catherine of Siena", feast:{m:4,d:29}, themes:["Courage","Church","Mysticism","Reform"], bio:"A 14th-century laywoman and Doctor of the Church who convinced the Pope to return to Rome. Her letters and Dialogue remain classics of mystical theology.", quote:"Be who God meant you to be and you will set the world on fire." },
-  { name:"Blessed Virgin Mary", feast:{m:8,d:15}, themes:["Faith","Humility","Intercession","Motherhood"], bio:"Mother of God, Queen of Heaven, first disciple of Christ. Mary's 'yes' at the Annunciation opened the door of salvation. In Catholic tradition, she intercedes constantly for her children.", quote:"Do whatever he tells you." },
-  { name:"Saint Patrick", feast:{m:3,d:17}, themes:["Mission","Courage","Trinity","Evangelization"], bio:"Captured as a slave in his youth and brought to Ireland, Patrick escaped and later returned as a missionary, evangelizing the entire island.", quote:"Christ with me, Christ before me, Christ behind me." },
-  { name:"Saint Ignatius of Loyola", feast:{m:7,d:31}, themes:["Discernment","Mission","Discipline","Spiritual Exercises"], bio:"A Basque soldier whose battlefield conversion led him to found the Jesuits and develop the Spiritual Exercises, a structured retreat still used worldwide.", quote:"Go forth and set the world on fire." },
-  { name:"Saint Faustina Kowalska", feast:{m:10,d:5}, themes:["Mercy","Trust","Vision","Divine Mercy"], bio:"A Polish nun to whom Christ appeared and entrusted the message of Divine Mercy. Her diary has become one of the most widely read spiritual books of the 20th century.", quote:"Jesus, I trust in You." },
-  { name:"Saint John Paul II", feast:{m:10,d:22}, themes:["Youth","Courage","Truth","Evangelization"], bio:"The beloved Polish pope who served for 27 years, survived an assassination attempt, and helped bring down communism through faith and diplomacy.", quote:"Be not afraid." },
-  { name:"Saint Anthony of Padua", feast:{m:6,d:13}, themes:["Lost Things","Preaching","Poverty","Scripture"], bio:"A Portuguese-born Franciscan renowned for powerful preaching and encyclopedic knowledge of Scripture. He is invoked for help finding lost items.", quote:"Actions speak louder than words; let your actions speak." },
-  { name:"Saint Michael the Archangel", feast:{m:9,d:29}, themes:["Protection","Courage","Spiritual Warfare","Justice"], bio:"Prince of the heavenly armies and protector of the Church. Michael appears in Scripture driving Satan from heaven, and tradition honors him as defender of souls.", quote:"Who is like God?" },
-  { name:"Saint Stephen", feast:{m:12,d:26}, themes:["Martyrdom","Courage","Forgiveness","Witness"], bio:"The first martyr of Christianity, stoned to death for his witness to the Risen Christ. As he died, he prayed for his executioners — echoing Christ on the Cross.", quote:"I see the heavens opened and the Son of Man standing at the right hand of God." },
-  { name:"Saint John the Apostle", feast:{m:12,d:27}, themes:["Love","Contemplation","Scripture","Faithfulness"], bio:"The 'Beloved Disciple' who stood at the Cross and received the Blessed Mother into his care. Author of the fourth Gospel, three letters, and Revelation.", quote:"God is love, and whoever abides in love abides in God." },
+  { name:"Saint Henry II", feast:{m:7,d:13}, patron:["Holy Roman Empire","The Lame","Physically Challenged"], themes:["Humility","Service","Faith","Governance"], bio:"Holy Roman Emperor Henry II (973-1024) placed his kingdom at the service of the Church, founding monasteries and cathedrals across Europe. He and his wife Cunigunde both lived celibate lives as an act of consecration. Canonized in 1146.", quote:"Not to us, O Lord, not to us, but to your name give glory.", wikiTitle:"Henry_II,_Holy_Roman_Emperor" },
+  { name:"Saint Kateri Tekakwitha", feast:{m:7,d:14}, patron:["Indigenous Peoples","Ecology","Canada"], themes:["Purity","Nature","Suffering","Faith"], bio:"Born in 1656 to a Mohawk father and Algonquin mother, Kateri was the first Native American canonized as a saint. Despite mockery and hardship, she lived a life of extraordinary holiness and love for God.", quote:"Who can tell me what is most pleasing to God that I may do it?", wikiTitle:"Kateri_Tekakwitha" },
+  { name:"Saint Bonaventure", feast:{m:7,d:15}, patron:["Bowel Disorders","Workers"], themes:["Theology","Humility","Mysticism","Franciscan"], bio:"A Franciscan theologian and Doctor of the Church, Bonaventure balanced deep scholarship with profound mystical prayer. As Minister General he led the Franciscans with wisdom and humility.", quote:"The creature is a shadow, a road, a vestige — a glimpse of God.", wikiTitle:"Bonaventure" },
+  { name:"Saint Camillus de Lellis", feast:{m:7,d:18}, patron:["Nurses","The Sick","Hospitals","Healthcare Workers"], themes:["Compassion","Service","Healing","Mercy"], bio:"A former soldier and compulsive gambler who converted and devoted his life to caring for the sick. He founded the Camillians and pioneered what we now call nursing best practices.", quote:"I wish for the strength of an angel to embrace and console the sick.", wikiTitle:"Camillus_de_Lellis" },
+  { name:"Saint Mary Magdalene", feast:{m:7,d:22}, patron:["Penitent Women","Perfumers","Contemplatives"], themes:["Repentance","Devotion","Witness","Mercy"], bio:"The first witness of the Resurrection, called Apostle to the Apostles by the Church. Her devotion to Christ never wavered even at the foot of the Cross when the disciples had fled.", quote:"She stood outside the tomb weeping — and then she saw Him.", wikiTitle:"Mary_Magdalene" },
+  { name:"Saint Ignatius of Loyola", feast:{m:7,d:31}, patron:["Jesuits","Soldiers","Retreatants","Educators"], themes:["Discernment","Mission","Discipline","Spiritual Exercises"], bio:"A Basque soldier whose battlefield conversion led him to found the Jesuits and develop the Spiritual Exercises, a structured retreat still used worldwide by millions.", quote:"Go forth and set the world on fire.", wikiTitle:"Ignatius_of_Loyola" },
+  { name:"Saint Dominic", feast:{m:8,d:8}, patron:["Dominican Republic","Astronomers","Scientists"], themes:["Preaching","Truth","Poverty","Prayer"], bio:"Founded the Order of Preachers (Dominicans) to combat heresy through preaching and scholarship. He promoted the Rosary as a weapon of prayer and love.", quote:"Arm yourself with prayer rather than a sword; wear humility rather than fine clothes.", wikiTitle:"Dominic_de_Guzmán" },
+  { name:"Saint Lawrence", feast:{m:8,d:10}, patron:["Deacons","Cooks","Brewers","Librarians"], themes:["Service","Martyrdom","Charity","Courage"], bio:"The archdeacon of Rome martyred in 258 AD, Lawrence was grilled alive on a gridiron. His witness of joy and charity in suffering became a beacon for the early Church.", quote:"I have given all — I have nothing left.", wikiTitle:"Lawrence_of_Rome" },
+  { name:"Saint Clare of Assisi", feast:{m:8,d:11}, patron:["Television","Laundry Workers","Eye Disease"], themes:["Poverty","Contemplation","Courage","Community"], bio:"Inspired by Saint Francis, Clare founded the Order of Poor Ladies — the second Franciscan order. She lived a life of radical poverty and contemplation in San Damiano.", quote:"Our vocation is to aspire to the heights.", wikiTitle:"Clare_of_Assisi" },
+  { name:"Blessed Virgin Mary", feast:{m:8,d:15}, patron:["All Christians","The Church","Mothers"], themes:["Faith","Humility","Intercession","Motherhood"], bio:"Mother of God, Queen of Heaven, first disciple of Christ. Mary's yes at the Annunciation opened the door of salvation. In Catholic tradition, she intercedes constantly for her children.", quote:"Do whatever he tells you.", wikiTitle:"Mary,_mother_of_Jesus" },
+  { name:"Saint Monica", feast:{m:8,d:27}, patron:["Mothers","Wives","Victims of Abuse"], themes:["Mothers","Perseverance","Prayer","Hope"], bio:"Mother of Saint Augustine, Monica prayed and wept for her son's conversion for seventeen years. Her patient, faithful intercession is a model for all who pray for wayward loved ones.", quote:"Nothing is far from God.", wikiTitle:"Monica_of_Hippo" },
+  { name:"Saint Augustine of Hippo", feast:{m:8,d:28}, patron:["Theologians","Brewers","Printers"], themes:["Conversion","Grace","Truth","Theology"], bio:"One of the greatest theologians in Church history, Augustine lived a dissolute youth before his dramatic conversion. His Confessions and City of God shaped Western Christianity profoundly.", quote:"Our heart is restless until it rests in Thee.", wikiTitle:"Augustine_of_Hippo" },
+  { name:"Saint Gregory the Great", feast:{m:9,d:3}, patron:["Popes","Musicians","Teachers","Students"], themes:["Leadership","Service","Music","Reform"], bio:"One of the greatest popes in Church history, Gregory reformed the liturgy, codified Gregorian chant, cared personally for the poor, and sent Augustine to England to evangelize the Anglo-Saxons.", quote:"It is no great thing to be humble when brought low; but to be humble when praised is a great and rare achievement.", wikiTitle:"Pope_Gregory_I" },
+  { name:"Saint Michael the Archangel", feast:{m:9,d:29}, patron:["Police Officers","Military","Paramedics","The Sick"], themes:["Protection","Courage","Spiritual Warfare","Justice"], bio:"Prince of the heavenly armies and protector of the Church. Michael appears in Scripture driving Satan from heaven, and tradition honors him as defender of souls and guide of the dying.", quote:"Who is like God?", wikiTitle:"Michael_(archangel)" },
+  { name:"Saint Thérèse of Lisieux", feast:{m:10,d:1}, patron:["Missions","France","Florists","AIDS Sufferers"], themes:["Simplicity","Childhood","Suffering","Mission"], bio:"The Little Flower, who died at 24, is a Doctor of the Church. Her little way of spiritual childhood — trusting God completely in small things — has transformed millions of souls.", quote:"Miss no single opportunity of making some small sacrifice, here by a smiling look, there by a kindly word.", wikiTitle:"Thérèse_of_Lisieux" },
+  { name:"Saint Francis of Assisi", feast:{m:10,d:4}, patron:["Animals","Ecology","Italy","Merchants"], themes:["Nature","Poverty","Peace","Animals"], bio:"Born into wealth in 13th-century Italy, Francis gave up everything to follow Christ radically. He founded the Franciscan Order, composed the Canticle of the Creatures, and received the stigmata.", quote:"Start by doing what is necessary, then what is possible, and suddenly you are doing the impossible.", wikiTitle:"Francis_of_Assisi" },
+  { name:"Saint Faustina Kowalska", feast:{m:10,d:5}, patron:["Divine Mercy Devotion","Poland"], themes:["Mercy","Trust","Vision","Divine Mercy"], bio:"A Polish nun to whom Christ appeared and entrusted the message of Divine Mercy. Her Diary of Saint Maria Faustina Kowalska has become one of the most widely read spiritual books of the 20th century.", quote:"Jesus, I trust in You.", wikiTitle:"Faustina_Kowalska" },
+  { name:"Saint Teresa of Avila", feast:{m:10,d:15}, patron:["Spain","Headache Sufferers","Chess Players"], themes:["Prayer","Mysticism","Interior Life","Reform"], bio:"A 16th-century Spanish Carmelite mystic and Doctor of the Church. Her Interior Castle remains one of the greatest works on contemplative prayer. She reformed the Carmelite Order with courage.", quote:"Let nothing disturb you, let nothing frighten you. All things pass. God never changes.", wikiTitle:"Teresa_of_Ávila" },
+  { name:"Saint John Paul II", feast:{m:10,d:22}, patron:["Families","Youth","Poland"], themes:["Youth","Courage","Truth","Evangelization"], bio:"The beloved Polish pope who served for 27 years, survived an assassination attempt, and helped bring down communism through faith and diplomacy. His pontificate transformed the modern Church.", quote:"Be not afraid.", wikiTitle:"Pope_John_Paul_II" },
+  { name:"Saint Stephen", feast:{m:12,d:26}, patron:["Deacons","Stonemasons","Bricklayers"], themes:["Martyrdom","Courage","Forgiveness","Witness"], bio:"The first martyr of Christianity, stoned to death for his witness to the Risen Christ. As he died, he prayed for his executioners — echoing Christ on the Cross. The young Saul watched.", quote:"I see the heavens opened and the Son of Man standing at the right hand of God.", wikiTitle:"Saint_Stephen" },
+  { name:"Saint John the Apostle", feast:{m:12,d:27}, patron:["Theologians","Publishers","Asia Minor"], themes:["Love","Contemplation","Scripture","Faithfulness"], bio:"The Beloved Disciple who stood at the Cross and received the Blessed Mother into his care. Author of the fourth Gospel, three letters, and Revelation. His message: God is love.", quote:"God is love, and whoever abides in love abides in God.", wikiTitle:"John_the_Apostle" },
+  { name:"Saint Thomas Aquinas", feast:{m:1,d:28}, patron:["Students","Scholars","Theologians","Universities"], themes:["Wisdom","Theology","Truth","Study"], bio:"The Angelic Doctor, Thomas was the greatest theologian of the medieval Church. Despite his brilliance, he described all his writings as straw compared to a single vision of God.", quote:"To one who has faith, no explanation is necessary.", wikiTitle:"Thomas_Aquinas" },
+  { name:"Saint Joseph", feast:{m:3,d:19}, patron:["Universal Church","Workers","Fathers","Travelers"], themes:["Work","Family","Protection","Fatherhood"], bio:"The earthly father of Jesus and husband of Mary. A carpenter by trade, Joseph protected the Holy Family through the flight into Egypt and raised the Son of God in Nazareth with quiet, faithful love.", quote:"He did as the angel of the Lord commanded him.", wikiTitle:"Joseph_(husband_of_Mary)" },
+  { name:"Saint Patrick", feast:{m:3,d:17}, patron:["Ireland","Nigeria","Engineers"], themes:["Mission","Courage","Trinity","Evangelization"], bio:"Captured as a slave in his youth and brought to Ireland, Patrick escaped and later returned as a missionary, evangelizing the entire island through faith, prayer, and love.", quote:"Christ with me, Christ before me, Christ behind me.", wikiTitle:"Saint_Patrick" },
+  { name:"Saint Catherine of Siena", feast:{m:4,d:29}, patron:["Italy","Nurses","Firefighters","Europe"], themes:["Courage","Church","Mysticism","Reform"], bio:"A 14th-century laywoman and Doctor of the Church who convinced the Pope to return to Rome. Her letters and Dialogue remain classics of mystical theology.", quote:"Be who God meant you to be and you will set the world on fire.", wikiTitle:"Catherine_of_Siena" },
+  { name:"Saint Peter", feast:{m:6,d:29}, patron:["Fishermen","Popes","Bakers","Locksmiths"], themes:["Leadership","Courage","Repentance","Faith"], bio:"The fisherman chosen by Christ as the rock of His Church. Despite his denials, Peter's repentance and restoration by the Risen Christ show that no failure is final in God's mercy.", quote:"Lord, you know everything. You know that I love you.", wikiTitle:"Saint_Peter" },
+  { name:"Saint Paul the Apostle", feast:{m:6,d:29}, patron:["Missionaries","Theologians","Writers","Tentmakers"], themes:["Mission","Conversion","Courage","Suffering"], bio:"The persecutor turned apostle, Paul spread the Gospel across the known world through extraordinary suffering. His letters form a large portion of the New Testament.", quote:"I can do all things through Christ who strengthens me.", wikiTitle:"Paul_the_Apostle" },
+  { name:"Saint Anthony of Padua", feast:{m:6,d:13}, patron:["Lost Items","The Poor","Travelers","Pregnant Women"], themes:["Lost Things","Preaching","Poverty","Scripture"], bio:"A Portuguese-born Franciscan renowned for powerful preaching and encyclopedic knowledge of Scripture. He is universally invoked for help finding lost items.", quote:"Actions speak louder than words; let your actions speak.", wikiTitle:"Anthony_of_Padua" },
+  { name:"Blessed Virgin Mary (Apparition)", feast:{m:5,d:13}, patron:["All Christians","Portugal","Brazil"], themes:["Faith","Humility","Intercession","Fatima"], bio:"Our Lady of Fatima appeared to three shepherd children in 1917, calling for prayer, penance, and the consecration of Russia. The Fatima message continues to call the world to conversion.", quote:"Pray the Rosary every day to obtain peace for the world.", wikiTitle:"Our_Lady_of_Fátima" },
+  { name:"Saint Francis Xavier", feast:{m:12,d:3}, patron:["Missionaries","Japan","India","Navarre"], themes:["Mission","Courage","Evangelization","Sacrifice"], bio:"The great Jesuit missionary baptized over thirty thousand people in India, the Malay Archipelago, and Japan. He died in 1552 on the island of Shanghuan, his eyes fixed on China.", quote:"Give me the grace, O Lord, to labor, to suffer, and not to count the cost.", wikiTitle:"Francis_Xavier" },
 ];
 
 //  ROSARY 
@@ -235,8 +245,17 @@ function getDailyVerse() {
 }
 function getSaintOfDay() {
   const now = new Date(); const m=now.getMonth()+1, d=now.getDate();
+  // First: exact feast day match for today
   const exact = SAINTS.find(s=>s.feast.m===m&&s.feast.d===d);
   if (exact) return exact;
+  // Second: find the most recent feast day in the past 7 days
+  for (let i=1; i<=7; i++) {
+    const past = new Date(now); past.setDate(past.getDate()-i);
+    const pm=past.getMonth()+1, pd=past.getDate();
+    const recent = SAINTS.find(s=>s.feast.m===pm&&s.feast.d===pd);
+    if (recent) return recent;
+  }
+  // Fallback: rotation by day of year
   const day = Math.floor((Date.now()-new Date(now.getFullYear(),0,0))/86400000);
   return SAINTS[day%SAINTS.length];
 }
@@ -546,7 +565,7 @@ function AppHeader({ tab, user, onSignOut }) {
               <div style={{ width: 56, height: 56, borderRadius: '50%', background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}><StarIco /></div>
               <div style={{ fontFamily: CINZEL, fontSize: 20, color: WHITE, fontWeight: 700, letterSpacing: '0.08em', textShadow: EMBOSS, marginBottom: 6 }}>Verbum Premium</div>
               <div style={{ fontSize: 13, color: GOLD, fontFamily: CINZEL, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16, fontWeight: 600 }}>Coming Soon</div>
-              <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>Verbum Premium is being prepared with additional features for our community. It will be announced through your parish once it is ready. Stay tuned.</p>
+              <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>Verbum Premium is currently in development. We will keep you updated once it is ready to launch. Thank you for your patience and support.</p>
             </div>
             <button onClick={() => setShowPremiumModal(false)} style={{ width: '100%', background: HEADER_BG, border: 'none', borderRadius: 14, padding: '14px', color: '#F5E6C8', fontSize: 15, fontFamily: CINZEL, fontWeight: 600, letterSpacing: '0.08em', cursor: 'pointer' }}>Got it</button>
           </div>
@@ -662,6 +681,85 @@ function DailyVerseCard({ onFav, favorites }) {
   );
 }
 
+// ─── SAINT OF THE DAY CARD ────────────────────────────────────────────────────
+function SaintOfDayCard({ saint }) {
+  const [photoUrl, setPhotoUrl] = useState(null);
+  const [photoLoaded, setPhotoLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!saint.wikiTitle) return;
+    const cacheKey = `verbum-saint-photo-${saint.wikiTitle}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) { setPhotoUrl(cached); return; }
+
+    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(saint.wikiTitle)}`)
+      .then(r => r.json())
+      .then(data => {
+        const url = data.thumbnail?.source || null;
+        if (url) {
+          sessionStorage.setItem(cacheKey, url);
+          setPhotoUrl(url);
+        }
+      })
+      .catch(() => {});
+  }, [saint.wikiTitle]);
+
+  const feastDate = new Date(2024, saint.feast.m - 1, saint.feast.d)
+    .toLocaleDateString("en-US", { month: "long", day: "numeric" });
+
+  return (
+    <div style={{ background: CARD, border: `1.5px solid ${BORDER}`, borderRadius: 18, padding: 20, marginBottom: 14, boxShadow: CARD_SHADOW_STRONG, overflow: "hidden" }}>
+      {/* Header row with photo */}
+      <div style={{ display: "flex", gap: 14, marginBottom: 14 }}>
+        {/* Photo */}
+        <div style={{ width: 80, height: 80, borderRadius: 14, overflow: "hidden", flexShrink: 0, background: `linear-gradient(135deg,${GOLD}20,${GOLD}08)`, border: `1.5px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {photoUrl ? (
+            <img
+              src={photoUrl}
+              alt={saint.name}
+              onLoad={() => setPhotoLoaded(true)}
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", opacity: photoLoaded ? 1 : 0, transition: "opacity 0.3s" }}
+            />
+          ) : (
+            <Cross size={28} />
+          )}
+        </div>
+
+        {/* Info */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 11, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4, fontFamily: CINZEL }}>Saint of the Day</div>
+          <div style={{ fontFamily: CINZEL, fontSize: 17, color: WHITE, fontWeight: 700, letterSpacing: "0.04em", textShadow: EMBOSS, marginBottom: 4, lineHeight: 1.3 }}>{saint.name}</div>
+          <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>Feast Day: {feastDate}</div>
+        </div>
+      </div>
+
+      {/* Patron */}
+      {saint.patron && (
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 11, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6, fontFamily: CINZEL }}>Patron of</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+            {saint.patron.map(p => <Pill key={p} label={p} />)}
+          </div>
+        </div>
+      )}
+
+      {/* Themes */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 12 }}>
+        {saint.themes.map(t => <Pill key={t} label={t} />)}
+      </div>
+
+      {/* Bio */}
+      <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.85, marginBottom: 14, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{saint.bio}</p>
+
+      {/* Quote */}
+      <div style={{ borderLeft: `3px solid ${GOLD}`, padding: "11px 14px", background: SURFACE, borderRadius: "0 10px 10px 0" }}>
+        <div style={{ fontFamily: CINZEL, fontSize: 15, color: WHITE, lineHeight: 1.85, fontWeight: 500, textShadow: EMBOSS }}>"{saint.quote}"</div>
+      </div>
+    </div>
+  );
+}
+
+
 function HomeTab({favorites,onFav,user}) {
   // Note: top padding accounts for fixed header
   const [verse,setVerse]=useState(getDailyVerse());
@@ -692,63 +790,16 @@ function HomeTab({favorites,onFav,user}) {
 
       {is3oclock && <ThreeOClockBanner />}
       <DailyCatholicHappening />
-      <div style={{background:season.bg,border:`1px solid ${season.border}`,borderRadius:18,padding:20,marginBottom:14,boxShadow:CARD_SHADOW}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}><div style={{...S.sectionLabel,marginBottom:0}}>Liturgical Season</div><div style={{width:8,height:8,borderRadius:"50%",background:season.light}}/></div>
-        <div style={{fontFamily:CINZEL,fontSize:19,color:WHITE,fontWeight:600,letterSpacing:"0.08em",marginBottom:6,textShadow:EMBOSS}}>{season.name}</div>
-        <p style={{fontSize:15,color:CREAM,lineHeight:1.75,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{season.desc}</p>
-        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{season.cats.map(c=><span key={c} style={{fontSize:13,background:"rgba(255,255,255,0.6)",color:season.light,padding:"3px 10px",borderRadius:20,fontFamily:"'Lato',sans-serif",border:`1px solid ${season.border}`}}>{c}</span>)}</div>
-      </div>
-      <div style={S.card}>
-        <div style={S.sectionLabel}> Saint of the Day</div>
-        <div style={{fontFamily:CINZEL,fontSize:19,color:WHITE,fontWeight:600,letterSpacing:"0.06em",marginBottom:4,textShadow:EMBOSS}}>{saint.name}</div>
-        <div style={{fontSize:13,color:MUTED,marginBottom:10,fontFamily:"'Lato',sans-serif"}}>Feast Day: {new Date(2024,saint.feast.m-1,saint.feast.d).toLocaleDateString("en-US",{month:"long",day:"numeric"})}</div>
-        <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>{saint.themes.map(t=><Pill key={t} label={t}/>)}</div>
-        <p style={{fontSize:16,color:CREAM,lineHeight:1.85,marginBottom:14,fontFamily:"'Lato',sans-serif"}}>{saint.bio}</p>
-        <div style={{borderLeft:`3px solid ${GOLD}`,padding:"10px 14px",background:SURFACE,borderRadius:"0 8px 8px 0"}}><div style={{fontFamily:CINZEL,fontSize:15,color:"#4A3010",lineHeight:1.85,fontWeight:400,textShadow:EMBOSS}}>"{saint.quote}"</div></div>
-      </div>
-      <div style={S.card}>
-        <div style={S.sectionLabel}>{moment.p}</div>
-        <div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.1,letterSpacing:"0.04em",fontWeight:400,textShadow:EMBOSS}}>Lord, may Your Word be a lamp to my feet and a light to my path today. Guide my thoughts, my words, and my actions, that I may walk in Your ways. Amen.</div>
-      </div>
-    </div>
-  );
-}
-
-//  SOUL CHECK TAB 
-function SoulCheckTab() {
-  const [messages,setMessages]=useState([{role:"assistant",content:"Peace be with you.\n\nHow is your heart today? Whatever you are carrying — joy, worry, grief, gratitude — share it with me. I am here to walk alongside you with God's Word."}]);
-  const [input,setInput]=useState(""); const [loading,setLoading]=useState(false); const [showGuide,setShowGuide]=useState(true);
-  const bottomRef=useRef(null);
-  useEffect(()=>{bottomRef.current?.scrollIntoView({behavior:"smooth"});},[messages,loading]);
-  const PAYWALL_MSG = "Soul Check is a feature for Verbum Premium users. To receive personalized Scripture reflections and spiritual companionship, please upgrade to a Premium account.";
-  const send=async()=>{ const text=input.trim();if(!text||loading)return; setInput("");setShowGuide(false); const updated=[...messages,{role:"user",content:text}]; setMessages(updated);setLoading(true); await new Promise(r=>setTimeout(r,800)); setMessages([...updated,{role:"assistant",content:PAYWALL_MSG,isPaywall:true}]); setLoading(false); };
-  const MOODS=["Anxious","Grateful","Lonely","Hopeful","Grieving","Lost","Peaceful","Struggling"];
-  const EXAMPLES=["I am feeling anxious about something difficult","I want to give thanks for a beautiful moment","I lost someone and I am trying to grieve well"];
-  return (
-    <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 120px)",minHeight:520}}>
-      <div style={{padding:"20px 20px 0",paddingTop:24,marginTop:"calc(56px + env(safe-area-inset-top))",borderBottom:`1px solid ${BORDER}`}}>
-        <div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>Soul Check</div>
-        <div style={{fontSize:15,color:MUTED,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>Share your heart — receive God's Word</div>
-        {showGuide&&(
-          <div style={{background:SURFACE,border:`1px solid ${BORDER}`,borderRadius:12,padding:14,marginBottom:12}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><div style={{fontSize:12,color:GOLD,fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL}}>How This Works</div><button onClick={()=>setShowGuide(false)} style={{background:"none",border:"none",color:MUTED,fontSize:18,cursor:"pointer"}}></button></div>
-            <p style={{fontSize:15,color:CREAM,lineHeight:1.78,marginBottom:10,fontFamily:"'Lato',sans-serif"}}>Share how you are feeling — in a word or full sentences. You'll receive a relevant Scripture verse and reflection grounded in the Catechism.</p>
-            {EXAMPLES.map(ex=><button key={ex} onClick={()=>{setInput(ex);setShowGuide(false);}} style={{display:"block",width:"100%",textAlign:"left",background:CARD,border:`1px solid ${BORDER}`,borderRadius:8,padding:"7px 12px",color:CREAM,fontSize:14,cursor:"pointer",fontFamily:"'Lato',sans-serif",marginBottom:5}}>"{ex}"</button>)}
+      <SaintOfDayCard saint={saint} />
+      <div style={{background:season.bg,border:`1.5px solid ${season.border}`,borderRadius:14,padding:"12px 16px",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:10,height:10,borderRadius:"50%",background:season.light,flexShrink:0}}/>
+          <div>
+            <div style={{fontSize:12,color:season.light,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:CINZEL,fontWeight:700,marginBottom:2}}>Liturgical Season</div>
+            <div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS}}>{season.name}</div>
           </div>
-        )}
-        {messages.length===1&&<div style={{display:"flex",flexWrap:"wrap",gap:6,paddingBottom:14}}>{MOODS.map(m=><button key={m} onClick={()=>setInput(m)} style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:20,padding:"5px 12px",color:CREAM,fontSize:14,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}>{m}</button>)}</div>}
-      </div>
-      <div style={{flex:1,overflowY:"auto",padding:"16px 20px",background:DARK}}>
-        {messages.map((m,i)=>(
-          <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start",marginBottom:16}}>
-            {m.role==="assistant"&&<div style={{width:28,height:28,borderRadius:"50%",background:`${GOLD}20`,border:`1px solid ${GOLD}50`,display:"flex",alignItems:"center",justifyContent:"center",marginRight:10,flexShrink:0,marginTop:2}}><Cross size={12}/></div>}
-            <div style={{maxWidth:"78%",background:m.role==="user"?GOLD:CARD,border:m.role==="user"?"none":`1px solid ${BORDER}`,borderRadius:m.role==="user"?"18px 18px 4px 18px":"4px 18px 18px 18px",padding:"12px 16px",boxShadow:"0 1px 4px rgba(0,0,0,0.07)"}}>
-              <div style={{fontSize:15,color:m.role==="user"?"#FFFFFF":CREAM,lineHeight:1.85,whiteSpace:"pre-wrap",fontFamily:m.role==="assistant"?CINZEL:"'Lato',sans-serif",fontWeight:400}}>{m.content}</div>
-            </div>
-          </div>
-        ))}
-        {loading&&<div style={{display:"flex",gap:10,marginBottom:16}}><div style={{width:28,height:28,borderRadius:"50%",background:`${GOLD}20`,border:`1px solid ${GOLD}50`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Cross size={12}/></div><div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:"4px 18px 18px 18px",padding:"14px 18px",display:"flex",gap:5,alignItems:"center"}}>{[0,1,2].map(i=><div key={i} style={{width:6,height:6,borderRadius:"50%",background:GOLD,animation:`pulse 1.4s ease-in-out ${i*0.2}s infinite`}}/>)}</div></div>}
-        <div ref={bottomRef}/>
+        </div>
+        <div style={{display:"flex",gap:5,flexWrap:"wrap",justifyContent:"flex-end",maxWidth:130}}>{season.cats.map(c=><span key={c} style={{fontSize:11,background:"rgba(255,255,255,0.5)",color:season.light,padding:"3px 9px",borderRadius:20,fontFamily:"'Lato',sans-serif",border:`1px solid ${season.border}`,fontWeight:600}}>{c}</span>)}</div>
       </div>
       <div style={{padding:"10px 14px",borderTop:`1px solid ${BORDER}`,background:CARD,display:"flex",gap:10,alignItems:"flex-end"}}>
         <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}} placeholder="How are you feeling today?" rows={1} style={{flex:1,background:SURFACE,border:`1px solid ${BORDER}`,borderRadius:18,padding:"10px 16px",color:WHITE,fontSize:16,resize:"none",outline:"none",fontFamily:"'Lato',sans-serif",lineHeight:1.5,maxHeight:100}}/>
@@ -782,7 +833,10 @@ function BibleSearchView() {
 function ExploreTab({favorites,onFav}) {
   const [view,setView]=useState("browse"); const [selectedCat,setSelectedCat]=useState(null); const [expandedId,setExpandedId]=useState(null);
   const filtered=selectedCat?VERSES.filter(v=>v.category.includes(selectedCat)):VERSES;
+  // Combine VERSES favorites (by ID) and DAILY_VERSES favorites (by ref)
   const favVerses=VERSES.filter(v=>favorites.has(v.id));
+  const favDailyVerses=DAILY_VERSES.filter(v=>favorites.has(v.ref)).map(v=>({...v,id:v.ref,category:v.category||[]}));
+  const allFavVerses=[...favVerses,...favDailyVerses];
   return (
     <div style={{padding:"0 20px 20px"}}>
       <div style={{padding:"24px 0 16px",marginTop:"calc(56px + env(safe-area-inset-top))"}}><div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{view==="browse"?"Verse Library":view==="search"?"Bible Search":"My Favorites"}</div><div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{view==="browse"?"Browse by theme or feeling":view==="search"?"All 73 books of the Catholic Bible":"Your personal collection"}</div></div>
@@ -791,7 +845,7 @@ function ExploreTab({favorites,onFav}) {
       </div>
       {view==="browse"&&(<><div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}><button onClick={()=>setSelectedCat(null)} style={{background:!selectedCat?GOLD:CARD,border:`1px solid ${!selectedCat?GOLD:BORDER}`,borderRadius:20,padding:"5px 14px",color:!selectedCat?"#1A1000":MUTED,fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif",fontWeight:!selectedCat?700:400}}>All</button>{CATEGORIES.map(c=>{const on=selectedCat===c.id;return<button key={c.id} onClick={()=>setSelectedCat(on?null:c.id)} style={{background:on?GOLD:CARD,border:`1px solid ${on?GOLD:BORDER}`,borderRadius:20,padding:"5px 12px",color:on?"#1A1000":MUTED,fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif",fontWeight:on?700:400}}>{c.sym} {c.label}</button>;})}</div><div style={{display:"flex",flexDirection:"column",gap:12}}>{filtered.map(v=><VerseCard key={v.id} verse={v} expanded={expandedId===v.id} onToggle={()=>setExpandedId(expandedId===v.id?null:v.id)} isFav={favorites.has(v.id)} onFav={onFav}/>)}</div></>)}
       {view==="search"&&<BibleSearchView favorites={favorites} onFav={onFav}/>}
-      {view==="favorites"&&(favVerses.length===0?<div style={{textAlign:"center",padding:"48px 20px"}}><div style={{fontSize:39,marginBottom:14,opacity:0.25}}></div><div style={{fontFamily:CINZEL,fontSize:16,color:MUTED,letterSpacing:"0.07em",marginBottom:8,textShadow:EMBOSS}}>No favorites yet</div><p style={{fontSize:15,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>Tap the  on any verse to save it here.</p></div>:<div style={{display:"flex",flexDirection:"column",gap:12}}>{favVerses.map(v=><div key={v.id} style={{background:CARD,border:`1px solid ${GOLD}30`,borderRadius:16,overflow:"hidden"}}><div onClick={()=>setExpandedId(expandedId===v.id?null:v.id)} style={{padding:"18px 18px 0",cursor:"pointer"}}><div style={{fontFamily:CINZEL,fontSize:16,color:CREAM,lineHeight:1.88,marginBottom:10,textShadow:EMBOSS}}>"{v.text}"</div><div style={{fontFamily:CINZEL,fontSize:13,color:GOLD,fontWeight:700,letterSpacing:"0.16em",marginBottom:14}}>— {v.ref}</div></div>{expandedId===v.id&&<div style={{padding:"0 18px",marginBottom:14}}><p style={{fontSize:15,color:CREAM,lineHeight:1.82,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{v.explanation}</p><div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>{v.category.map(c=><Pill key={c} label={c}/>)}</div></div>}<div style={{borderTop:`1px solid ${BORDER}`,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{fontSize:13,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Saved</div><button onClick={()=>onFav(v.id)} style={{background:"none",border:`1px solid #4A1A1A`,borderRadius:8,padding:"4px 10px",color:"#A06060",fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}> Remove</button></div></div>)}</div>)}
+      {view==="favorites"&&(allFavVerses.length===0?<div style={{textAlign:"center",padding:"48px 20px"}}><div style={{fontSize:39,marginBottom:14,opacity:0.25}}></div><div style={{fontFamily:CINZEL,fontSize:16,color:MUTED,letterSpacing:"0.07em",marginBottom:8,textShadow:EMBOSS}}>No favorites yet</div><p style={{fontSize:15,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>Tap the  on any verse to save it here.</p></div>:<div style={{display:"flex",flexDirection:"column",gap:12}}>{allFavVerses.map(v=><div key={v.id} style={{background:CARD,border:`1px solid ${GOLD}30`,borderRadius:16,overflow:"hidden"}}><div onClick={()=>setExpandedId(expandedId===v.id?null:v.id)} style={{padding:"18px 18px 0",cursor:"pointer"}}><div style={{fontFamily:CINZEL,fontSize:16,color:CREAM,lineHeight:1.88,marginBottom:10,textShadow:EMBOSS}}>"{v.text}"</div><div style={{fontFamily:CINZEL,fontSize:13,color:GOLD,fontWeight:700,letterSpacing:"0.16em",marginBottom:14}}>— {v.ref}</div></div>{expandedId===v.id&&<div style={{padding:"0 18px",marginBottom:14}}><p style={{fontSize:15,color:CREAM,lineHeight:1.82,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{v.explanation}</p><div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>{v.category.map(c=><Pill key={c} label={c}/>)}</div></div>}<div style={{borderTop:`1px solid ${BORDER}`,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{fontSize:13,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Saved</div><button onClick={()=>onFav(v.id)} style={{background:"none",border:`1px solid #4A1A1A`,borderRadius:8,padding:"4px 10px",color:"#A06060",fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}> Remove</button></div></div>)}</div>)}
     </div>
   );
 }
@@ -1023,6 +1077,7 @@ export default function BibleApp() {
   const [userChecked, setUserChecked] = useState(false)
   const [tab, setTab] = useState("home")
   const [favorites, setFavorites] = useState(new Set())
+  const [hasNewFavorites, setHasNewFavorites] = useState(false)
   const [showNotifBanner, setShowNotifBanner] = useState(false)
   const [installPrompt, setInstallPrompt] = useState(null)
   const [showInstallBanner, setShowInstallBanner] = useState(false)
@@ -1080,7 +1135,12 @@ export default function BibleApp() {
     return () => window.removeEventListener("verbum-navigate", handler)
   }, [])
 
-  const onFav = (id) => setFavorites(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  const onFav = (id) => setFavorites(prev => {
+    const next = new Set(prev);
+    if (next.has(id)) { next.delete(id); } 
+    else { next.add(id); setHasNewFavorites(true); }
+    return next;
+  })
 
   const handleInstall = async () => {
     if (!installPrompt) return
@@ -1103,6 +1163,11 @@ export default function BibleApp() {
     { id: "prayers", label: "Prayers", I: PrayIco },
     { id: "mass",    label: "Mass",    I: MassIco },
   ]
+
+  const handleTabChange = (id) => {
+    setTab(id);
+    if (id === "explore") setHasNewFavorites(false);
+  }
 
   //  Wait for session check 
   if (!userChecked) {
@@ -1172,9 +1237,9 @@ export default function BibleApp() {
       {/* Bottom nav */}
       <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(245,239,228,0.96)", backdropFilter: "blur(14px)", borderTop: `1px solid ${BORDER}`, display: "flex", padding: "8px 0 12px", boxShadow: "0 -2px 12px rgba(0,0,0,0.07)" }}>
         {TABS.map(({ id, label, I }) => (
-          <button key={id} onClick={() => setTab(id)} style={{ flex: 1, background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "4px 0", position: "relative" }}>
-            {id === "explore" && favorites.size > 0 && (
-              <div style={{ position: "absolute", top: 0, right: "calc(50% - 20px)", width: 15, height: 15, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: "#FFFFFF", fontWeight: 700 }}>{favorites.size}</div>
+          <button key={id} onClick={() => handleTabChange(id)} style={{ flex: 1, background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "4px 0", position: "relative" }}>
+            {id === "explore" && hasNewFavorites && (
+              <div style={{ position: "absolute", top: 2, right: "calc(50% - 14px)", width: 9, height: 9, borderRadius: "50%", background: "#E53E3E" }} />
             )}
             <I on={tab === id} />
             <span style={{ fontSize: 9, color: tab === id ? GOLD : MUTED, letterSpacing: "0.05em", fontWeight: tab === id ? 700 : 400 }}>{label}</span>

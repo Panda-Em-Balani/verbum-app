@@ -325,72 +325,7 @@ function VerseCard({verse,expanded,onToggle,isFav,onFav}) {
 }
 
 // ─── NOTIFICATION PERMISSION POPUP ───────────────────────────────────────────
-function NotificationBanner({ onGranted, onDismiss }) {
-  const [requesting, setRequesting] = useState(false);
-  const handleEnable = async () => {
-    setRequesting(true);
-    const granted = await requestNotificationPermission();
-    setRequesting(false);
-    if (granted) { onGranted(); }
-    else { onDismiss(); }
-  };
-  return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 900, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)" }}>
-      <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 24, padding: 28, maxWidth: 340, width: "100%", boxShadow: CARD_SHADOW_STRONG, position: "relative" }}>
-        <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 100, height: 2, background: `linear-gradient(90deg,transparent,${GOLD},transparent)` }} />
-        <div style={{ textAlign: "center", marginBottom: 20 }}>
-          <div style={{ width: 54, height: 54, borderRadius: "50%", background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
-            <BellIco on />
-          </div>
-          <div style={{ fontFamily: CINZEL, fontSize: 19, color: WHITE, fontWeight: 700, letterSpacing: "0.08em", textShadow: EMBOSS, marginBottom: 10 }}>Daily Reminders</div>
-          <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.82, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>
-            Stay connected to your faith with daily notifications — a morning verse, the Three O'Clock Prayer, and Catholic feast day reminders.
-          </p>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <button onClick={handleEnable} disabled={requesting} style={{ width: "100%", background: `linear-gradient(135deg,${GOLD},${GOLD_BRIGHT})`, border: "none", borderRadius: 14, padding: "13px", color: "#FFFFFF", fontSize: 15, fontFamily: CINZEL, fontWeight: 600, letterSpacing: "0.08em", cursor: requesting ? "default" : "pointer", boxShadow: `0 4px 16px ${GOLD}40` }}>
-            {requesting ? "Requesting..." : "Enable Notifications"}
-          </button>
-          <button onClick={onDismiss} style={{ width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: 14, padding: "12px", color: MUTED, fontSize: 14, fontFamily: "'Lato',sans-serif", cursor: "pointer", fontWeight: 500 }}>
-            Maybe later
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
- {
-  const [requesting, setRequesting] = useState(false);
-  const handleEnable = async () => {
-    setRequesting(true);
-    const granted = await requestNotificationPermission();
-    setRequesting(false);
-    if (granted) { onGranted(); }
-    else { onDismiss(); }
-  };
-  return (
-    <div style={{background:"#FBF4E4",border:`1px solid ${GOLD}60`,borderRadius:16,padding:16,margin:"0 20px 14px",boxShadow:"0 1px 6px rgba(154,107,31,0.08)"}}>
-      <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
-        <div style={{width:32,height:32,borderRadius:"50%",background:`${GOLD}18`,border:`1px solid ${GOLD}40`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><BellIco on/></div>
-        <div style={{flex:1}}>
-          <div style={{fontFamily:CINZEL,fontSize:16,color:WHITE,fontWeight:600,letterSpacing:"0.05em",textShadow:EMBOSS,marginBottom:3}}>Daily Reminders</div>
-          <p style={{fontSize:14,color:CREAM,lineHeight:1.7,fontFamily:"'Lato',sans-serif",marginBottom:10}}>
-            Enable notifications to receive the Verse of the Day, the Three O'Clock Prayer, and Catholic feast day reminders.
-          </p>
-          <div style={{display:"flex",gap:8}}>
-            <button onClick={handleEnable} disabled={requesting} style={{background:GOLD,border:"none",borderRadius:10,padding:"7px 14px",color:"#FFFFFF",fontSize:14,fontFamily:CINZEL,letterSpacing:"0.07em",cursor:"pointer",fontWeight:600}}>
-              {requesting?"...":"Enable"}
-            </button>
-            <button onClick={onDismiss} style={{background:"none",border:`1px solid ${BORDER}`,borderRadius:10,padding:"7px 12px",color:MUTED,fontSize:14,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}>
-              Not now
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+function NotificationBanner({ onGranted, onDismiss })
 // ─── PWA INSTALL POPUP ───────────────────────────────────────────────────────
 function InstallBanner({ onInstall, onDismiss }) {
   return (
@@ -410,25 +345,6 @@ function InstallBanner({ onInstall, onDismiss }) {
           <button onClick={onDismiss} style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: 14, padding: "13px 16px", color: MUTED, fontSize: 14, cursor: "pointer", fontFamily: "'Lato',sans-serif" }}>
             Later
           </button>
-        </div>
-      </div>
-    </div>
-  );
-}
- {
-  return (
-    <div style={{background:"#EDF4EE",border:"1px solid #5A9A6A60",borderRadius:16,padding:16,margin:"0 20px 14px",boxShadow:"0 1px 6px rgba(90,154,106,0.08)"}}>
-      <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
-        <img src="/icon-192.png" alt="" style={{width:32,height:32,borderRadius:8,flexShrink:0}}/>
-        <div style={{flex:1}}>
-          <div style={{fontFamily:CINZEL,fontSize:16,color:WHITE,fontWeight:600,letterSpacing:"0.05em",textShadow:EMBOSS,marginBottom:3}}>Install Verbum</div>
-          <p style={{fontSize:14,color:CREAM,lineHeight:1.7,fontFamily:"'Lato',sans-serif",marginBottom:10}}>
-            Add Verbum to your home screen for quick access and offline use.
-          </p>
-          <div style={{display:"flex",gap:8}}>
-            <button onClick={onInstall} style={{background:"#5A9A6A",border:"none",borderRadius:10,padding:"7px 14px",color:"#FFFFFF",fontSize:14,fontFamily:CINZEL,letterSpacing:"0.07em",cursor:"pointer",fontWeight:600}}>Install</button>
-            <button onClick={onDismiss} style={{background:"none",border:`1px solid ${BORDER}`,borderRadius:10,padding:"7px 12px",color:MUTED,fontSize:14,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}>Later</button>
-          </div>
         </div>
       </div>
     </div>

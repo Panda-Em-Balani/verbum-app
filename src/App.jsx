@@ -515,7 +515,7 @@ function AppHeader({ tab, user, onSignOut }) {
   const firstName = user?.name?.split(' ')[0] || '';
   return (
     <>
-      <div style={{ position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 430, height: HEADER_H, background: HEADER_BG, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', boxShadow: '0 2px 20px rgba(0,0,0,0.30)' }}>
+      <div style={{ position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 430, background: HEADER_BG, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 16, paddingRight: 16, paddingTop: 'env(safe-area-inset-top)', minHeight: HEADER_H, boxShadow: '0 2px 20px rgba(0,0,0,0.30)' }}>
         <div style={{ width: 105 }}>
           {tab === 'home' && (
             <button onClick={() => setShowPremiumModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 20, padding: '6px 11px', cursor: 'pointer' }}>
@@ -681,7 +681,7 @@ function HomeTab({favorites,onFav,user}) {
   const S={ sectionLabel:{fontSize:14,color:GOLD_BRIGHT,fontWeight:800,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:14,fontFamily:CINZEL}, card:{background:CARD,border:`1px solid ${BORDER}`,borderRadius:18,padding:20,marginBottom:14,boxShadow:CARD_SHADOW} };
   return (
     <div style={{padding:"0 20px 20px"}}>
-      <div style={{textAlign:"center",padding:"24px 0 20px",marginTop:HEADER_H}}>
+      <div style={{textAlign:"center",padding:"24px 0 20px",marginTop:"calc(56px + env(safe-area-inset-top))"}}>
         <div style={{display:"flex",justifyContent:"center",marginBottom:14}}><Cross size={28}/></div>
         <div style={{fontSize:16,color:GOLD_BRIGHT,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:4,fontWeight:700,fontFamily:CINZEL}}>{dateStr}</div>
         <div style={{fontSize:16,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500,marginBottom:8,letterSpacing:"0.06em"}}>{timeStr}</div>
@@ -689,13 +689,7 @@ function HomeTab({favorites,onFav,user}) {
         <div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{moment.l}</div>
       </div>
       <DailyVerseCard onFav={onFav} favorites={favorites} />
-      <div style={{display:"flex",gap:8,marginBottom:showFavPanel||expanded?8:14}}>
-        <button onClick={()=>{setExpanded(!expanded);setShowFavPanel(false);}} style={{flex:1,background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:"11px 0",color:WHITE,fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,fontFamily:"'Lato',sans-serif",boxShadow:"0 1px 3px rgba(0,0,0,0.05)"}}><span></span>{expanded?"Hide":"Read"} Explanation</button>
-        <button onClick={()=>{setShowFavPanel(!showFavPanel);setExpanded(false);}} style={{background:CARD,border:`1px solid ${isFav?GOLD+"88":BORDER}`,borderRadius:12,padding:"11px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:6,boxShadow:"0 1px 3px rgba(0,0,0,0.05)"}}><HeartIco filled={isFav}/><span style={{fontSize:15,color:isFav?GOLD:MUTED,fontFamily:"'Lato',sans-serif"}}>{isFav?"Saved":"Save"}</span></button>
-        <button onClick={refresh} disabled={refreshing} style={{background:CARD,border:`1px solid ${GOLD}60`,borderRadius:12,padding:"11px 14px",cursor:"pointer",opacity:refreshing?.5:1,transition:"opacity 0.2s"}}><RefreshIco/></button>
-      </div>
-      {expanded&&<div style={{...S.card,marginBottom:12}}><p style={{fontSize:16,color:CREAM,lineHeight:1.85,marginBottom:16}}>{verse.explanation}</p>{verse.example&&<div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}`,borderRadius:"0 10px 10px 0",padding:"13px 16px"}}><div style={{fontSize:13,color:GOLD,fontWeight:700,letterSpacing:"0.14em",marginBottom:7,textTransform:"uppercase",fontFamily:CINZEL}}>In Practice</div><p style={{fontSize:15,color:MUTED,lineHeight:1.78}}>{verse.example}</p></div>}</div>}
-      {showFavPanel&&<div style={{background:"#FDF8F0",border:`1px solid ${GOLD}60`,borderRadius:14,padding:16,marginBottom:12}}><p style={{fontSize:15,color:MUTED,marginBottom:12,fontFamily:"'Lato',sans-serif",lineHeight:1.6}}>{isFav?"This verse is already in your Favorites.":"Add this verse to your personal Favorites."}</p><button onClick={()=>{onFav(verse.id);setShowFavPanel(false);}} style={{width:"100%",background:isFav?"#FFF0F0":"#F0FFF4",border:`1px solid ${isFav?"#E08080":"#80C080"}`,borderRadius:10,padding:"10px",color:isFav?"#C06060":GOLD,fontSize:15,cursor:"pointer",fontFamily:CINZEL,letterSpacing:"0.07em",fontWeight:600}}>{isFav?"  Remove from Favorites":"  Add to Favorites"}</button></div>}
+
       {is3oclock && <ThreeOClockBanner />}
       <DailyCatholicHappening />
       <div style={{background:season.bg,border:`1px solid ${season.border}`,borderRadius:18,padding:20,marginBottom:14,boxShadow:CARD_SHADOW}}>
@@ -732,7 +726,7 @@ function SoulCheckTab() {
   const EXAMPLES=["I am feeling anxious about something difficult","I want to give thanks for a beautiful moment","I lost someone and I am trying to grieve well"];
   return (
     <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 120px)",minHeight:520}}>
-      <div style={{padding:"20px 20px 0",paddingTop:24,marginTop:HEADER_H,borderBottom:`1px solid ${BORDER}`}}>
+      <div style={{padding:"20px 20px 0",paddingTop:24,marginTop:"calc(56px + env(safe-area-inset-top))",borderBottom:`1px solid ${BORDER}`}}>
         <div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>Soul Check</div>
         <div style={{fontSize:15,color:MUTED,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>Share your heart — receive God's Word</div>
         {showGuide&&(
@@ -791,7 +785,7 @@ function ExploreTab({favorites,onFav}) {
   const favVerses=VERSES.filter(v=>favorites.has(v.id));
   return (
     <div style={{padding:"0 20px 20px"}}>
-      <div style={{padding:"24px 0 16px",marginTop:HEADER_H}}><div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{view==="browse"?"Verse Library":view==="search"?"Bible Search":"My Favorites"}</div><div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{view==="browse"?"Browse by theme or feeling":view==="search"?"All 73 books of the Catholic Bible":"Your personal collection"}</div></div>
+      <div style={{padding:"24px 0 16px",marginTop:"calc(56px + env(safe-area-inset-top))"}}><div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{view==="browse"?"Verse Library":view==="search"?"Bible Search":"My Favorites"}</div><div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{view==="browse"?"Browse by theme or feeling":view==="search"?"All 73 books of the Catholic Bible":"Your personal collection"}</div></div>
       <div style={{display:"flex",background:SURFACE,borderRadius:12,padding:3,marginBottom:18,border:`1px solid ${BORDER}`,gap:2}}>
         {[{id:"browse",label:" Browse"},{id:"search",label:" Bible"},{id:"favorites",label:` Saved${favVerses.length?" ("+favVerses.length+")":""}`}].map(t=><button key={t.id} onClick={()=>{setView(t.id);setExpandedId(null);}} style={{flex:1,background:view===t.id?CARD:"none",border:view===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:view===t.id?GOLD_BRIGHT:MUTED,fontSize:14,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
       </div>
@@ -878,7 +872,7 @@ function PrayersTab() {
   if (subSection==="three-oclock") return <div style={{padding:"0 20px 20px"}}><ThreeOClockView onBack={()=>setSubSection(null)}/></div>;
   return (
     <div style={{padding:"0 20px 20px"}}>
-      <div style={{padding:"24px 0 16px",marginTop:HEADER_H}}><div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{section==="prayers"?"Catholic Prayers":"The Holy Rosary"}</div><div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{section==="prayers"?"Traditional prayers of the faith":"A decade-by-decade guide"}</div></div>
+      <div style={{padding:"24px 0 16px",marginTop:"calc(56px + env(safe-area-inset-top))"}}><div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{section==="prayers"?"Catholic Prayers":"The Holy Rosary"}</div><div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{section==="prayers"?"Traditional prayers of the faith":"A decade-by-decade guide"}</div></div>
       <div style={{display:"flex",background:SURFACE,borderRadius:12,padding:3,marginBottom:18,border:`1px solid ${BORDER}`}}>
         {[{id:"prayers",label:"  Prayers"},{id:"rosary",label:"  Rosary"}].map(t=><button key={t.id} onClick={()=>setSection(t.id)} style={{flex:1,background:section===t.id?CARD:"none",border:section===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:section===t.id?GOLD_BRIGHT:MUTED,fontSize:15,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
       </div>
@@ -946,7 +940,7 @@ function MassTab() {
   return (
     <div style={{ padding: "0 0 20px" }}>
       {/* Header */}
-      <div style={{ padding: "24px 20px 20px", marginTop: HEADER_H, borderBottom: `1px solid ${BORDER}` }}>
+      <div style={{ padding: "24px 20px 20px", marginTop: "calc(56px + env(safe-area-inset-top))", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}></div>
           <div>

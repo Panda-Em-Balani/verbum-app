@@ -304,7 +304,7 @@ function VerseCard({verse,expanded,onToggle,isFav,onFav}) {
           <div style={{fontSize:14,color:GOLD,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:CINZEL}}>{verse.ref}</div>
         </div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8,flexShrink:0}}>
-          <span style={{fontSize:14,color:MUTED}}>{expanded?"":""}</span>
+          <span style={{fontSize:14,color:MUTED}}>{expanded?"\u2212":"+"}</span>
           <div onClick={e=>{e.stopPropagation();onFav(verse.id);}}><HeartIco filled={isFav}/></div>
         </div>
       </div>
@@ -769,11 +769,6 @@ function SaintOfDayCard({ saint }) {
 
 function HomeTab({favorites,onFav,user}) {
   // Note: top padding accounts for fixed header
-  const [verse,setVerse]=useState(getDailyVerse());
-  const [expanded,setExpanded]=useState(false);
-  const [refreshing,setRefreshing]=useState(false);
-  const [showFavPanel,setShowFavPanel]=useState(false);
-  const [usedIds,setUsedIds]=useState(new Set([getDailyVerse().id]));
   const [time,setTime]=useState(new Date());
   useEffect(()=>{ const t=setInterval(()=>setTime(new Date()),1000); return()=>clearInterval(t); },[]);
   const saint=getSaintOfDay(); const season=getLiturgicalSeason();
@@ -781,9 +776,6 @@ function HomeTab({favorites,onFav,user}) {
   const moment=h<12?{g:`Good Morning${user?`, ${user.name.split(' ')[0]}`:''}`,p:"Morning Prayer",l:"Begin this day in God's presence."}:h<17?{g:"Good Afternoon",p:"Midday Prayer",l:"Pause and rest in the Lord."}:{g:"Good Evening",p:"Evening Prayer",l:"Give thanks for this day."};
   const dateStr=time.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
   const timeStr=time.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",second:"2-digit",hour12:true});
-  const isFav=favorites.has(verse.id);
-  const refresh=()=>{ setRefreshing(true); setTimeout(()=>{ const pool=VERSES.filter(v=>!usedIds.has(v.id)||usedIds.size>=VERSES.length); const next=(pool.length?pool:VERSES)[Math.floor(Math.random()*(pool.length||VERSES.length))]; setVerse(next);setExpanded(false);setShowFavPanel(false); setUsedIds(p=>{const s=new Set(p.size>=VERSES.length?[]:p);s.add(next.id);return s;}); setRefreshing(false); },400); };
-  const S={ sectionLabel:{fontSize:14,color:GOLD_BRIGHT,fontWeight:800,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:14,fontFamily:CINZEL}, card:{background:CARD,border:`1px solid ${BORDER}`,borderRadius:18,padding:20,marginBottom:14,boxShadow:CARD_SHADOW} };
   return (
     <div style={{padding:"0 20px 20px"}}>
       <div style={{textAlign:"center",padding:"24px 0 20px",marginTop:"calc(56px + env(safe-area-inset-top))"}}>
@@ -808,11 +800,6 @@ function HomeTab({favorites,onFav,user}) {
         </div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap",justifyContent:"flex-end",maxWidth:130}}>{season.cats.map(c=><span key={c} style={{fontSize:11,background:"rgba(255,255,255,0.5)",color:season.light,padding:"3px 9px",borderRadius:20,fontFamily:"'Lato',sans-serif",border:`1px solid ${season.border}`,fontWeight:600}}>{c}</span>)}</div>
       </div>
-      <div style={{padding:"10px 14px",borderTop:`1px solid ${BORDER}`,background:CARD,display:"flex",gap:10,alignItems:"flex-end"}}>
-        <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}} placeholder="How are you feeling today?" rows={1} style={{flex:1,background:SURFACE,border:`1px solid ${BORDER}`,borderRadius:18,padding:"10px 16px",color:WHITE,fontSize:16,resize:"none",outline:"none",fontFamily:"'Lato',sans-serif",lineHeight:1.5,maxHeight:100}}/>
-        <button onClick={send} disabled={!input.trim()||loading} style={{width:40,height:40,borderRadius:"50%",background:input.trim()&&!loading?GOLD:SURFACE,border:`1px solid ${input.trim()&&!loading?GOLD:BORDER}`,cursor:input.trim()&&!loading?"pointer":"default",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s",flexShrink:0}}><SendIco/></button>
-      </div>
-      <style>{`@keyframes pulse{0%,80%,100%{opacity:0.2;transform:scale(0.8)}40%{opacity:1;transform:scale(1)}}`}</style>
     </div>
   );
 }
@@ -848,11 +835,11 @@ function ExploreTab({favorites,onFav}) {
     <div style={{padding:"0 20px 20px"}}>
       <div style={{padding:"24px 0 16px",marginTop:"calc(56px + env(safe-area-inset-top))"}}><div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{view==="browse"?"Verse Library":view==="search"?"Bible Search":"My Favorites"}</div><div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{view==="browse"?"Browse by theme or feeling":view==="search"?"All 73 books of the Catholic Bible":"Your personal collection"}</div></div>
       <div style={{display:"flex",background:SURFACE,borderRadius:12,padding:3,marginBottom:18,border:`1px solid ${BORDER}`,gap:2}}>
-        {[{id:"browse",label:" Browse"},{id:"search",label:" Bible"},{id:"favorites",label:` Saved${favVerses.length?" ("+favVerses.length+")":""}`}].map(t=><button key={t.id} onClick={()=>{setView(t.id);setExpandedId(null);}} style={{flex:1,background:view===t.id?CARD:"none",border:view===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:view===t.id?GOLD_BRIGHT:MUTED,fontSize:14,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
+        {[{id:"browse",label:"Browse"},{id:"search",label:"Bible"},{id:"favorites",label:`Saved${allFavVerses.length?" ("+allFavVerses.length+")":""}`}].map(t=><button key={t.id} onClick={()=>{setView(t.id);setExpandedId(null);}} style={{flex:1,background:view===t.id?CARD:"none",border:view===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:view===t.id?GOLD_BRIGHT:MUTED,fontSize:14,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
       </div>
       {view==="browse"&&(<><div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}><button onClick={()=>setSelectedCat(null)} style={{background:!selectedCat?GOLD:CARD,border:`1px solid ${!selectedCat?GOLD:BORDER}`,borderRadius:20,padding:"5px 14px",color:!selectedCat?"#1A1000":MUTED,fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif",fontWeight:!selectedCat?700:400}}>All</button>{CATEGORIES.map(c=>{const on=selectedCat===c.id;return<button key={c.id} onClick={()=>setSelectedCat(on?null:c.id)} style={{background:on?GOLD:CARD,border:`1px solid ${on?GOLD:BORDER}`,borderRadius:20,padding:"5px 12px",color:on?"#1A1000":MUTED,fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif",fontWeight:on?700:400}}>{c.sym} {c.label}</button>;})}</div><div style={{display:"flex",flexDirection:"column",gap:12}}>{filtered.map(v=><VerseCard key={v.id} verse={v} expanded={expandedId===v.id} onToggle={()=>setExpandedId(expandedId===v.id?null:v.id)} isFav={favorites.has(v.id)} onFav={onFav}/>)}</div></>)}
       {view==="search"&&<BibleSearchView favorites={favorites} onFav={onFav}/>}
-      {view==="favorites"&&(allFavVerses.length===0?<div style={{textAlign:"center",padding:"48px 20px"}}><div style={{fontSize:39,marginBottom:14,opacity:0.25}}></div><div style={{fontFamily:CINZEL,fontSize:16,color:MUTED,letterSpacing:"0.07em",marginBottom:8,textShadow:EMBOSS}}>No favorites yet</div><p style={{fontSize:15,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>Tap the  on any verse to save it here.</p></div>:<div style={{display:"flex",flexDirection:"column",gap:12}}>{allFavVerses.map(v=><div key={v.id} style={{background:CARD,border:`1px solid ${GOLD}30`,borderRadius:16,overflow:"hidden"}}><div onClick={()=>setExpandedId(expandedId===v.id?null:v.id)} style={{padding:"18px 18px 0",cursor:"pointer"}}><div style={{fontFamily:CINZEL,fontSize:16,color:CREAM,lineHeight:1.88,marginBottom:10,textShadow:EMBOSS}}>"{v.text}"</div><div style={{fontFamily:CINZEL,fontSize:13,color:GOLD,fontWeight:700,letterSpacing:"0.16em",marginBottom:14}}>— {v.ref}</div></div>{expandedId===v.id&&<div style={{padding:"0 18px",marginBottom:14}}><p style={{fontSize:15,color:CREAM,lineHeight:1.82,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{v.explanation}</p><div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>{v.category.map(c=><Pill key={c} label={c}/>)}</div></div>}<div style={{borderTop:`1px solid ${BORDER}`,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{fontSize:13,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Saved</div><button onClick={()=>onFav(v.id)} style={{background:"none",border:`1px solid #4A1A1A`,borderRadius:8,padding:"4px 10px",color:"#A06060",fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}> Remove</button></div></div>)}</div>)}
+      {view==="favorites"&&(allFavVerses.length===0?<div style={{textAlign:"center",padding:"48px 20px"}}><div style={{marginBottom:14,opacity:0.4,display:"flex",justifyContent:"center"}}><HeartIco filled/></div><div style={{fontFamily:CINZEL,fontSize:16,color:MUTED,letterSpacing:"0.07em",marginBottom:8,textShadow:EMBOSS}}>No favorites yet</div><p style={{fontSize:15,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>Tap the heart on any verse to save it here.</p></div>:<div style={{display:"flex",flexDirection:"column",gap:12}}>{allFavVerses.map(v=><div key={v.id} style={{background:CARD,border:`1px solid ${GOLD}30`,borderRadius:16,overflow:"hidden"}}><div onClick={()=>setExpandedId(expandedId===v.id?null:v.id)} style={{padding:"18px 18px 0",cursor:"pointer"}}><div style={{fontFamily:CINZEL,fontSize:16,color:CREAM,lineHeight:1.88,marginBottom:10,textShadow:EMBOSS}}>"{v.text}"</div><div style={{fontFamily:CINZEL,fontSize:13,color:GOLD,fontWeight:700,letterSpacing:"0.16em",marginBottom:14}}>— {v.ref}</div></div>{expandedId===v.id&&<div style={{padding:"0 18px",marginBottom:14}}><p style={{fontSize:15,color:CREAM,lineHeight:1.82,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{v.explanation}</p><div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>{v.category.map(c=><Pill key={c} label={c}/>)}</div></div>}<div style={{borderTop:`1px solid ${BORDER}`,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{fontSize:13,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Saved</div><button onClick={()=>onFav(v.id)} style={{background:"none",border:`1px solid #4A1A1A`,borderRadius:8,padding:"4px 10px",color:"#A06060",fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}>Remove</button></div></div>)}</div>)}
     </div>
   );
 }
@@ -872,7 +859,7 @@ function NovenaView({ onBack }) {
           <p style={{fontSize:15,color:CREAM,lineHeight:1.78,fontFamily:"'Lato',sans-serif"}}>{novena.description}</p>
         </div>
         <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
-          {novena.days.map((_,i)=>{const done=prayedDays.has(`${selected}-${i}`);const active=currentDay===i;return<button key={i} onClick={()=>setCurrentDay(i)} style={{width:36,height:36,borderRadius:"50%",background:active?GOLD:done?"#182818":CARD,border:`1.5px solid ${active?GOLD:done?"#3A9A4A":BORDER}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:active?"#1A1000":done?"#2A8030":MUTED,fontSize:14,fontFamily:CINZEL,fontWeight:active?700:400}}>{done&&!active?"":i+1}</button>;})}
+          {novena.days.map((_,i)=>{const done=prayedDays.has(`${selected}-${i}`);const active=currentDay===i;return<button key={i} onClick={()=>setCurrentDay(i)} style={{width:36,height:36,borderRadius:"50%",background:active?GOLD:done?"#182818":CARD,border:`1.5px solid ${active?GOLD:done?"#3A9A4A":BORDER}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:active?"#1A1000":done?"#2A8030":MUTED,fontSize:14,fontFamily:CINZEL,fontWeight:active?700:400}}>{done&&!active?"\u2713":i+1}</button>;})}
         </div>
         <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:20,marginBottom:12}}>
           <div style={{fontSize:12,color:GOLD,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:6}}>Day {currentDay+1}</div>
@@ -880,9 +867,9 @@ function NovenaView({ onBack }) {
           <div style={{fontSize:15,color:GOLD,fontFamily:CINZEL,letterSpacing:"0.06em",marginBottom:16}}>{day.intention}</div>
           <div style={{borderTop:`1px solid ${BORDER}`,paddingTop:16}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:10}}>Prayer</div><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.1,textShadow:EMBOSS,whiteSpace:"pre-line"}}>{day.prayer}</div></div>
         </div>
-        <button onClick={()=>setPrayedDays(p=>{const s=new Set(p);hasCompleted?s.delete(`${selected}-${currentDay}`):s.add(`${selected}-${currentDay}`);return s;})} style={{width:"100%",background:hasCompleted?"#0A1A0A":"#181408",border:`1px solid ${hasCompleted?"#3A9A4A":GOLD+"40"}`,borderRadius:14,padding:"13px",color:hasCompleted?"#2A7A30":GOLD_BRIGHT,fontSize:15,fontFamily:CINZEL,fontWeight:600,letterSpacing:"0.08em",cursor:"pointer",marginBottom:10}}>{hasCompleted?"  Prayed Today":"Mark as Prayed"}</button>
+        <button onClick={()=>setPrayedDays(p=>{const s=new Set(p);hasCompleted?s.delete(`${selected}-${currentDay}`):s.add(`${selected}-${currentDay}`);return s;})} style={{width:"100%",background:hasCompleted?"#0A1A0A":"#181408",border:`1px solid ${hasCompleted?"#3A9A4A":GOLD+"40"}`,borderRadius:14,padding:"13px",color:hasCompleted?"#2A7A30":GOLD_BRIGHT,fontSize:15,fontFamily:CINZEL,fontWeight:600,letterSpacing:"0.08em",cursor:"pointer",marginBottom:10}}>{hasCompleted?"\u2713 Prayed Today":"Mark as Prayed"}</button>
         <div style={{display:"flex",gap:10}}>
-          <button onClick={()=>{if(currentDay>0){setCurrentDay(currentDay-1);setBeads?.(0);}}} disabled={currentDay===0} style={{flex:1,background:CARD,border:`1px solid ${currentDay===0?BORDER:GOLD+"40"}`,borderRadius:12,padding:"12px 0",cursor:currentDay===0?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===0?.35:1}}><ChevIco dir="left"/><span style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Previous</span></button>
+          <button onClick={()=>{if(currentDay>0){setCurrentDay(currentDay-1);}}} disabled={currentDay===0} style={{flex:1,background:CARD,border:`1px solid ${currentDay===0?BORDER:GOLD+"40"}`,borderRadius:12,padding:"12px 0",cursor:currentDay===0?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===0?.35:1}}><ChevIco dir="left"/><span style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Previous</span></button>
           <button onClick={()=>{if(currentDay<8)setCurrentDay(currentDay+1);}} disabled={currentDay===8} style={{flex:1,background:currentDay===8?CARD:SURFACE,border:`1px solid ${currentDay===8?BORDER:GOLD+"55"}`,borderRadius:12,padding:"12px 0",cursor:currentDay===8?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===8?.35:1}}><span style={{fontSize:15,color:currentDay===8?MUTED:GOLD_BRIGHT,fontFamily:"'Lato',sans-serif"}}>{currentDay===8?"Complete":"Next Day"}</span>{currentDay<8&&<ChevIco/>}</button>
         </div>
       </div>
@@ -911,7 +898,7 @@ function ThreeOClockView({ onBack }) {
         <div style={{background:"rgba(155,89,192,0.06)",borderRadius:12,padding:14,borderLeft:"3px solid rgba(155,89,192,0.4)"}}><div style={{fontSize:12,color:"#7040A0",letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:8}}>Jesus to Saint Faustina</div><p style={{fontSize:14,color:"#4A2870",lineHeight:1.9,fontFamily:CINZEL,fontStyle:"italic",textShadow:EMBOSS}}>{THREE_OCLOCK_PRAYER.instruction}</p></div>
       </div>
       <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:20,marginBottom:12}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:12}}>Prayer for the Hour of Mercy</div><div style={{fontFamily:CINZEL,fontSize:15,color:CREAM,lineHeight:2.1,textShadow:EMBOSS}}>{THREE_OCLOCK_PRAYER.shortPrayer}</div></div>
-      <button onClick={()=>setShowChaplet(!showChaplet)} style={{width:"100%",background:showChaplet?"#0A1A0A":"#181408",border:`1px solid ${showChaplet?"#3A9A4A":GOLD+"40"}`,borderRadius:14,padding:"13px",color:showChaplet?"#2A7A30":GOLD_BRIGHT,fontSize:15,fontFamily:CINZEL,fontWeight:600,cursor:"pointer",marginBottom:12}}>{showChaplet?"  Hide Chaplet":"  Full Divine Mercy Chaplet"}</button>
+      <button onClick={()=>setShowChaplet(!showChaplet)} style={{width:"100%",background:showChaplet?"#0A1A0A":"#181408",border:`1px solid ${showChaplet?"#3A9A4A":GOLD+"40"}`,borderRadius:14,padding:"13px",color:showChaplet?"#2A7A30":GOLD_BRIGHT,fontSize:15,fontFamily:CINZEL,fontWeight:600,cursor:"pointer",marginBottom:12}}>{showChaplet?"Hide Chaplet":"Full Divine Mercy Chaplet"}</button>
       {showChaplet&&<div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:20,marginBottom:12}}><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.2,whiteSpace:"pre-line",textShadow:EMBOSS}}>{THREE_OCLOCK_PRAYER.chaplet}</div></div>}
       <div style={{background:SURFACE,border:`1px solid ${BORDER}`,borderRadius:14,padding:16}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.18em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:8}}>Catechism of the Catholic Church</div><p style={{fontSize:15,color:"#908878",lineHeight:1.78,fontFamily:"'Lato',sans-serif"}}>{THREE_OCLOCK_PRAYER.ccc}</p></div>
     </div>
@@ -920,7 +907,11 @@ function ThreeOClockView({ onBack }) {
 
 //  PRAYERS TAB 
 function PrayersTab() {
-  const [section,setSection]=useState("prayers"); const [subSection,setSubSection]=useState(null); const [expandedPrayer,setExpandedPrayer]=useState(null); const [mysteryType,setMysteryType]=useState("Joyful"); const [decade,setDecade]=useState(0); const [beads,setBeads]=useState(0);
+  const [section,setSection]=useState("prayers"); const [subSection,setSubSection]=useState(null);
+  useEffect(()=>{
+    const deep=localStorage.getItem("verbum_deep_section");
+    if(deep){ localStorage.removeItem("verbum_deep_section"); if(deep==="three-oclock"||deep==="novenas") setSubSection(deep); if(deep==="rosary") setSection("rosary"); }
+  },[]); const [expandedPrayer,setExpandedPrayer]=useState(null); const [mysteryType,setMysteryType]=useState("Joyful"); const [decade,setDecade]=useState(0); const [beads,setBeads]=useState(0);
   const PRAYERS=[
     {t:"Our Father",s:"The Lord's Prayer",text:"Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.",note:"Taught by Jesus himself in Matthew 6:9–13, this is the foundational prayer of the Christian faith. The CCC calls it 'the summary of the whole gospel' (CCC 2761)."},
     {t:"Hail Mary",s:"Ave Maria",text:"Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.",note:"Drawn from Luke 1:28 and 1:42. The CCC affirms that Mary's intercession flows from her divine motherhood (CCC 969)."},
@@ -935,13 +926,13 @@ function PrayersTab() {
     <div style={{padding:"0 20px 20px"}}>
       <div style={{padding:"24px 0 16px",marginTop:"calc(56px + env(safe-area-inset-top))"}}><div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{section==="prayers"?"Catholic Prayers":"The Holy Rosary"}</div><div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{section==="prayers"?"Traditional prayers of the faith":"A decade-by-decade guide"}</div></div>
       <div style={{display:"flex",background:SURFACE,borderRadius:12,padding:3,marginBottom:18,border:`1px solid ${BORDER}`}}>
-        {[{id:"prayers",label:"  Prayers"},{id:"rosary",label:"  Rosary"}].map(t=><button key={t.id} onClick={()=>setSection(t.id)} style={{flex:1,background:section===t.id?CARD:"none",border:section===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:section===t.id?GOLD_BRIGHT:MUTED,fontSize:15,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
+        {[{id:"prayers",label:"Prayers"},{id:"rosary",label:"Rosary"}].map(t=><button key={t.id} onClick={()=>setSection(t.id)} style={{flex:1,background:section===t.id?CARD:"none",border:section===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:section===t.id?GOLD_BRIGHT:MUTED,fontSize:15,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
       </div>
       {section==="prayers"&&(
         <div style={{display:"flex",flexDirection:"column",gap:12,width:"100%"}}>
-          <button onClick={()=>setSubSection("three-oclock")} style={{background:"#F5EEF8",border:"1px solid #9B59C0",borderRadius:16,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.35)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,flexShrink:0}}></div><div><div style={{fontFamily:CINZEL,fontSize:17,color:"#4A2070",fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:2}}>Three O'Clock Prayer</div><div style={{fontSize:13,color:"#7040A0",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>Hour of Mercy · Divine Mercy Chaplet</div></div></div><ChevIco/></div>{isThreeOClockHour()&&<div style={{marginTop:10,background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.25)",borderRadius:8,padding:"6px 12px",display:"inline-block"}}><span style={{fontSize:13,color:"#7040A0",fontFamily:CINZEL}}> It is the Hour of Mercy now</span></div>}</button>
+          <button onClick={()=>setSubSection("three-oclock")} style={{background:"#F5EEF8",border:"1px solid #9B59C0",borderRadius:16,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.35)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,flexShrink:0}}></div><div><div style={{fontFamily:CINZEL,fontSize:17,color:"#4A2070",fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:2}}>Three O'Clock Prayer</div><div style={{fontSize:13,color:"#7040A0",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>Hour of Mercy · Divine Mercy Chaplet</div></div></div><ChevIco/></div>{isThreeOClockHour()&&<div style={{marginTop:10,background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.25)",borderRadius:8,padding:"6px 12px",display:"inline-block"}}><span style={{fontSize:13,color:"#7040A0",fontFamily:CINZEL}}>It is the Hour of Mercy now</span></div>}</button>
           <button onClick={()=>setSubSection("novenas")} style={{background:"#F0EAF8",border:`1px solid #8060C0`,borderRadius:16,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:"rgba(100,60,180,0.12)",border:"1px solid rgba(100,60,180,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,flexShrink:0}}></div><div><div style={{fontFamily:CINZEL,fontSize:17,color:"#3A1860",fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:2}}>Novenas</div><div style={{fontSize:13,color:"#6040A0",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>Nine Days of Prayer · 4 Novenas</div></div></div><ChevIco/></div></button>
-          {PRAYERS.map((p,i)=><div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"88":BORDER}`,borderRadius:18,padding:20,cursor:"pointer",boxShadow:expandedPrayer===i?CARD_SHADOW_STRONG:CARD_SHADOW,transition:"all 0.2s"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontFamily:CINZEL,fontSize:18,color:WHITE,marginBottom:4,letterSpacing:"0.06em",fontWeight:600,textShadow:EMBOSS}}>{p.t}</div><div style={{fontSize:13,color:GOLD,letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>{p.s}</div></div><span style={{color:MUTED,fontSize:15}}>{expandedPrayer===i?"":""}</span></div>{expandedPrayer===i&&<div style={{marginTop:16,paddingTop:16,borderTop:`1px solid ${BORDER}`}}><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.1,marginBottom:14,letterSpacing:"0.04em",whiteSpace:"pre-line",textShadow:EMBOSS}}>{p.text}</div><div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}`,borderRadius:"0 8px 8px 0",padding:"10px 14px"}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:5}}>Note & CCC</div><p style={{fontSize:14,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif"}}>{p.note}</p></div></div>}</div>)}
+          {PRAYERS.map((p,i)=><div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"88":BORDER}`,borderRadius:18,padding:20,cursor:"pointer",boxShadow:expandedPrayer===i?CARD_SHADOW_STRONG:CARD_SHADOW,transition:"all 0.2s"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontFamily:CINZEL,fontSize:18,color:WHITE,marginBottom:4,letterSpacing:"0.06em",fontWeight:600,textShadow:EMBOSS}}>{p.t}</div><div style={{fontSize:13,color:GOLD,letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>{p.s}</div></div><span style={{color:MUTED,fontSize:15}}>{expandedPrayer===i?"\u2212":"+"}</span></div>{expandedPrayer===i&&<div style={{marginTop:16,paddingTop:16,borderTop:`1px solid ${BORDER}`}}><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.1,marginBottom:14,letterSpacing:"0.04em",whiteSpace:"pre-line",textShadow:EMBOSS}}>{p.text}</div><div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}`,borderRadius:"0 8px 8px 0",padding:"10px 14px"}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:5}}>Note & CCC</div><p style={{fontSize:14,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif"}}>{p.note}</p></div></div>}</div>)}
         </div>
       )}
       {section==="rosary"&&(
@@ -1078,6 +1069,68 @@ function MassTab() {
     </div>
   );
 }
+
+//  SOUL CHECK TAB (static, no API)
+function SoulCheckTab({ favorites, onFav }) {
+  const [feeling, setFeeling] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
+  const matched = feeling ? VERSES.filter(v => v.category.includes(feeling)).slice(0, 4) : [];
+  const feelingLabel = feeling ? (CATEGORIES.find(c => c.id === feeling)?.label || feeling) : "";
+  return (
+    <div style={{ padding: "0 20px 20px" }}>
+      <div style={{ padding: "24px 0 16px", marginTop: "calc(56px + env(safe-area-inset-top))" }}>
+        <div style={{ fontFamily: CINZEL, fontSize: 22, color: WHITE, marginBottom: 4, letterSpacing: "0.07em", fontWeight: 600, textShadow: EMBOSS }}>Soul Check</div>
+        <div style={{ fontSize: 15, color: MUTED, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>How is your soul today?</div>
+      </div>
+
+      <div style={{ background: "linear-gradient(135deg,#FDF6E3,#F5E9C8)", border: `1px solid ${GOLD}50`, borderRadius: 18, padding: 20, marginBottom: 16, boxShadow: CARD_SHADOW }}>
+        <div style={{ fontSize: 12, color: GOLD_BRIGHT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 10 }}>A Moment of Honesty</div>
+        <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>
+          Pause for a moment. Name what you are carrying, and let God's Word meet you there. Choose the word that best describes your heart right now.
+        </p>
+      </div>
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+        {CATEGORIES.map(c => {
+          const on = feeling === c.id;
+          return (
+            <button key={c.id} onClick={() => { setFeeling(on ? null : c.id); setExpandedId(null); }} style={{ background: on ? GOLD : CARD, border: `1px solid ${on ? GOLD : BORDER}`, borderRadius: 20, padding: "8px 16px", color: on ? "#FFFFFF" : MUTED, fontSize: 14, cursor: "pointer", fontFamily: "'Lato',sans-serif", fontWeight: on ? 700 : 500, boxShadow: on ? CARD_SHADOW : "none", transition: "all 0.2s" }}>
+              {c.sym ? `${c.sym} ` : ""}{c.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {feeling && (
+        <>
+          <div style={{ fontSize: 13, color: GOLD_BRIGHT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 12 }}>The Word for {feelingLabel}</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+            {matched.map(v => (
+              <VerseCard key={v.id} verse={v} expanded={expandedId === v.id} onToggle={() => setExpandedId(expandedId === v.id ? null : v.id)} isFav={favorites.has(v.id)} onFav={onFav} />
+            ))}
+          </div>
+          <div style={{ background: SURFACE, borderLeft: `3px solid ${GOLD}`, borderRadius: "0 10px 10px 0", padding: "13px 16px", marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: GOLD, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 6, fontWeight: 700 }}>A Closing Prayer</div>
+            <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500, fontStyle: "italic" }}>
+              Lord, You know my heart better than I know it myself. Take what I am feeling today and draw me closer to You through it. Amen.
+            </p>
+          </div>
+        </>
+      )}
+
+      <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 18, boxShadow: CARD_SHADOW }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+          <LockIco />
+          <div style={{ fontFamily: CINZEL, fontSize: 14, color: WHITE, fontWeight: 600, letterSpacing: "0.06em", textShadow: EMBOSS }}>Guided Soul Check</div>
+        </div>
+        <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.78, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>
+          A personal, guided conversation about your spiritual life is coming with Verbum Premium.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 //  APP SHELL 
 export default function BibleApp() {
   const [user, setUser] = useState(null)
@@ -1130,7 +1183,9 @@ export default function BibleApp() {
     if (!user) return
     const permission = getNotificationPermission()
     if (permission === "granted") {
-      initNotifications()
+      supabase.auth.getUser().then(({ data }) => {
+        initNotifications(data?.user?.id)
+      }).catch(() => initNotifications())
     } else if (permission === "default" && !localStorage.getItem("verbum_notif_dismissed")) {
       const t = setTimeout(() => setShowNotifBanner(true), 2000)
       return () => clearTimeout(t)
@@ -1139,13 +1194,44 @@ export default function BibleApp() {
 
   // Deep link navigation from notification tap
   useEffect(() => {
-    const handler = (e) => {
-      const { tab, section } = e.detail || {}
-      if (tab) setTab(tab)
+    const applyDeepLink = (tabId, section) => {
       if (section) localStorage.setItem("verbum_deep_section", section)
+      if (tabId) setTab(tabId)
     }
-    window.addEventListener("verbum-navigate", handler)
-    return () => window.removeEventListener("verbum-navigate", handler)
+    const parseUrl = (url) => {
+      try {
+        const u = new URL(url, window.location.origin)
+        applyDeepLink(u.searchParams.get("tab"), u.searchParams.get("section"))
+      } catch { /* ignore malformed urls */ }
+    }
+
+    // 1) Custom event (from anywhere in the app)
+    const customHandler = (e) => {
+      const { tab: tabId, section } = e.detail || {}
+      applyDeepLink(tabId, section)
+    }
+    window.addEventListener("verbum-navigate", customHandler)
+
+    // 2) Message from the service worker (notification tapped while app is open)
+    const swHandler = (e) => {
+      if (e.data?.type === "NAVIGATE" && e.data.url) parseUrl(e.data.url)
+    }
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", swHandler)
+    }
+
+    // 3) Cold start from a notification (app opened with ?tab=...&section=...)
+    if (window.location.search) {
+      parseUrl(window.location.href)
+      window.history.replaceState({}, "", window.location.pathname)
+    }
+
+    return () => {
+      window.removeEventListener("verbum-navigate", customHandler)
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.removeEventListener("message", swHandler)
+      }
+    }
   }, [])
 
   const onFav = (id) => setFavorites(prev => {
@@ -1241,7 +1327,7 @@ export default function BibleApp() {
         )}
 
         {tab === "home"    && <HomeTab favorites={favorites} onFav={onFav} user={user} />}
-        {tab === "soul"    && <SoulCheckTab />}
+        {tab === "soul"    && <SoulCheckTab favorites={favorites} onFav={onFav} />}
         {tab === "explore" && <ExploreTab favorites={favorites} onFav={onFav} />}
         {tab === "prayers" && <PrayersTab />}
         {tab === "mass"    && <MassTab />}

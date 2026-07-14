@@ -3,20 +3,20 @@ import LoginPage from "./LoginPage.jsx";
 import { requestNotificationPermission, initNotifications, getNotificationPermission } from "./notifications.js";
 import { supabase } from "./supabase.js";
 
-const GOLD = "#DBBC57";
-const GOLD_BRIGHT = "#D4AF35";
-const DARK = "#F1E4BC";
-const SURFACE = "#F8F0DC";
-const CARD = "#FEFCF5";
-const BORDER = "#E2CA78";
-const CREAM = "#2E1E08";
-const MUTED = "#6B5535";
-const WHITE = "#1A0E04";
+const GOLD = "#DAA520";
+const GOLD_BRIGHT = "#FFD700";
+const DARK = "#F5F5F5";
+const SURFACE = "#EEEEEE";
+const CARD = "#FFFFFF";
+const BORDER = "#C0C0C0";
+const CREAM = "#5D3A1A";
+const MUTED = "#8B7355";
+const WHITE = "#3B1E08";
 const CINZEL = "'Cinzel', serif";
-const EMBOSS = "0 1px 0 rgba(255,255,255,0.9), 0 -1px 0 rgba(0,0,0,0.12)";
-const CARD_SHADOW = "0 2px 12px rgba(100,70,20,0.10), 0 1px 3px rgba(100,70,20,0.08)";
-const CARD_SHADOW_STRONG = "0 4px 20px rgba(100,70,20,0.14), 0 2px 6px rgba(100,70,20,0.10)";
-const HEADER_BG = "#3D2200";
+const EMBOSS = "0 1px 2px rgba(0,0,0,0.12)";
+const CARD_SHADOW = "0 1px 8px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)";
+const CARD_SHADOW_STRONG = "0 4px 16px rgba(0,0,0,0.09), 0 2px 4px rgba(0,0,0,0.05)";
+const HEADER_BG = "#8B4513";
 const HEADER_H = 56; // fixed header height px
 
 //  MASS STREAM CONFIG 
@@ -281,16 +281,16 @@ function isThreeOClockHour() { return new Date().getHours() === 15; }
 
 //  ICONS 
 const Cross=({size=20})=><svg width={size} height={size} viewBox="0 0 20 20" fill="none"><rect x="8.5" y="2" width="3" height="16" rx="1" fill={GOLD}/><rect x="2" y="7.5" width="16" height="3" rx="1" fill={GOLD}/></svg>;
-const HomeIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 9v11h5v-6h6v6h5V9L11 2z" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
-const ChatIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 5a2 2 0 012-2h12a2 2 0 012 2v9a2 2 0 01-2 2H8l-5 4V5z" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
-const BookIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3-7 3V4z" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
-const PrayIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5" fill="none"/><circle cx="11" cy="11" r="3" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5" fill="none"/><line x1="11" y1="3" x2="11" y2="8" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5"/><line x1="11" y1="14" x2="11" y2="19" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5"/><line x1="3" y1="11" x2="8" y2="11" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5"/><line x1="14" y1="11" x2="19" y2="11" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5"/></svg>;
-const MassIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="13" rx="2" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5" fill="none"/><path d="M9 9l5 2.5L9 14V9z" fill={on?GOLD:"#B8A898"}/><line x1="7" y1="2" x2="7" y2="5" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5" strokeLinecap="round"/><line x1="15" y1="2" x2="15" y2="5" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5" strokeLinecap="round"/></svg>;
+const HomeIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 9v11h5v-6h6v6h5V9L11 2z" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
+const ChatIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 5a2 2 0 012-2h12a2 2 0 012 2v9a2 2 0 01-2 2H8l-5 4V5z" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
+const BookIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3-7 3V4z" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
+const PrayIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none"/><circle cx="11" cy="11" r="3" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none"/><line x1="11" y1="3" x2="11" y2="8" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/><line x1="11" y1="14" x2="11" y2="19" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/><line x1="3" y1="11" x2="8" y2="11" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/><line x1="14" y1="11" x2="19" y2="11" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/></svg>;
+const MassIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="13" rx="2" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none"/><path d="M9 9l5 2.5L9 14V9z" fill={on?GOLD:"#A0A0A0"}/><line x1="7" y1="2" x2="7" y2="5" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" strokeLinecap="round"/><line x1="15" y1="2" x2="15" y2="5" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" strokeLinecap="round"/></svg>;
 const RefreshIco=()=><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 0110.7-3.7" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><path d="M14 8a6 6 0 01-10.7 3.7" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><polyline points="13,3.5 13,7 9.5,7" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><polyline points="3,12.5 3,9 6.5,9" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 const SendIco=()=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9l14-7-7 14V9H2z" fill={GOLD}/></svg>;
-const HeartIco=({filled})=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15S2 10.5 2 5.5A3.5 3.5 0 019 3.7 3.5 3.5 0 0116 5.5C16 10.5 9 15 9 15z" stroke={filled?GOLD:"#B8A898"} strokeWidth="1.5" fill={filled?GOLD:"none"}/></svg>;
+const HeartIco=({filled})=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15S2 10.5 2 5.5A3.5 3.5 0 019 3.7 3.5 3.5 0 0116 5.5C16 10.5 9 15 9 15z" stroke={filled?GOLD:"#A0A0A0"} strokeWidth="1.5" fill={filled?GOLD:"none"}/></svg>;
 const ChevIco=({dir="right"})=><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{transform:dir==="left"?"rotate(180deg)":"none"}}><path d="M5 3l4 4-4 4" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const BellIco=({on})=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 00-5 5v4l-1.5 2h13L14 11V7a5 5 0 00-5-5z" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5" fill="none"/><path d="M7 15a2 2 0 004 0" stroke={on?GOLD:"#B8A898"} strokeWidth="1.5"/></svg>;
+const BellIco=({on})=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 00-5 5v4l-1.5 2h13L14 11V7a5 5 0 00-5-5z" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none"/><path d="M7 15a2 2 0 004 0" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/></svg>;
 const Pill=({label})=><span style={{fontSize:13,background:SURFACE,color:GOLD,padding:"3px 10px",borderRadius:20,letterSpacing:"0.04em",fontFamily:"'Lato',sans-serif",display:"inline-block",border:`1px solid ${BORDER}`}}>{label}</span>;
 const LockIco=()=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="8" width="12" height="9" rx="2" stroke={GOLD} strokeWidth="1.5"/><path d="M6 8V5.5a3 3 0 016 0V8" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><circle cx="9" cy="12.5" r="1.5" fill={GOLD}/></svg>;
 
@@ -500,8 +500,8 @@ function DailyCatholicHappening() {
   if (!happening) return null;
 
   return (
-    <div style={{ background: "linear-gradient(135deg,#FFFBF0,#FFF3D6)", border: `1px solid ${GOLD}50`, borderRadius: 18, padding: 20, marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: CARD_SHADOW_STRONG }}>
-      <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: "rgba(180,140,60,0.05)" }} />
+    <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF5DC)", border: `1px solid ${GOLD}50`, borderRadius: 18, padding: 20, marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: CARD_SHADOW_STRONG }}>
+      <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: "rgba(218,165,32,0.06)" }} />
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
         <div style={{ width: 42, height: 42, borderRadius: 12, background: `${GOLD}15`, border: `1px solid ${GOLD}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
           <CalendarIco />
@@ -534,6 +534,56 @@ const CalendarIco = () => <svg width="20" height="20" viewBox="0 0 18 18" fill="
 const VerseIco = () => <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 2h8l4 4v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke={GOLD} strokeWidth="1.5" fill="none"/><line x1="5" y1="8" x2="13" y2="8" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><line x1="5" y1="11" x2="11" y2="11" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/></svg>;
 const StarIco = () => <svg width="16" height="16" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 4H13l-3.5 2.5 1.3 4L7 9.5 3.2 11.5l1.3-4L1 5h4.5L7 1z" fill="rgba(255,255,255,0.85)"/></svg>;
 const UserIco = () => <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="3" stroke="rgba(255,255,255,0.9)" strokeWidth="1.3" fill="none"/><path d="M2 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="rgba(255,255,255,0.9)" strokeWidth="1.3" strokeLinecap="round" fill="none"/></svg>;
+
+
+// --- NAME PROMPT (shown once after first login if no profile name) ---
+function NamePrompt({ email, onComplete }) {
+  const [name, setName] = useState("");
+  const [saving, setSaving] = useState(false);
+  const handleSave = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("profiles").upsert({ id: user.id, name: trimmed }, { onConflict: "id" });
+      }
+    } catch (e) { console.warn("[Verbum] Profile save error:", e.message); }
+    onComplete(trimmed);
+  };
+  return (
+    <div style={{ minHeight: "100vh", background: DARK, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: "'Lato',-apple-system,sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap');*{box-sizing:border-box;margin:0;padding:0}body{background:#F5F5F5}input::placeholder{color:#A09080}input{font-size:16px !important}`}</style>
+      <div style={{ width: "100%", maxWidth: 380, textAlign: "center" }}>
+        <Cross size={36} />
+        <div style={{ fontFamily: CINZEL, fontSize: 24, color: WHITE, fontWeight: 700, letterSpacing: "0.12em", marginTop: 20, marginBottom: 6, textShadow: EMBOSS }}>Welcome to Verbum</div>
+        <p style={{ fontSize: 15, color: MUTED, marginBottom: 32, lineHeight: 1.7 }}>One more thing before we begin.</p>
+        <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, boxShadow: CARD_SHADOW_STRONG }}>
+          <div style={{ fontFamily: CINZEL, fontSize: 18, color: WHITE, fontWeight: 600, letterSpacing: "0.06em", marginBottom: 6, textShadow: EMBOSS }}>What should we call you?</div>
+          <p style={{ fontSize: 13, color: MUTED, marginBottom: 20 }}>This is how Verbum will greet you.</p>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
+            placeholder="Your first name"
+            autoFocus
+            style={{ width: "100%", background: SURFACE, border: `1.5px solid ${name.trim() ? GOLD : BORDER}`, borderRadius: 14, padding: "14px 18px", fontSize: 17, color: WHITE, fontFamily: CINZEL, fontWeight: 600, letterSpacing: "0.05em", outline: "none", textAlign: "center", transition: "border-color 0.2s" }}
+          />
+          <button
+            onClick={handleSave}
+            disabled={!name.trim() || saving}
+            style={{ width: "100%", marginTop: 16, background: name.trim() ? `linear-gradient(135deg,${GOLD},${GOLD_BRIGHT})` : SURFACE, border: "none", borderRadius: 14, padding: "14px", color: name.trim() ? "#FFFFFF" : MUTED, fontSize: 16, fontFamily: CINZEL, fontWeight: 600, letterSpacing: "0.08em", cursor: name.trim() ? "pointer" : "default", transition: "all 0.2s" }}
+          >
+            {saving ? "Saving..." : "Continue"}
+          </button>
+        </div>
+        <p style={{ fontSize: 12, color: MUTED, marginTop: 16, opacity: 0.7 }}>Signed in as {email}</p>
+      </div>
+    </div>
+  );
+}
 
 // ─── FIXED HEADER BAR ────────────────────────────────────────────────────────
 function AppHeader({ tab, user, onSignOut }) {
@@ -645,23 +695,20 @@ function getDailyVerseStatic() {
 function DailyVerseCard({ onFav, favorites }) {
   const verse = getDailyVerseStatic();
   const [expanded, setExpanded] = useState(false);
-  const [showFavPanel, setShowFavPanel] = useState(false);
   const isFav = favorites.has(verse.ref);
 
   return (
     <div style={{ marginBottom: 14 }}>
-      <div style={{ background: 'linear-gradient(135deg,#FDF6E3,#F5E9C8)', border: `1px solid ${GOLD}60`, borderRadius: 20, padding: 24, position: 'relative', overflow: 'hidden', boxShadow: CARD_SHADOW_STRONG }}>
-        <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: 'rgba(180,140,60,0.08)' }} />
-        <div style={{ fontSize: 14, color: GOLD_BRIGHT, fontWeight: 800, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14, fontFamily: CINZEL }}>Daily Verse</div>
-        <div style={{ fontFamily: CINZEL, fontSize: 18, color: WHITE, lineHeight: 2.0, marginBottom: 14, letterSpacing: '0.04em', fontWeight: 600, textShadow: EMBOSS }}>"{verse.text}"</div>
-        <div style={{ fontFamily: CINZEL, fontSize: 14, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: '0.16em', marginBottom: 18 }}>— {verse.ref}</div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => { setExpanded(!expanded); setShowFavPanel(false); }} style={{ flex: 1, background: 'rgba(154,107,31,0.12)', border: `1px solid ${GOLD}50`, borderRadius: 12, padding: '10px 0', color: GOLD_BRIGHT, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: "'Lato',sans-serif", fontWeight: 700 }}>
-            <VerseIco /> {expanded ? 'Hide Reflection' : 'Read Reflection'}
-          </button>
-          <button onClick={() => { setShowFavPanel(!showFavPanel); setExpanded(false); }} style={{ background: isFav ? `${GOLD}25` : 'rgba(154,107,31,0.12)', border: `1px solid ${isFav ? GOLD : GOLD + '50'}`, borderRadius: 12, padding: '10px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <HeartIco filled={isFav} />
-          </button>
+      <div onClick={() => setExpanded(!expanded)} style={{ background: 'linear-gradient(135deg,#FFFCF5,#FFF3D6)', border: `1px solid ${GOLD}60`, borderRadius: 20, padding: 24, position: 'relative', overflow: 'hidden', boxShadow: CARD_SHADOW_STRONG, cursor: 'pointer', transition: 'box-shadow 0.2s' }}>
+        <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: 'rgba(218,165,32,0.08)' }} />
+        <div style={{ position: 'absolute', top: 18, right: 18, zIndex: 2 }} onClick={(e) => { e.stopPropagation(); onFav(verse.ref); }}>
+          <HeartIco filled={isFav} />
+        </div>
+        <div style={{ fontSize: 13, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 14, fontFamily: CINZEL }}>Daily Verse</div>
+        <div style={{ fontFamily: CINZEL, fontSize: 18, color: WHITE, lineHeight: 2.0, marginBottom: 14, letterSpacing: '0.04em', fontWeight: 600, textShadow: EMBOSS, paddingRight: 28 }}>"{verse.text}"</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ fontFamily: CINZEL, fontSize: 14, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: '0.16em' }}>— {verse.ref}</div>
+          <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif" }}>{expanded ? 'Tap to close' : 'Tap to reflect'}</div>
         </div>
       </div>
       {expanded && (
@@ -676,14 +723,7 @@ function DailyVerseCard({ onFav, favorites }) {
           {verse.category && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>{verse.category.map(c => <Pill key={c} label={c} />)}</div>}
         </div>
       )}
-      {showFavPanel && (
-        <div style={{ background: '#FDF8F0', border: `1px solid ${GOLD}60`, borderRadius: 14, padding: 18, marginTop: 8, boxShadow: CARD_SHADOW }}>
-          <p style={{ fontSize: 14, color: MUTED, marginBottom: 12, fontFamily: "'Lato',sans-serif", lineHeight: 1.75, fontWeight: 500 }}>{isFav ? 'This verse is in your Favorites.' : 'Save this verse to your Favorites.'}</p>
-          <button onClick={() => { onFav(verse.ref); setShowFavPanel(false); }} style={{ width: '100%', background: isFav ? '#FFF0F0' : '#F0FFF4', border: `1px solid ${isFav ? '#E08080' : '#80C080'}`, borderRadius: 10, padding: '12px', color: isFav ? '#C06060' : GOLD, fontSize: 14, cursor: 'pointer', fontFamily: CINZEL, letterSpacing: '0.07em', fontWeight: 700 }}>
-            {isFav ? 'Remove from Favorites' : 'Add to Favorites'}
-          </button>
-        </div>
-      )}
+
     </div>
   );
 }
@@ -773,7 +813,7 @@ function HomeTab({favorites,onFav,user}) {
   useEffect(()=>{ const t=setInterval(()=>setTime(new Date()),1000); return()=>clearInterval(t); },[]);
   const saint=getSaintOfDay(); const season=getLiturgicalSeason();
   const h=time.getHours(); const is3oclock=isThreeOClockHour();
-  const moment=h<12?{g:`Good Morning${user?`, ${user.name.split(' ')[0]}`:''}`,p:"Morning Prayer",l:"Begin this day in God's presence."}:h<17?{g:"Good Afternoon",p:"Midday Prayer",l:"Pause and rest in the Lord."}:{g:"Good Evening",p:"Evening Prayer",l:"Give thanks for this day."};
+  const firstName=user?.name?.split(' ')[0]||''; const moment=h<12?{g:`Good Morning${firstName?`, ${firstName}`:''}`,p:"Morning Prayer",l:"Begin this day in God's presence."}:h<17?{g:"Good Afternoon",p:"Midday Prayer",l:"Pause and rest in the Lord."}:{g:"Good Evening",p:"Evening Prayer",l:"Give thanks for this day."};
   const dateStr=time.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
   const timeStr=time.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",second:"2-digit",hour12:true});
   return (
@@ -790,15 +830,15 @@ function HomeTab({favorites,onFav,user}) {
       {is3oclock && <ThreeOClockBanner />}
       <DailyCatholicHappening />
       <SaintOfDayCard saint={saint} />
-      <div style={{background:season.bg,border:`1.5px solid ${season.border}`,borderRadius:14,padding:"12px 16px",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
+      <div style={{background:season.bg,border:`1.5px solid ${season.border}`,borderRadius:16,padding:"16px 18px",marginBottom:14,boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
           <div style={{width:10,height:10,borderRadius:"50%",background:season.light,flexShrink:0}}/>
           <div>
-            <div style={{fontSize:12,color:season.light,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:CINZEL,fontWeight:700,marginBottom:2}}>Liturgical Season</div>
+            <div style={{fontSize:11,color:season.light,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,fontWeight:700,marginBottom:2}}>Liturgical Season</div>
             <div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS}}>{season.name}</div>
           </div>
         </div>
-        <div style={{display:"flex",gap:5,flexWrap:"wrap",justifyContent:"flex-end",maxWidth:130}}>{season.cats.map(c=><span key={c} style={{fontSize:11,background:"rgba(255,255,255,0.5)",color:season.light,padding:"3px 9px",borderRadius:20,fontFamily:"'Lato',sans-serif",border:`1px solid ${season.border}`,fontWeight:600}}>{c}</span>)}</div>
+        <p style={{fontSize:13,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif",fontWeight:500,paddingLeft:20}}>{season.desc}</p>
       </div>
     </div>
   );
@@ -839,7 +879,7 @@ function ExploreTab({favorites,onFav}) {
       </div>
       {view==="browse"&&(<><div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}><button onClick={()=>setSelectedCat(null)} style={{background:!selectedCat?GOLD:CARD,border:`1px solid ${!selectedCat?GOLD:BORDER}`,borderRadius:20,padding:"5px 14px",color:!selectedCat?"#1A1000":MUTED,fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif",fontWeight:!selectedCat?700:400}}>All</button>{CATEGORIES.map(c=>{const on=selectedCat===c.id;return<button key={c.id} onClick={()=>setSelectedCat(on?null:c.id)} style={{background:on?GOLD:CARD,border:`1px solid ${on?GOLD:BORDER}`,borderRadius:20,padding:"5px 12px",color:on?"#1A1000":MUTED,fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif",fontWeight:on?700:400}}>{c.sym} {c.label}</button>;})}</div><div style={{display:"flex",flexDirection:"column",gap:12}}>{filtered.map(v=><VerseCard key={v.id} verse={v} expanded={expandedId===v.id} onToggle={()=>setExpandedId(expandedId===v.id?null:v.id)} isFav={favorites.has(v.id)} onFav={onFav}/>)}</div></>)}
       {view==="search"&&<BibleSearchView favorites={favorites} onFav={onFav}/>}
-      {view==="favorites"&&(allFavVerses.length===0?<div style={{textAlign:"center",padding:"48px 20px"}}><div style={{marginBottom:14,opacity:0.4,display:"flex",justifyContent:"center"}}><HeartIco filled/></div><div style={{fontFamily:CINZEL,fontSize:16,color:MUTED,letterSpacing:"0.07em",marginBottom:8,textShadow:EMBOSS}}>No favorites yet</div><p style={{fontSize:15,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>Tap the heart on any verse to save it here.</p></div>:<div style={{display:"flex",flexDirection:"column",gap:12}}>{allFavVerses.map(v=><div key={v.id} style={{background:CARD,border:`1px solid ${GOLD}30`,borderRadius:16,overflow:"hidden"}}><div onClick={()=>setExpandedId(expandedId===v.id?null:v.id)} style={{padding:"18px 18px 0",cursor:"pointer"}}><div style={{fontFamily:CINZEL,fontSize:16,color:CREAM,lineHeight:1.88,marginBottom:10,textShadow:EMBOSS}}>"{v.text}"</div><div style={{fontFamily:CINZEL,fontSize:13,color:GOLD,fontWeight:700,letterSpacing:"0.16em",marginBottom:14}}>— {v.ref}</div></div>{expandedId===v.id&&<div style={{padding:"0 18px",marginBottom:14}}><p style={{fontSize:15,color:CREAM,lineHeight:1.82,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{v.explanation}</p><div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>{v.category.map(c=><Pill key={c} label={c}/>)}</div></div>}<div style={{borderTop:`1px solid ${BORDER}`,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{fontSize:13,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Saved</div><button onClick={()=>onFav(v.id)} style={{background:"none",border:`1px solid #4A1A1A`,borderRadius:8,padding:"4px 10px",color:"#A06060",fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}>Remove</button></div></div>)}</div>)}
+      {view==="favorites"&&(allFavVerses.length===0?<div style={{textAlign:"center",padding:"48px 20px"}}><div style={{marginBottom:14,opacity:0.4,display:"flex",justifyContent:"center"}}><HeartIco filled/></div><div style={{fontFamily:CINZEL,fontSize:16,color:MUTED,letterSpacing:"0.07em",marginBottom:8,textShadow:EMBOSS}}>No favorites yet</div><p style={{fontSize:15,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>Tap the heart on any verse to save it here.</p></div>:<div style={{display:"flex",flexDirection:"column",gap:12}}>{allFavVerses.map(v=><div key={v.id} style={{background:CARD,border:`1px solid ${GOLD}30`,borderRadius:16,overflow:"hidden"}}><div onClick={()=>setExpandedId(expandedId===v.id?null:v.id)} style={{padding:"18px 18px 0",cursor:"pointer"}}><div style={{fontFamily:CINZEL,fontSize:16,color:CREAM,lineHeight:1.88,marginBottom:10,textShadow:EMBOSS}}>"{v.text}"</div><div style={{fontFamily:CINZEL,fontSize:13,color:GOLD,fontWeight:700,letterSpacing:"0.16em",marginBottom:14}}>— {v.ref}</div></div>{expandedId===v.id&&<div style={{padding:"0 18px",marginBottom:14}}><p style={{fontSize:15,color:CREAM,lineHeight:1.82,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{v.explanation}</p><div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>{v.category.map(c=><Pill key={c} label={c}/>)}</div></div>}<div style={{borderTop:`1px solid ${BORDER}`,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{fontSize:13,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Saved</div><button onClick={()=>onFav(v.id)} style={{background:"none",border:`1px solid #C08080`,borderRadius:8,padding:"4px 10px",color:"#A06060",fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}>Remove</button></div></div>)}</div>)}
     </div>
   );
 }
@@ -1007,7 +1047,7 @@ function MassTab() {
         <div style={{ fontSize: 10, color: GOLD_BRIGHT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 12 }}>Available Streams</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
           {STREAMS.map((stream, i) => (
-            <button key={i} onClick={() => { setSelected(i); setLoaded(false); }} style={{ background: selected === i ? "linear-gradient(135deg,#FDF6E3,#F5E9C8)" : CARD, border: `1.5px solid ${selected === i ? GOLD : BORDER}`, borderRadius: 16, padding: "14px 16px", cursor: "pointer", textAlign: "left", transition: "all 0.2s", boxShadow: selected === i ? CARD_SHADOW_STRONG : CARD_SHADOW }}>
+            <button key={i} onClick={() => { setSelected(i); setLoaded(false); }} style={{ background: selected === i ? "linear-gradient(135deg,#FFFCF5,#FFF3D6)" : CARD, border: `1.5px solid ${selected === i ? GOLD : BORDER}`, borderRadius: 16, padding: "14px 16px", cursor: "pointer", textAlign: "left", transition: "all 0.2s", boxShadow: selected === i ? CARD_SHADOW_STRONG : CARD_SHADOW }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{ width: 38, height: 38, borderRadius: 10, background: selected === i ? `${GOLD}20` : SURFACE, border: `1px solid ${selected === i ? GOLD + "60" : BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>{stream.icon}</div>
                 <div style={{ flex: 1 }}>
@@ -1059,7 +1099,7 @@ function MassTab() {
         </div>
 
         {/* Spiritual note */}
-        <div style={{ background: "linear-gradient(135deg,#FDF6E3,#F5E9C8)", border: `1px solid ${GOLD}50`, borderRadius: 16, padding: 16, boxShadow: CARD_SHADOW }}>
+        <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}50`, borderRadius: 16, padding: 16, boxShadow: CARD_SHADOW }}>
           <div style={{ fontSize: 10, color: GOLD_BRIGHT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 8 }}>A Note on Virtual Mass</div>
           <p style={{ fontSize: 12, color: CREAM, lineHeight: 1.78, fontFamily: "'Lato',sans-serif" }}>
             The Church encourages physical attendance at Mass whenever possible — it is there we receive Christ truly present in the Eucharist. Watching a live stream is a meaningful act of worship when in-person attendance is not possible. If you are able, please attend Mass at your local parish.
@@ -1083,7 +1123,7 @@ function SoulCheckTab({ favorites, onFav }) {
         <div style={{ fontSize: 15, color: MUTED, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>How is your soul today?</div>
       </div>
 
-      <div style={{ background: "linear-gradient(135deg,#FDF6E3,#F5E9C8)", border: `1px solid ${GOLD}50`, borderRadius: 18, padding: 20, marginBottom: 16, boxShadow: CARD_SHADOW }}>
+      <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}50`, borderRadius: 18, padding: 20, marginBottom: 16, boxShadow: CARD_SHADOW }}>
         <div style={{ fontSize: 12, color: GOLD_BRIGHT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 10 }}>A Moment of Honesty</div>
         <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>
           Pause for a moment. Name what you are carrying, and let God's Word meet you there. Choose the word that best describes your heart right now.
@@ -1135,6 +1175,7 @@ function SoulCheckTab({ favorites, onFav }) {
 export default function BibleApp() {
   const [user, setUser] = useState(null)
   const [userChecked, setUserChecked] = useState(false)
+  const [needsName, setNeedsName] = useState(false)
   const [tab, setTab] = useState("home")
   const [favorites, setFavorites] = useState(new Set())
   const [hasNewFavorites, setHasNewFavorites] = useState(false)
@@ -1152,9 +1193,15 @@ export default function BibleApp() {
             .select("name")
             .eq("id", session.user.id)
             .single()
-          setUser({ name: profile?.name || session.user.email.split("@")[0], email: session.user.email })
+          if (profile?.name) {
+            setUser({ name: profile.name, email: session.user.email })
+          } else {
+            setUser({ name: "", email: session.user.email })
+            setNeedsName(true)
+          }
         } catch {
-          setUser({ name: session.user.email.split("@")[0], email: session.user.email })
+          setUser({ name: "", email: session.user.email })
+          setNeedsName(true)
         }
       }
       setUserChecked(true)
@@ -1271,14 +1318,14 @@ export default function BibleApp() {
   //  Wait for session check 
   if (!userChecked) {
     return (
-      <div style={{ minHeight: "100vh", background: "#F5EFE4", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100vh", background: "#F5F5F5", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap')`}</style>
         <div style={{ textAlign: "center" }}>
           <svg width="32" height="32" viewBox="0 0 20 20" fill="none" style={{ marginBottom: 16 }}>
-            <rect x="8.5" y="2" width="3" height="16" rx="1" fill="#9A6B1F"/>
-            <rect x="2" y="7.5" width="16" height="3" rx="1" fill="#9A6B1F"/>
+            <rect x="8.5" y="2" width="3" height="16" rx="1" fill="#DAA520"/>
+            <rect x="2" y="7.5" width="16" height="3" rx="1" fill="#DAA520"/>
           </svg>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: "#A0907A", letterSpacing: "0.1em" }}>Loading...</div>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: "#8B7355", letterSpacing: "0.1em" }}>Loading...</div>
         </div>
       </div>
     )
@@ -1289,22 +1336,35 @@ export default function BibleApp() {
     return <LoginPage onLogin={(u) => setUser(u)} />
   }
 
+  //  Show name prompt if profile has no name 
+  if (needsName) {
+    return (
+      <NamePrompt
+        email={user.email}
+        onComplete={(name) => {
+          setUser(prev => ({ ...prev, name }))
+          setNeedsName(false)
+        }}
+      />
+    )
+  }
+
   return (
     <div style={{ background: DARK, minHeight: "100vh", width: "100%", fontFamily: "'Lato',-apple-system,sans-serif", color: WHITE, position: "relative" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Lato:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:0}
-        textarea::placeholder{color:#B0A090}
-        input::placeholder{color:#9A8A74}
+        textarea::placeholder{color:#A09080}
+        input::placeholder{color:#A09080}
         input{font-size:16px !important;-webkit-user-select:text;user-select:text}
         input[type=number]{-moz-appearance:textfield;}
         input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
         button{font-family:'Lato',-apple-system,sans-serif}
         p{margin:0}
-        select option{background:#FFFDF8;color:#1E1208}
+        select option{background:#FFFFFF;color:#3B1E08}
         html{touch-action:manipulation}
-        body{background:#EDE4D0}
+        body{background:#F5F5F5}
       `}</style>
 
       <AppHeader tab={tab} user={user} onSignOut={handleSignOut} />
@@ -1334,7 +1394,7 @@ export default function BibleApp() {
       </div>
 
       {/* Bottom nav */}
-      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(245,239,228,0.96)", backdropFilter: "blur(14px)", borderTop: `1px solid ${BORDER}`, display: "flex", padding: "8px 0 12px", boxShadow: "0 -2px 12px rgba(0,0,0,0.07)" }}>
+      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(14px)", borderTop: `1px solid ${BORDER}`, display: "flex", padding: "8px 0 12px", boxShadow: "0 -2px 12px rgba(0,0,0,0.07)" }}>
         {TABS.map(({ id, label, I }) => (
           <button key={id} onClick={() => handleTabChange(id)} style={{ flex: 1, background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "4px 0", position: "relative" }}>
             {id === "explore" && hasNewFavorites && (

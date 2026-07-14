@@ -1,4 +1,4 @@
-// ─── VERBUM PUSH NOTIFICATIONS ───────────────────────────────────────────────
+// --- VERBUM PUSH NOTIFICATIONS ---
 // Registers the service worker, subscribes the device to Web Push,
 // and saves the subscription to Supabase so the Edge Function can send to it.
 
@@ -33,6 +33,10 @@ export async function requestNotificationPermission() {
 export async function initNotifications(userId) {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
   if (Notification.permission !== 'granted') return;
+  if (!userId) {
+    console.warn('[Verbum] initNotifications called without userId, subscription will not be saved');
+    return;
+  }
 
   try {
     // Register service worker
@@ -52,7 +56,7 @@ export async function initNotifications(userId) {
 
     const json = sub.toJSON();
 
-    // Save to Supabase — upsert so we don't duplicate
+    // Save to Supabase - upsert so we don't duplicate
     const { error } = await supabase
       .from('push_subscriptions')
       .upsert({
@@ -68,16 +72,9 @@ export async function initNotifications(userId) {
       console.log('[Verbum] Push subscription saved successfully');
     }
 
-    // Listen for deep link navigation messages from service worker
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data?.type === 'NAVIGATE') {
-        const url = event.data.url;
-        const params = new URLSearchParams(url.split('?')[1] || '');
-        const tab = params.get('tab');
-        const section = params.get('section');
-        window.dispatchEvent(new CustomEvent('verbum-navigate', { detail: { tab, section } }));
-      }
-    });
+    // NOTE: Deep link navigation from SW messages is handled in App.jsx's
+    // useEffect (serviceWorker "message" listener). Do NOT add a duplicate
+    // listener here, or notification taps will fire navigation twice.
 
   } catch (err) {
     console.warn('[Verbum] Push notification setup failed:', err.message);

@@ -490,12 +490,9 @@ function DailyCatholicHappening() {
   const month = now.getMonth() + 1;
   const day = now.getDate();
 
-  // Find today's feast, or pick one based on day of year
-  let happening = HAPPENINGS.find(h => h.month === month && h.day === day);
-  if (!happening) {
-    const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
-    happening = HAPPENINGS[dayOfYear % HAPPENINGS.length];
-  }
+  // Only show a card if today actually has a feast/happening in the calendar.
+  // On ordinary days with no matching entry, render nothing.
+  const happening = HAPPENINGS.find(h => h.month === month && h.day === day);
 
   if (!happening) return null;
 

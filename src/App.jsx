@@ -3,6 +3,7 @@ import LoginPage from "./LoginPage.jsx";
 import { requestNotificationPermission, initNotifications, getNotificationPermission } from "./notifications.js";
 import { supabase } from "./supabase.js";
 import ShareButton from "./ShareButton.jsx";
+import StoryShareButton from "./StoryShareButton.jsx";
 import InstallPage from "./InstallPage.jsx";
 import { INSTALL_PATH } from "./config.js";
 import { isStandalone, isIOS, isInAppBrowser } from "./device.js";
@@ -323,7 +324,7 @@ function VerseCard({verse,expanded,onToggle,isFav,onFav}) {
             </div>
           )}
           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>{verse.category.map(c=><Pill key={c} label={c}/>)}</div>
-          <div style={{marginTop:14}}><ShareButton text={verse.text} verseRef={verse.ref} source="verse"/></div>
+          <div style={{marginTop:14,display:"flex",gap:8,flexWrap:"wrap"}}><ShareButton text={verse.text} verseRef={verse.ref} source="verse"/><StoryShareButton text={verse.text} verseRef={verse.ref} source="verse"/></div>
         </div>
       )}
     </div>
@@ -713,7 +714,7 @@ function DailyVerseCard({ onFav, favorites }) {
           <div style={{ fontFamily: CINZEL, fontSize: 14, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: '0.16em' }}>— {verse.ref}</div>
           <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif" }}>{expanded ? 'Tap to close' : 'Tap to reflect'}</div>
         </div>
-        <div style={{ marginTop: 16 }}><ShareButton text={verse.text} verseRef={verse.ref} source="daily-verse" label="Share this verse" /></div>
+        <div style={{ marginTop: 16, display: "flex", gap: 8, flexWrap: "wrap" }}><ShareButton text={verse.text} verseRef={verse.ref} source="daily-verse" /><StoryShareButton text={verse.text} verseRef={verse.ref} source="daily-verse" /></div>
       </div>
       {expanded && (
         <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 22, marginTop: 8, boxShadow: CARD_SHADOW }}>

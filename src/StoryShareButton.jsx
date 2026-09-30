@@ -94,7 +94,7 @@ export default function StoryShareButton({ text, verseRef, source = "story", lab
         onClick={open}
         disabled={state === "loading"}
         aria-label="Share as Story image"
-        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}80`, borderRadius: 20, padding: "6px 12px", cursor: "pointer", color: GOLD_TEXT, fontFamily: CINZEL, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", opacity: state === "loading" ? 0.6 : 1, ...style }}
+        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}80`, borderRadius: 22, padding: "0 14px", minHeight: 44, cursor: "pointer", color: GOLD_TEXT, fontFamily: CINZEL, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", opacity: state === "loading" ? 0.6 : 1, ...style }}
       >
         <StoryIcon />
         {state === "loading" ? "Creating…" : label}

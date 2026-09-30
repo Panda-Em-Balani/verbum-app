@@ -56,7 +56,7 @@ export default function ShareButton({ text, verseRef, source = "share", label = 
         type="button"
         onClick={onClick}
         aria-label={label}
-        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}80`, borderRadius: 20, padding: "6px 12px", cursor: "pointer", color: GOLD_TEXT, fontFamily: CINZEL, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", ...style }}
+        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}80`, borderRadius: 22, padding: "0 14px", minHeight: 44, cursor: "pointer", color: GOLD_TEXT, fontFamily: CINZEL, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", ...style }}
       >
         <ShareIcon />
         {label}

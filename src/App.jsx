@@ -2,6 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import LoginPage from "./LoginPage.jsx";
 import { requestNotificationPermission, initNotifications, getNotificationPermission } from "./notifications.js";
 import { supabase } from "./supabase.js";
+import ShareButton from "./ShareButton.jsx";
+import InstallPage from "./InstallPage.jsx";
+import { INSTALL_PATH } from "./config.js";
+import { isStandalone, isIOS, isInAppBrowser } from "./device.js";
+import { track } from "./analytics.js";
 
 const GOLD = "#DAA520";
 const GOLD_BRIGHT = "#B8860B";
@@ -318,6 +323,7 @@ function VerseCard({verse,expanded,onToggle,isFav,onFav}) {
             </div>
           )}
           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>{verse.category.map(c=><Pill key={c} label={c}/>)}</div>
+          <div style={{marginTop:14}}><ShareButton text={verse.text} verseRef={verse.ref} source="verse"/></div>
         </div>
       )}
     </div>
@@ -707,6 +713,7 @@ function DailyVerseCard({ onFav, favorites }) {
           <div style={{ fontFamily: CINZEL, fontSize: 14, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: '0.16em' }}>— {verse.ref}</div>
           <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif" }}>{expanded ? 'Tap to close' : 'Tap to reflect'}</div>
         </div>
+        <div style={{ marginTop: 16 }}><ShareButton text={verse.text} verseRef={verse.ref} source="daily-verse" label="Share this verse" /></div>
       </div>
       {expanded && (
         <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 22, marginTop: 8, boxShadow: CARD_SHADOW }}>
@@ -799,6 +806,7 @@ function SaintOfDayCard({ saint }) {
       <div style={{ borderLeft: `3px solid ${GOLD}`, padding: "11px 14px", background: SURFACE, borderRadius: "0 10px 10px 0" }}>
         <div style={{ fontFamily: CINZEL, fontSize: 15, color: WHITE, lineHeight: 1.85, fontWeight: 500, textShadow: EMBOSS }}>"{saint.quote}"</div>
       </div>
+      <div style={{ marginTop: 14 }}><ShareButton text={saint.quote} verseRef={saint.name} source="saint" /></div>
     </div>
   );
 }
@@ -836,6 +844,11 @@ function HomeTab({favorites,onFav,user}) {
           </div>
         </div>
         <p style={{fontSize:13,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif",fontWeight:500,paddingLeft:20}}>{season.desc}</p>
+      </div>
+      <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:"18px",marginBottom:14,boxShadow:CARD_SHADOW,textAlign:"center"}}>
+        <div style={{fontFamily:CINZEL,fontSize:16,color:WHITE,fontWeight:700,letterSpacing:"0.06em",marginBottom:6}}>Invite a friend</div>
+        <p style={{fontSize:13,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif",fontWeight:500,marginBottom:12}}>Share Verbum and help someone grow in prayer.</p>
+        <ShareButton source="invite" label="Share Verbum" />
       </div>
     </div>
   );
@@ -1169,6 +1182,19 @@ function SoulCheckTab({ favorites, onFav }) {
 }
 
 //  APP SHELL 
+// Re-show the install banner a week after "Later" instead of hiding it forever.
+const INSTALL_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000
+function installDismissedRecently() {
+  try {
+    const at = Number(localStorage.getItem("verbum_install_dismissed"))
+    return at > 0 && Date.now() - at < INSTALL_SNOOZE_MS
+  } catch { return false }
+}
+// iPhone has no install prompt event, so offer the guide banner up front.
+function shouldShowIosBanner() {
+  return isIOS() && !isStandalone() && !isInAppBrowser() && !installDismissedRecently()
+}
+
 export default function BibleApp() {
   const [user, setUser] = useState(null)
   const [userChecked, setUserChecked] = useState(false)
@@ -1178,7 +1204,8 @@ export default function BibleApp() {
   const [hasNewFavorites, setHasNewFavorites] = useState(false)
   const [showNotifBanner, setShowNotifBanner] = useState(false)
   const [installPrompt, setInstallPrompt] = useState(null)
-  const [showInstallBanner, setShowInstallBanner] = useState(false)
+  const [showInstallBanner, setShowInstallBanner] = useState(shouldShowIosBanner)
+  const [installed, setInstalled] = useState(isStandalone)
 
   //  Check Supabase session on load 
   useEffect(() => {
@@ -1216,10 +1243,20 @@ export default function BibleApp() {
     const handler = (e) => {
       e.preventDefault()
       setInstallPrompt(e)
-      if (!localStorage.getItem("verbum_install_dismissed")) setShowInstallBanner(true)
+      if (!installDismissedRecently() && !isStandalone()) setShowInstallBanner(true)
+    }
+    const onInstalled = () => {
+      track("app_installed")
+      setInstalled(true)
+      setInstallPrompt(null)
+      setShowInstallBanner(false)
     }
     window.addEventListener("beforeinstallprompt", handler)
-    return () => window.removeEventListener("beforeinstallprompt", handler)
+    window.addEventListener("appinstalled", onInstalled)
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler)
+      window.removeEventListener("appinstalled", onInstalled)
+    }
   }, [])
 
   //  Notification setup 
@@ -1285,11 +1322,20 @@ export default function BibleApp() {
     return next;
   })
 
-  const handleInstall = async () => {
-    if (!installPrompt) return
+  // Fires the native install prompt when the browser offers one. Resolves to the outcome.
+  const installViaPrompt = async () => {
+    if (!installPrompt) return "unavailable"
     installPrompt.prompt()
     const { outcome } = await installPrompt.userChoice
     if (outcome === "accepted") { setInstallPrompt(null); setShowInstallBanner(false) }
+    return outcome
+  }
+
+  // Banner button: native prompt where available, otherwise the guided install page (iPhone).
+  const handleInstall = async () => {
+    track("install_click", { from: "banner" })
+    if (installPrompt) { await installViaPrompt(); return }
+    window.location.assign(`${INSTALL_PATH}?ref=banner`)
   }
 
   const handleSignOut = async () => {
@@ -1310,6 +1356,11 @@ export default function BibleApp() {
   const handleTabChange = (id) => {
     setTab(id);
     if (id === "explore") setHasNewFavorites(false);
+  }
+
+  //  Public install page (no login needed) 
+  if (window.location.pathname.replace(/\/+$/, "") === INSTALL_PATH) {
+    return <InstallPage verse={getDailyVerseStatic()} installPrompt={installPrompt} onInstall={installViaPrompt} installed={installed} />
   }
 
   //  Wait for session check 
@@ -1369,7 +1420,7 @@ export default function BibleApp() {
         {showInstallBanner && tab === "home" && (
           <InstallBanner
             onInstall={handleInstall}
-            onDismiss={() => { setShowInstallBanner(false); localStorage.setItem("verbum_install_dismissed", "1") }}
+            onDismiss={() => { setShowInstallBanner(false); localStorage.setItem("verbum_install_dismissed", String(Date.now())) }}
           />
         )}
         {showNotifBanner && tab === "home" && (

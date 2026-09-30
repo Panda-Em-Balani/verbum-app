@@ -5,10 +5,11 @@ import { track } from "./analytics.js";
 
 const GOLD = "#DAA520";
 const GOLD_BRIGHT = "#B8860B";
+const GOLD_TEXT = "#8A6508";
 const CARD = "#FFFFFF";
 const BORDER = "#C0C0C0";
 const TEXT = "#3B1E08";
-const MUTED = "#8B7355";
+const MUTED = "#75603F";
 const CINZEL = "'Cinzel', serif";
 
 function StoryIcon({ size = 16, color = GOLD_BRIGHT }) {
@@ -93,7 +94,7 @@ export default function StoryShareButton({ text, verseRef, source = "story", lab
         onClick={open}
         disabled={state === "loading"}
         aria-label="Share as Story image"
-        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}80`, borderRadius: 20, padding: "6px 12px", cursor: "pointer", color: GOLD_BRIGHT, fontFamily: CINZEL, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", opacity: state === "loading" ? 0.6 : 1, ...style }}
+        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}80`, borderRadius: 20, padding: "6px 12px", cursor: "pointer", color: GOLD_TEXT, fontFamily: CINZEL, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", opacity: state === "loading" ? 0.6 : 1, ...style }}
       >
         <StoryIcon />
         {state === "loading" ? "Creating…" : label}

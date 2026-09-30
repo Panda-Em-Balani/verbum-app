@@ -4,10 +4,11 @@ import { track } from "./analytics.js";
 
 const GOLD = "#DAA520";
 const GOLD_BRIGHT = "#B8860B";
+const GOLD_TEXT = "#8A6508";
 const CARD = "#FFFFFF";
 const BORDER = "#C0C0C0";
 const TEXT = "#3B1E08";
-const MUTED = "#8B7355";
+const MUTED = "#75603F";
 const CINZEL = "'Cinzel', serif";
 
 function ShareIcon({ size = 16, color = GOLD_BRIGHT }) {
@@ -55,7 +56,7 @@ export default function ShareButton({ text, verseRef, source = "share", label = 
         type="button"
         onClick={onClick}
         aria-label={label}
-        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}80`, borderRadius: 20, padding: "6px 12px", cursor: "pointer", color: GOLD_BRIGHT, fontFamily: CINZEL, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", ...style }}
+        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}80`, borderRadius: 20, padding: "6px 12px", cursor: "pointer", color: GOLD_TEXT, fontFamily: CINZEL, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", ...style }}
       >
         <ShareIcon />
         {label}

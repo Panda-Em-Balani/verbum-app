@@ -7,11 +7,12 @@ import { track } from "./analytics.js";
 
 const GOLD = "#DAA520";
 const GOLD_BRIGHT = "#B8860B";
+const GOLD_TEXT = "#8A6508";
 const CARD = "#FFFFFF";
 const BORDER = "#C0C0C0";
 const TEXT = "#3B1E08";
 const CREAM = "#5D3A1A";
-const MUTED = "#8B7355";
+const MUTED = "#75603F";
 const CINZEL = "'Cinzel', serif";
 const LATO = "'Lato',sans-serif";
 
@@ -21,7 +22,7 @@ const secondaryBtn = { display: "block", width: "100%", textAlign: "center", tex
 function Step({ n, children }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 0" }}>
-      <div style={{ width: 32, height: 32, borderRadius: "50%", background: `${GOLD}22`, border: `1.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: CINZEL, fontWeight: 700, color: GOLD_BRIGHT, flexShrink: 0 }}>{n}</div>
+      <div style={{ width: 32, height: 32, borderRadius: "50%", background: `${GOLD}22`, border: `1.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: CINZEL, fontWeight: 700, color: GOLD_TEXT, flexShrink: 0 }}>{n}</div>
       <div style={{ fontFamily: LATO, fontSize: 16, color: CREAM, fontWeight: 500, lineHeight: 1.5, textAlign: "left", flex: 1 }}>{children}</div>
     </div>
   );
@@ -83,9 +84,9 @@ export default function InstallPage({ verse, installPrompt, onInstall, installed
 
         {verse && (
           <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}60`, borderRadius: 20, padding: 22, marginBottom: 22, boxShadow: "0 4px 16px rgba(0,0,0,0.09)" }}>
-            <div style={{ fontSize: 12, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10, fontFamily: CINZEL }}>Today's Verse</div>
+            <div style={{ fontSize: 12, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10, fontFamily: CINZEL }}>Today's Verse</div>
             <div style={{ fontFamily: CINZEL, fontSize: 17, lineHeight: 1.9, fontWeight: 600, marginBottom: 10 }}>"{verse.text}"</div>
-            <div style={{ fontFamily: CINZEL, fontSize: 13, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: "0.14em" }}>— {verse.ref}</div>
+            <div style={{ fontFamily: CINZEL, fontSize: 13, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.14em" }}>— {verse.ref}</div>
           </div>
         )}
 
@@ -161,7 +162,7 @@ export default function InstallPage({ verse, installPrompt, onInstall, installed
 
         {kind !== "installed" && (
           <p style={{ textAlign: "center", marginTop: 22, fontSize: 14, color: MUTED }}>
-            Just want a look? <a href="/" style={{ color: GOLD_BRIGHT, fontWeight: 700 }}>Continue in the browser</a>
+            Just want a look? <a href="/" style={{ color: GOLD_TEXT, fontWeight: 700 }}>Continue in the browser</a>
           </p>
         )}
       </main>

@@ -11,12 +11,13 @@ import { track } from "./analytics.js";
 
 const GOLD = "#DAA520";
 const GOLD_BRIGHT = "#B8860B";
+const GOLD_TEXT = "#8A6508"; // text-safe gold (AA on white/cream); keep GOLD for fills, borders, icons
 const DARK = "#F5F5F5";
 const SURFACE = "#EEEEEE";
 const CARD = "#FFFFFF";
 const BORDER = "#C0C0C0";
 const CREAM = "#5D3A1A";
-const MUTED = "#8B7355";
+const MUTED = "#75603F";
 const WHITE = "#3B1E08";
 const CINZEL = "'Cinzel', serif";
 const EMBOSS = "0 1px 2px rgba(0,0,0,0.12)";
@@ -297,7 +298,7 @@ const SendIco=()=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><p
 const HeartIco=({filled})=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15S2 10.5 2 5.5A3.5 3.5 0 019 3.7 3.5 3.5 0 0116 5.5C16 10.5 9 15 9 15z" stroke={filled?GOLD:"#A0A0A0"} strokeWidth="1.5" fill={filled?GOLD:"none"}/></svg>;
 const ChevIco=({dir="right"})=><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{transform:dir==="left"?"rotate(180deg)":"none"}}><path d="M5 3l4 4-4 4" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 const BellIco=({on})=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 00-5 5v4l-1.5 2h13L14 11V7a5 5 0 00-5-5z" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none"/><path d="M7 15a2 2 0 004 0" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/></svg>;
-const Pill=({label})=><span style={{fontSize:13,background:SURFACE,color:GOLD,padding:"3px 10px",borderRadius:20,letterSpacing:"0.04em",fontFamily:"'Lato',sans-serif",display:"inline-block",border:`1px solid ${BORDER}`}}>{label}</span>;
+const Pill=({label})=><span style={{fontSize:13,background:SURFACE,color:GOLD_TEXT,padding:"3px 10px",borderRadius:20,letterSpacing:"0.04em",fontFamily:"'Lato',sans-serif",display:"inline-block",border:`1px solid ${BORDER}`}}>{label}</span>;
 const LockIco=()=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="8" width="12" height="9" rx="2" stroke={GOLD} strokeWidth="1.5"/><path d="M6 8V5.5a3 3 0 016 0V8" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><circle cx="9" cy="12.5" r="1.5" fill={GOLD}/></svg>;
 
 //  VERSE CARD 
@@ -307,7 +308,7 @@ function VerseCard({verse,expanded,onToggle,isFav,onFav}) {
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:12}}>
         <div style={{flex:1}}>
           <div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,lineHeight:1.9,marginBottom:12,letterSpacing:"0.04em",fontWeight:600,textShadow:EMBOSS}}>"{verse.text}"</div>
-          <div style={{fontSize:14,color:GOLD,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:CINZEL}}>{verse.ref}</div>
+          <div style={{fontSize:14,color:GOLD_TEXT,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:CINZEL}}>{verse.ref}</div>
         </div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8,flexShrink:0}}>
           <span style={{fontSize:14,color:MUTED}}>{expanded?"\u2212":"+"}</span>
@@ -319,7 +320,7 @@ function VerseCard({verse,expanded,onToggle,isFav,onFav}) {
           <p style={{fontSize:16,color:CREAM,lineHeight:1.85,marginBottom:14}}>{verse.explanation}</p>
           {verse.example&&(
             <div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}`,borderRadius:"0 8px 8px 0",padding:"12px 14px",marginBottom:12}}>
-              <div style={{fontSize:13,color:GOLD,fontWeight:700,letterSpacing:"0.14em",marginBottom:6,textTransform:"uppercase",fontFamily:CINZEL}}>In Practice</div>
+              <div style={{fontSize:13,color:GOLD_TEXT,fontWeight:700,letterSpacing:"0.14em",marginBottom:6,textTransform:"uppercase",fontFamily:CINZEL}}>In Practice</div>
               <p style={{fontSize:15,color:MUTED,lineHeight:1.78}}>{verse.example}</p>
             </div>
           )}
@@ -401,7 +402,7 @@ function PaidUserModal({ onClose, onProceed }) {
         <div style={{textAlign:"center",marginBottom:24}}>
           <div style={{width:56,height:56,borderRadius:"50%",background:`${GOLD}15`,border:`1.5px solid ${GOLD}50`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}><LockIco/></div>
           <div style={{fontFamily:CINZEL,fontSize:20,color:WHITE,fontWeight:600,letterSpacing:"0.08em",marginBottom:8,textShadow:EMBOSS}}>Soul Check</div>
-          <div style={{fontSize:13,color:GOLD,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:16}}>Premium Feature</div>
+          <div style={{fontSize:13,color:GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:16}}>Premium Feature</div>
           <p style={{fontSize:16,color:CREAM,lineHeight:1.85,fontFamily:"'Lato',sans-serif"}}>Soul Check is available to <strong style={{color:WHITE}}>Verbum Premium</strong> subscribers.</p>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
@@ -511,7 +512,7 @@ function DailyCatholicHappening() {
           <CalendarIco />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, color: GOLD, letterSpacing: "0.2em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 4, fontWeight: 700 }}>
+          <div style={{ fontSize: 12, color: GOLD_TEXT, letterSpacing: "0.2em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 4, fontWeight: 700 }}>
             Today in the Church {happening.year ? `· ${happening.year}` : ""}
           </div>
           <div style={{ fontFamily: CINZEL, fontSize: 16, color: WHITE, fontWeight: 600, letterSpacing: "0.05em", lineHeight: 1.4, textShadow: EMBOSS }}>{happening.title}</div>
@@ -519,13 +520,13 @@ function DailyCatholicHappening() {
       </div>
       {happening.type && (
         <div style={{ display: "inline-block", background: `${GOLD}15`, border: `1px solid ${GOLD}40`, borderRadius: 20, padding: "4px 14px", marginBottom: 12 }}>
-          <span style={{ fontSize: 12, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.1em", fontWeight: 600 }}>{happening.type}</span>
+          <span style={{ fontSize: 12, color: GOLD_TEXT, fontFamily: CINZEL, letterSpacing: "0.1em", fontWeight: 600 }}>{happening.type}</span>
         </div>
       )}
       <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.88, fontFamily: "'Lato',sans-serif", marginBottom: 12, fontWeight: 500 }}>{happening.body}</p>
       {happening.ccc && (
         <div style={{ background: SURFACE, borderLeft: `3px solid ${GOLD}80`, borderRadius: "0 10px 10px 0", padding: "11px 14px" }}>
-          <div style={{ fontSize: 11, color: GOLD, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 5, fontWeight: 700 }}>Catechism Connection</div>
+          <div style={{ fontSize: 11, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 5, fontWeight: 700 }}>Catechism Connection</div>
           <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.78, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{happening.ccc}</p>
         </div>
       )}
@@ -625,7 +626,7 @@ function AppHeader({ tab, user, onSignOut }) {
             <div style={{ textAlign: 'center', marginBottom: 20 }}>
               <div style={{ width: 56, height: 56, borderRadius: '50%', background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}><StarIco /></div>
               <div style={{ fontFamily: CINZEL, fontSize: 20, color: WHITE, fontWeight: 700, letterSpacing: '0.08em', textShadow: EMBOSS, marginBottom: 6 }}>Verbum Premium</div>
-              <div style={{ fontSize: 13, color: GOLD, fontFamily: CINZEL, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16, fontWeight: 600 }}>Coming Soon</div>
+              <div style={{ fontSize: 13, color: GOLD_TEXT, fontFamily: CINZEL, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16, fontWeight: 600 }}>Coming Soon</div>
               <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>Verbum Premium is currently in development. We will keep you updated once it is ready to launch. Thank you for your patience and support.</p>
             </div>
             <button onClick={() => setShowPremiumModal(false)} style={{ width: '100%', background: HEADER_BG, border: 'none', borderRadius: 14, padding: '14px', color: '#F5E6C8', fontSize: 15, fontFamily: CINZEL, fontWeight: 600, letterSpacing: '0.08em', cursor: 'pointer' }}>Got it</button>
@@ -708,10 +709,10 @@ function DailyVerseCard({ onFav, favorites }) {
         <div style={{ position: 'absolute', top: 18, right: 18, zIndex: 2 }} onClick={(e) => { e.stopPropagation(); onFav(verse.ref); }}>
           <HeartIco filled={isFav} />
         </div>
-        <div style={{ fontSize: 13, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 14, fontFamily: CINZEL }}>Daily Verse</div>
+        <div style={{ fontSize: 13, color: GOLD_TEXT, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 14, fontFamily: CINZEL }}>Daily Verse</div>
         <div style={{ fontFamily: CINZEL, fontSize: 18, color: WHITE, lineHeight: 2.0, marginBottom: 14, letterSpacing: '0.04em', fontWeight: 600, textShadow: EMBOSS, paddingRight: 28 }}>"{verse.text}"</div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontFamily: CINZEL, fontSize: 14, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: '0.16em' }}>— {verse.ref}</div>
+          <div style={{ fontFamily: CINZEL, fontSize: 14, color: GOLD_TEXT, fontWeight: 700, letterSpacing: '0.16em' }}>— {verse.ref}</div>
           <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif" }}>{expanded ? 'Tap to close' : 'Tap to reflect'}</div>
         </div>
         <div style={{ marginTop: 16, display: "flex", gap: 8, flexWrap: "wrap" }}><ShareButton text={verse.text} verseRef={verse.ref} source="daily-verse" /><StoryShareButton text={verse.text} verseRef={verse.ref} source="daily-verse" /></div>
@@ -721,7 +722,7 @@ function DailyVerseCard({ onFav, favorites }) {
           <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.95, marginBottom: 16, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{verse.explanation}</p>
           {verse.example && (
             <div style={{ background: SURFACE, borderLeft: `3px solid ${GOLD}`, borderRadius: '0 10px 10px 0', padding: '13px 16px' }}>
-              <div style={{ fontSize: 13, color: GOLD_BRIGHT, fontWeight: 800, letterSpacing: '0.14em', marginBottom: 7, textTransform: 'uppercase', fontFamily: CINZEL }}>In Practice</div>
+              <div style={{ fontSize: 13, color: GOLD_TEXT, fontWeight: 800, letterSpacing: '0.14em', marginBottom: 7, textTransform: 'uppercase', fontFamily: CINZEL }}>In Practice</div>
               <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{verse.example}</p>
             </div>
           )}
@@ -779,7 +780,7 @@ function SaintOfDayCard({ saint }) {
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4, fontFamily: CINZEL }}>Saint of the Day</div>
+          <div style={{ fontSize: 11, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4, fontFamily: CINZEL }}>Saint of the Day</div>
           <div style={{ fontFamily: CINZEL, fontSize: 17, color: WHITE, fontWeight: 700, letterSpacing: "0.04em", textShadow: EMBOSS, marginBottom: 4, lineHeight: 1.3 }}>{saint.name}</div>
           <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>Feast Day: {feastDate}</div>
         </div>
@@ -788,7 +789,7 @@ function SaintOfDayCard({ saint }) {
       {/* Patron */}
       {saint.patron && (
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, color: GOLD_BRIGHT, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6, fontFamily: CINZEL }}>Patron of</div>
+          <div style={{ fontSize: 11, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6, fontFamily: CINZEL }}>Patron of</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
             {saint.patron.map(p => <Pill key={p} label={p} />)}
           </div>
@@ -826,7 +827,7 @@ function HomeTab({favorites,onFav,user}) {
     <div style={{padding:"0 20px 20px"}}>
       <div style={{textAlign:"center",padding:"24px 0 20px",marginTop:"calc(56px + env(safe-area-inset-top))"}}>
         <div style={{display:"flex",justifyContent:"center",marginBottom:14}}><Cross size={28}/></div>
-        <div style={{fontSize:16,color:GOLD_BRIGHT,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:4,fontWeight:700,fontFamily:CINZEL}}>{dateStr}</div>
+        <div style={{fontSize:16,color:GOLD_TEXT,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:4,fontWeight:700,fontFamily:CINZEL}}>{dateStr}</div>
         <div style={{fontSize:16,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500,marginBottom:8,letterSpacing:"0.06em"}}>{timeStr}</div>
         <div style={{fontFamily:CINZEL,fontSize:28,color:WHITE,marginBottom:6,letterSpacing:"0.08em",fontWeight:700,textShadow:EMBOSS}}>{moment.g}</div>
         <div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{moment.l}</div>
@@ -863,7 +864,7 @@ function BibleSearchView() {
         <BookIco on={true} />
       </div>
       <div style={{ fontFamily: CINZEL, fontSize: 20, color: WHITE, fontWeight: 700, letterSpacing: "0.08em", textShadow: EMBOSS, marginBottom: 8 }}>Bible Search</div>
-      <div style={{ fontSize: 13, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 18, fontWeight: 600 }}>Coming in Premium</div>
+      <div style={{ fontSize: 13, color: GOLD_TEXT, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 18, fontWeight: 600 }}>Coming in Premium</div>
       <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500, marginBottom: 20 }}>
         Full Bible Search across all 73 books of the Catholic Bible, with verse text, Catholic reflection, and Catechism connection, is being prepared for Verbum Premium.
       </p>
@@ -886,11 +887,11 @@ function ExploreTab({favorites,onFav}) {
     <div style={{padding:"0 20px 20px"}}>
       <div style={{padding:"24px 0 16px",marginTop:"calc(56px + env(safe-area-inset-top))"}}><div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{view==="browse"?"Verse Library":view==="search"?"Bible Search":"My Favorites"}</div><div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{view==="browse"?"Browse by theme or feeling":view==="search"?"All 73 books of the Catholic Bible":"Your personal collection"}</div></div>
       <div style={{display:"flex",background:SURFACE,borderRadius:12,padding:3,marginBottom:18,border:`1px solid ${BORDER}`,gap:2}}>
-        {[{id:"browse",label:"Browse"},{id:"search",label:"Bible"},{id:"favorites",label:`Saved${allFavVerses.length?" ("+allFavVerses.length+")":""}`}].map(t=><button key={t.id} onClick={()=>{setView(t.id);setExpandedId(null);}} style={{flex:1,background:view===t.id?CARD:"none",border:view===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:view===t.id?GOLD_BRIGHT:MUTED,fontSize:14,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
+        {[{id:"browse",label:"Browse"},{id:"search",label:"Bible"},{id:"favorites",label:`Saved${allFavVerses.length?" ("+allFavVerses.length+")":""}`}].map(t=><button key={t.id} onClick={()=>{setView(t.id);setExpandedId(null);}} style={{flex:1,background:view===t.id?CARD:"none",border:view===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:view===t.id?GOLD_TEXT:MUTED,fontSize:14,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
       </div>
       {view==="browse"&&(<><div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}><button onClick={()=>setSelectedCat(null)} style={{background:!selectedCat?GOLD:CARD,border:`1px solid ${!selectedCat?GOLD:BORDER}`,borderRadius:20,padding:"5px 14px",color:!selectedCat?"#1A1000":MUTED,fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif",fontWeight:!selectedCat?700:400}}>All</button>{CATEGORIES.map(c=>{const on=selectedCat===c.id;return<button key={c.id} onClick={()=>setSelectedCat(on?null:c.id)} style={{background:on?GOLD:CARD,border:`1px solid ${on?GOLD:BORDER}`,borderRadius:20,padding:"5px 12px",color:on?"#1A1000":MUTED,fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif",fontWeight:on?700:400}}>{c.sym} {c.label}</button>;})}</div><div style={{display:"flex",flexDirection:"column",gap:12}}>{filtered.map(v=><VerseCard key={v.id} verse={v} expanded={expandedId===v.id} onToggle={()=>setExpandedId(expandedId===v.id?null:v.id)} isFav={favorites.has(v.id)} onFav={onFav}/>)}</div></>)}
       {view==="search"&&<BibleSearchView favorites={favorites} onFav={onFav}/>}
-      {view==="favorites"&&(allFavVerses.length===0?<div style={{textAlign:"center",padding:"48px 20px"}}><div style={{marginBottom:14,opacity:0.4,display:"flex",justifyContent:"center"}}><HeartIco filled/></div><div style={{fontFamily:CINZEL,fontSize:16,color:MUTED,letterSpacing:"0.07em",marginBottom:8,textShadow:EMBOSS}}>No favorites yet</div><p style={{fontSize:15,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>Tap the heart on any verse to save it here.</p></div>:<div style={{display:"flex",flexDirection:"column",gap:12}}>{allFavVerses.map(v=><div key={v.id} style={{background:CARD,border:`1px solid ${GOLD}30`,borderRadius:16,overflow:"hidden"}}><div onClick={()=>setExpandedId(expandedId===v.id?null:v.id)} style={{padding:"18px 18px 0",cursor:"pointer"}}><div style={{fontFamily:CINZEL,fontSize:16,color:CREAM,lineHeight:1.88,marginBottom:10,textShadow:EMBOSS}}>"{v.text}"</div><div style={{fontFamily:CINZEL,fontSize:13,color:GOLD,fontWeight:700,letterSpacing:"0.16em",marginBottom:14}}>— {v.ref}</div></div>{expandedId===v.id&&<div style={{padding:"0 18px",marginBottom:14}}><p style={{fontSize:15,color:CREAM,lineHeight:1.82,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{v.explanation}</p><div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>{v.category.map(c=><Pill key={c} label={c}/>)}</div></div>}<div style={{borderTop:`1px solid ${BORDER}`,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{fontSize:13,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Saved</div><button onClick={()=>onFav(v.id)} style={{background:"none",border:`1px solid #C08080`,borderRadius:8,padding:"4px 10px",color:"#A06060",fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}>Remove</button></div></div>)}</div>)}
+      {view==="favorites"&&(allFavVerses.length===0?<div style={{textAlign:"center",padding:"48px 20px"}}><div style={{marginBottom:14,opacity:0.4,display:"flex",justifyContent:"center"}}><HeartIco filled/></div><div style={{fontFamily:CINZEL,fontSize:16,color:MUTED,letterSpacing:"0.07em",marginBottom:8,textShadow:EMBOSS}}>No favorites yet</div><p style={{fontSize:15,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>Tap the heart on any verse to save it here.</p></div>:<div style={{display:"flex",flexDirection:"column",gap:12}}>{allFavVerses.map(v=><div key={v.id} style={{background:CARD,border:`1px solid ${GOLD}30`,borderRadius:16,overflow:"hidden"}}><div onClick={()=>setExpandedId(expandedId===v.id?null:v.id)} style={{padding:"18px 18px 0",cursor:"pointer"}}><div style={{fontFamily:CINZEL,fontSize:16,color:CREAM,lineHeight:1.88,marginBottom:10,textShadow:EMBOSS}}>"{v.text}"</div><div style={{fontFamily:CINZEL,fontSize:13,color:GOLD_TEXT,fontWeight:700,letterSpacing:"0.16em",marginBottom:14}}>— {v.ref}</div></div>{expandedId===v.id&&<div style={{padding:"0 18px",marginBottom:14}}><p style={{fontSize:15,color:CREAM,lineHeight:1.82,marginBottom:12,fontFamily:"'Lato',sans-serif"}}>{v.explanation}</p><div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>{v.category.map(c=><Pill key={c} label={c}/>)}</div></div>}<div style={{borderTop:`1px solid ${BORDER}`,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{fontSize:13,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Saved</div><button onClick={()=>onFav(v.id)} style={{background:"none",border:`1px solid #C08080`,borderRadius:8,padding:"4px 10px",color:"#A06060",fontSize:13,cursor:"pointer",fontFamily:"'Lato',sans-serif"}}>Remove</button></div></div>)}</div>)}
     </div>
   );
 }
@@ -904,24 +905,24 @@ function NovenaView({ onBack }) {
       <div>
         <button onClick={()=>setSelected(null)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:MUTED,fontSize:15,cursor:"pointer",fontFamily:"'Lato',sans-serif",marginBottom:16,padding:0}}><ChevIco dir="left"/> Back to Novenas</button>
         <div style={{background:novena.color,border:`1px solid ${novena.border}`,borderRadius:18,padding:20,marginBottom:14}}>
-          <div style={{fontSize:12,color:novena.accent||GOLD_BRIGHT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:6}}>Novena</div>
+          <div style={{fontSize:12,color:novena.accent||GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:6}}>Novena</div>
           <div style={{fontFamily:CINZEL,fontSize:19,color:WHITE,fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:4}}>{novena.title}</div>
-          <div style={{fontSize:14,color:novena.accent||GOLD_BRIGHT,fontFamily:CINZEL,letterSpacing:"0.08em",marginBottom:12}}>{novena.subtitle}</div>
+          <div style={{fontSize:14,color:novena.accent||GOLD_TEXT,fontFamily:CINZEL,letterSpacing:"0.08em",marginBottom:12}}>{novena.subtitle}</div>
           <p style={{fontSize:15,color:CREAM,lineHeight:1.78,fontFamily:"'Lato',sans-serif"}}>{novena.description}</p>
         </div>
         <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
-          {novena.days.map((_,i)=>{const done=prayedDays.has(`${selected}-${i}`);const active=currentDay===i;return<button key={i} onClick={()=>setCurrentDay(i)} style={{width:36,height:36,borderRadius:"50%",background:active?GOLD:done?"#182818":CARD,border:`1.5px solid ${active?GOLD:done?"#3A9A4A":BORDER}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:active?"#1A1000":done?"#2A8030":MUTED,fontSize:14,fontFamily:CINZEL,fontWeight:active?700:400}}>{done&&!active?"\u2713":i+1}</button>;})}
+          {novena.days.map((_,i)=>{const done=prayedDays.has(`${selected}-${i}`);const active=currentDay===i;return<button key={i} onClick={()=>setCurrentDay(i)} style={{width:36,height:36,borderRadius:"50%",background:active?GOLD:done?"#EAF6EC":CARD,border:`1.5px solid ${active?GOLD:done?"#4A9A5A":BORDER}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:active?"#1A1000":done?"#2E6B36":MUTED,fontSize:14,fontFamily:CINZEL,fontWeight:active?700:400}}>{done&&!active?"\u2713":i+1}</button>;})}
         </div>
         <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:20,marginBottom:12}}>
-          <div style={{fontSize:12,color:GOLD,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:6}}>Day {currentDay+1}</div>
+          <div style={{fontSize:12,color:GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:6}}>Day {currentDay+1}</div>
           <div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,fontWeight:600,textShadow:EMBOSS,marginBottom:4}}>Intention</div>
-          <div style={{fontSize:15,color:GOLD,fontFamily:CINZEL,letterSpacing:"0.06em",marginBottom:16}}>{day.intention}</div>
-          <div style={{borderTop:`1px solid ${BORDER}`,paddingTop:16}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:10}}>Prayer</div><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.1,textShadow:EMBOSS,whiteSpace:"pre-line"}}>{day.prayer}</div></div>
+          <div style={{fontSize:15,color:GOLD_TEXT,fontFamily:CINZEL,letterSpacing:"0.06em",marginBottom:16}}>{day.intention}</div>
+          <div style={{borderTop:`1px solid ${BORDER}`,paddingTop:16}}><div style={{fontSize:12,color:GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:10}}>Prayer</div><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.1,textShadow:EMBOSS,whiteSpace:"pre-line"}}>{day.prayer}</div></div>
         </div>
-        <button onClick={()=>setPrayedDays(p=>{const s=new Set(p);hasCompleted?s.delete(`${selected}-${currentDay}`):s.add(`${selected}-${currentDay}`);return s;})} style={{width:"100%",background:hasCompleted?"#0A1A0A":"#181408",border:`1px solid ${hasCompleted?"#3A9A4A":GOLD+"40"}`,borderRadius:14,padding:"13px",color:hasCompleted?"#2A7A30":GOLD_BRIGHT,fontSize:15,fontFamily:CINZEL,fontWeight:600,letterSpacing:"0.08em",cursor:"pointer",marginBottom:10}}>{hasCompleted?"\u2713 Prayed Today":"Mark as Prayed"}</button>
+        <button onClick={()=>setPrayedDays(p=>{const s=new Set(p);hasCompleted?s.delete(`${selected}-${currentDay}`):s.add(`${selected}-${currentDay}`);return s;})} style={{width:"100%",background:hasCompleted?"#EAF6EC":SURFACE,border:`1px solid ${hasCompleted?"#4A9A5A":GOLD+"66"}`,borderRadius:14,padding:"13px",color:hasCompleted?"#2E6B36":GOLD_TEXT,fontSize:15,fontFamily:CINZEL,fontWeight:600,letterSpacing:"0.08em",cursor:"pointer",marginBottom:10}}>{hasCompleted?"\u2713 Prayed Today":"Mark as Prayed"}</button>
         <div style={{display:"flex",gap:10}}>
           <button onClick={()=>{if(currentDay>0){setCurrentDay(currentDay-1);}}} disabled={currentDay===0} style={{flex:1,background:CARD,border:`1px solid ${currentDay===0?BORDER:GOLD+"40"}`,borderRadius:12,padding:"12px 0",cursor:currentDay===0?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===0?.35:1}}><ChevIco dir="left"/><span style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Previous</span></button>
-          <button onClick={()=>{if(currentDay<8)setCurrentDay(currentDay+1);}} disabled={currentDay===8} style={{flex:1,background:currentDay===8?CARD:SURFACE,border:`1px solid ${currentDay===8?BORDER:GOLD+"55"}`,borderRadius:12,padding:"12px 0",cursor:currentDay===8?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===8?.35:1}}><span style={{fontSize:15,color:currentDay===8?MUTED:GOLD_BRIGHT,fontFamily:"'Lato',sans-serif"}}>{currentDay===8?"Complete":"Next Day"}</span>{currentDay<8&&<ChevIco/>}</button>
+          <button onClick={()=>{if(currentDay<8)setCurrentDay(currentDay+1);}} disabled={currentDay===8} style={{flex:1,background:currentDay===8?CARD:SURFACE,border:`1px solid ${currentDay===8?BORDER:GOLD+"55"}`,borderRadius:12,padding:"12px 0",cursor:currentDay===8?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===8?.35:1}}><span style={{fontSize:15,color:currentDay===8?MUTED:GOLD_TEXT,fontFamily:"'Lato',sans-serif"}}>{currentDay===8?"Complete":"Next Day"}</span>{currentDay<8&&<ChevIco/>}</button>
         </div>
       </div>
     );
@@ -932,7 +933,7 @@ function NovenaView({ onBack }) {
       <div style={{fontFamily:CINZEL,fontSize:19,color:WHITE,fontWeight:600,letterSpacing:"0.07em",marginBottom:4,textShadow:EMBOSS}}>Novenas</div>
       <p style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500,marginBottom:18,lineHeight:1.7}}>A novena is nine days of prayer offered for a particular intention. Select one to begin.</p>
       <div style={{display:"flex",flexDirection:"column",gap:12}}>
-        {NOVENAS.map(n=><button key={n.id} onClick={()=>{setSelected(n.id);setCurrentDay(0);}} style={{background:n.color,border:`1px solid ${n.border}`,borderRadius:16,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div style={{flex:1}}><div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:3}}>{n.title}</div><div style={{fontSize:14,color:n.accent||GOLD_BRIGHT,fontFamily:CINZEL,letterSpacing:"0.08em",marginBottom:10}}>{n.subtitle}</div><p style={{fontSize:14,color:"#A0988A",lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>{n.description.substring(0,100)}...</p></div><ChevIco/></div><div style={{marginTop:12,display:"flex",gap:5}}>{Array.from({length:9},(_,i)=><div key={i} style={{width:18,height:4,borderRadius:2,background:prayedDays.has(`${n.id}-${i}`)?"#2A8030":"rgba(255,255,255,0.1)"}}/>)}</div></button>)}
+        {NOVENAS.map(n=><button key={n.id} onClick={()=>{setSelected(n.id);setCurrentDay(0);}} style={{background:n.color,border:`1px solid ${n.border}`,borderRadius:16,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div style={{flex:1}}><div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:3}}>{n.title}</div><div style={{fontSize:14,color:n.accent||GOLD_BRIGHT,fontFamily:CINZEL,letterSpacing:"0.08em",marginBottom:10}}>{n.subtitle}</div><p style={{fontSize:14,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif"}}>{n.description.substring(0,100)}...</p></div><ChevIco/></div><div style={{marginTop:12,display:"flex",gap:5}}>{Array.from({length:9},(_,i)=><div key={i} style={{width:18,height:4,borderRadius:2,background:prayedDays.has(`${n.id}-${i}`)?"#4A9A5A":BORDER}}/>)}</div></button>)}
       </div>
     </div>
   );
@@ -948,10 +949,10 @@ function ThreeOClockView({ onBack }) {
         <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}><div style={{width:44,height:44,borderRadius:"50%",background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.35)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:23}}>🕒</div><div><div style={{fontFamily:CINZEL,fontSize:19,color:"#4A2070",fontWeight:600,letterSpacing:"0.07em",textShadow:EMBOSS}}>{THREE_OCLOCK_PRAYER.title}</div><div style={{fontSize:13,color:"#7040A0",letterSpacing:"0.18em",fontFamily:CINZEL,textTransform:"uppercase"}}>{THREE_OCLOCK_PRAYER.subtitle}</div></div></div>
         <div style={{background:"rgba(155,89,192,0.06)",borderRadius:12,padding:14,borderLeft:"3px solid rgba(155,89,192,0.4)"}}><div style={{fontSize:12,color:"#7040A0",letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:8}}>Jesus to Saint Faustina</div><p style={{fontSize:14,color:"#4A2870",lineHeight:1.9,fontFamily:CINZEL,fontStyle:"italic",textShadow:EMBOSS}}>{THREE_OCLOCK_PRAYER.instruction}</p></div>
       </div>
-      <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:20,marginBottom:12}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:12}}>Prayer for the Hour of Mercy</div><div style={{fontFamily:CINZEL,fontSize:15,color:CREAM,lineHeight:2.1,textShadow:EMBOSS}}>{THREE_OCLOCK_PRAYER.shortPrayer}</div></div>
-      <button onClick={()=>setShowChaplet(!showChaplet)} style={{width:"100%",background:showChaplet?"#0A1A0A":"#181408",border:`1px solid ${showChaplet?"#3A9A4A":GOLD+"40"}`,borderRadius:14,padding:"13px",color:showChaplet?"#2A7A30":GOLD_BRIGHT,fontSize:15,fontFamily:CINZEL,fontWeight:600,cursor:"pointer",marginBottom:12}}>{showChaplet?"Hide Chaplet":"Full Divine Mercy Chaplet"}</button>
+      <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:20,marginBottom:12}}><div style={{fontSize:12,color:GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:12}}>Prayer for the Hour of Mercy</div><div style={{fontFamily:CINZEL,fontSize:15,color:CREAM,lineHeight:2.1,textShadow:EMBOSS}}>{THREE_OCLOCK_PRAYER.shortPrayer}</div></div>
+      <button onClick={()=>setShowChaplet(!showChaplet)} style={{width:"100%",background:showChaplet?"#EAF6EC":SURFACE,border:`1px solid ${showChaplet?"#4A9A5A":GOLD+"66"}`,borderRadius:14,padding:"13px",color:showChaplet?"#2E6B36":GOLD_TEXT,fontSize:15,fontFamily:CINZEL,fontWeight:600,cursor:"pointer",marginBottom:12}}>{showChaplet?"Hide Chaplet":"Full Divine Mercy Chaplet"}</button>
       {showChaplet&&<div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:20,marginBottom:12}}><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.2,whiteSpace:"pre-line",textShadow:EMBOSS}}>{THREE_OCLOCK_PRAYER.chaplet}</div></div>}
-      <div style={{background:SURFACE,border:`1px solid ${BORDER}`,borderRadius:14,padding:16}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.18em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:8}}>Catechism of the Catholic Church</div><p style={{fontSize:15,color:"#908878",lineHeight:1.78,fontFamily:"'Lato',sans-serif"}}>{THREE_OCLOCK_PRAYER.ccc}</p></div>
+      <div style={{background:SURFACE,border:`1px solid ${BORDER}`,borderRadius:14,padding:16}}><div style={{fontSize:12,color:GOLD_TEXT,letterSpacing:"0.18em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:8}}>Catechism of the Catholic Church</div><p style={{fontSize:15,color:MUTED,lineHeight:1.78,fontFamily:"'Lato',sans-serif"}}>{THREE_OCLOCK_PRAYER.ccc}</p></div>
     </div>
   );
 }
@@ -977,33 +978,33 @@ function PrayersTab() {
     <div style={{padding:"0 20px 20px"}}>
       <div style={{padding:"24px 0 16px",marginTop:"calc(56px + env(safe-area-inset-top))"}}><div style={{fontFamily:CINZEL,fontSize:22,color:WHITE,marginBottom:4,letterSpacing:"0.07em",fontWeight:600,textShadow:EMBOSS}}>{section==="prayers"?"Catholic Prayers":"The Holy Rosary"}</div><div style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>{section==="prayers"?"Traditional prayers of the faith":"A decade-by-decade guide"}</div></div>
       <div style={{display:"flex",background:SURFACE,borderRadius:12,padding:3,marginBottom:18,border:`1px solid ${BORDER}`}}>
-        {[{id:"prayers",label:"Prayers"},{id:"rosary",label:"Rosary"}].map(t=><button key={t.id} onClick={()=>setSection(t.id)} style={{flex:1,background:section===t.id?CARD:"none",border:section===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:section===t.id?GOLD_BRIGHT:MUTED,fontSize:15,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
+        {[{id:"prayers",label:"Prayers"},{id:"rosary",label:"Rosary"}].map(t=><button key={t.id} onClick={()=>setSection(t.id)} style={{flex:1,background:section===t.id?CARD:"none",border:section===t.id?`1px solid ${GOLD}40`:"1px solid transparent",borderRadius:10,padding:"8px 0",color:section===t.id?GOLD_TEXT:MUTED,fontSize:15,cursor:"pointer",fontFamily:"'Lato',sans-serif",transition:"all 0.2s"}}>{t.label}</button>)}
       </div>
       {section==="prayers"&&(
         <div style={{display:"flex",flexDirection:"column",gap:12,width:"100%"}}>
           <button onClick={()=>setSubSection("three-oclock")} style={{background:"#F5EEF8",border:"1px solid #9B59C0",borderRadius:16,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.35)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,flexShrink:0}}>🕒</div><div><div style={{fontFamily:CINZEL,fontSize:17,color:"#4A2070",fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:2}}>Three O'Clock Prayer</div><div style={{fontSize:13,color:"#7040A0",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>Hour of Mercy · Divine Mercy Chaplet</div></div></div><ChevIco/></div>{isThreeOClockHour()&&<div style={{marginTop:10,background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.25)",borderRadius:8,padding:"6px 12px",display:"inline-block"}}><span style={{fontSize:13,color:"#7040A0",fontFamily:CINZEL}}>It is the Hour of Mercy now</span></div>}</button>
           <button onClick={()=>setSubSection("novenas")} style={{background:"#F0EAF8",border:`1px solid #8060C0`,borderRadius:16,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:36,height:36,borderRadius:"50%",background:"rgba(100,60,180,0.12)",border:"1px solid rgba(100,60,180,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,flexShrink:0}}>📿</div><div><div style={{fontFamily:CINZEL,fontSize:17,color:"#3A1860",fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS,marginBottom:2}}>Novenas</div><div style={{fontSize:13,color:"#6040A0",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>Nine Days of Prayer · 4 Novenas</div></div></div><ChevIco/></div></button>
-          {PRAYERS.map((p,i)=><div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"88":BORDER}`,borderRadius:18,padding:20,cursor:"pointer",boxShadow:expandedPrayer===i?CARD_SHADOW_STRONG:CARD_SHADOW,transition:"all 0.2s"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontFamily:CINZEL,fontSize:18,color:WHITE,marginBottom:4,letterSpacing:"0.06em",fontWeight:600,textShadow:EMBOSS}}>{p.t}</div><div style={{fontSize:13,color:GOLD,letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>{p.s}</div></div><span style={{color:MUTED,fontSize:15}}>{expandedPrayer===i?"\u2212":"+"}</span></div>{expandedPrayer===i&&<div style={{marginTop:16,paddingTop:16,borderTop:`1px solid ${BORDER}`}}><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.1,marginBottom:14,letterSpacing:"0.04em",whiteSpace:"pre-line",textShadow:EMBOSS}}>{p.text}</div><div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}`,borderRadius:"0 8px 8px 0",padding:"10px 14px"}}><div style={{fontSize:12,color:GOLD,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:5}}>Note & CCC</div><p style={{fontSize:14,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif"}}>{p.note}</p></div></div>}</div>)}
+          {PRAYERS.map((p,i)=><div key={i} onClick={()=>setExpandedPrayer(expandedPrayer===i?null:i)} style={{background:CARD,border:`1px solid ${expandedPrayer===i?GOLD+"88":BORDER}`,borderRadius:18,padding:20,cursor:"pointer",boxShadow:expandedPrayer===i?CARD_SHADOW_STRONG:CARD_SHADOW,transition:"all 0.2s"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontFamily:CINZEL,fontSize:18,color:WHITE,marginBottom:4,letterSpacing:"0.06em",fontWeight:600,textShadow:EMBOSS}}>{p.t}</div><div style={{fontSize:13,color:GOLD_TEXT,letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:CINZEL}}>{p.s}</div></div><span style={{color:MUTED,fontSize:15}}>{expandedPrayer===i?"\u2212":"+"}</span></div>{expandedPrayer===i&&<div style={{marginTop:16,paddingTop:16,borderTop:`1px solid ${BORDER}`}}><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.1,marginBottom:14,letterSpacing:"0.04em",whiteSpace:"pre-line",textShadow:EMBOSS}}>{p.text}</div><div style={{background:SURFACE,borderLeft:`3px solid ${GOLD}`,borderRadius:"0 8px 8px 0",padding:"10px 14px"}}><div style={{fontSize:12,color:GOLD_TEXT,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:5}}>Note & CCC</div><p style={{fontSize:14,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif"}}>{p.note}</p></div></div>}</div>)}
         </div>
       )}
       {section==="rosary"&&(
         <>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>{MYSTERY_TYPES.map(t=>{const m=ROSARY[t];const on=mysteryType===t;return<button key={t} onClick={()=>{setMysteryType(t);setDecade(0);setBeads(0);}} style={{background:on?m.color:CARD,border:`1px solid ${on?m.border:BORDER}`,borderRadius:12,padding:"13px 12px",cursor:"pointer",transition:"all 0.2s",textAlign:"left"}}><div style={{fontFamily:CINZEL,fontSize:15,color:on?WHITE:MUTED,fontWeight:on?600:400,letterSpacing:"0.05em",marginBottom:2,textShadow:on?EMBOSS:"none"}}>{t}</div><div style={{fontSize:12,color:on?"rgba(255,255,255,0.55)":MUTED,fontFamily:"'Lato',sans-serif"}}>{m.day}</div></button>;})}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>{MYSTERY_TYPES.map(t=>{const m=ROSARY[t];const on=mysteryType===t;return<button key={t} onClick={()=>{setMysteryType(t);setDecade(0);setBeads(0);}} style={{background:on?m.color:CARD,border:`1px solid ${on?m.border:BORDER}`,borderRadius:12,padding:"13px 12px",cursor:"pointer",transition:"all 0.2s",textAlign:"left"}}><div style={{fontFamily:CINZEL,fontSize:15,color:on?WHITE:MUTED,fontWeight:on?600:400,letterSpacing:"0.05em",marginBottom:2,textShadow:on?EMBOSS:"none"}}>{t}</div><div style={{fontSize:12,color:MUTED,fontFamily:"'Lato',sans-serif"}}>{m.day}</div></button>;})}
           </div>
           <div style={{background:myst.color,border:`1px solid ${myst.border}`,borderRadius:20,padding:22,marginBottom:12}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}><div style={{fontSize:12,color:"rgba(255,255,255,0.45)",letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL}}>Decade {decade+1} of 5</div><div style={{display:"flex",gap:7}}>{myst.decades.map((_,i)=><div key={i} onClick={()=>{setDecade(i);setBeads(0);}} style={{width:6,height:6,borderRadius:"50%",background:i===decade?GOLD_BRIGHT:"rgba(255,255,255,0.2)",cursor:"pointer"}}/>)}</div></div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}><div style={{fontSize:12,color:MUTED,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL}}>Decade {decade+1} of 5</div><div style={{display:"flex",gap:7}}>{myst.decades.map((_,i)=><div key={i} onClick={()=>{setDecade(i);setBeads(0);}} style={{width:6,height:6,borderRadius:"50%",background:i===decade?GOLD_BRIGHT:BORDER,cursor:"pointer"}}/>)}</div></div>
             <div style={{fontFamily:CINZEL,fontSize:18,color:WHITE,fontWeight:600,letterSpacing:"0.06em",marginBottom:4,textShadow:EMBOSS}}>{curDecade.name}</div>
-            <div style={{fontSize:13,color:GOLD,marginBottom:14,fontFamily:CINZEL,letterSpacing:"0.12em",fontWeight:700}}>{curDecade.ref}</div>
+            <div style={{fontSize:13,color:GOLD_TEXT,marginBottom:14,fontFamily:CINZEL,letterSpacing:"0.12em",fontWeight:700}}>{curDecade.ref}</div>
             <p style={{fontSize:15,color:CREAM,lineHeight:1.85,fontFamily:"'Lato',sans-serif"}}>{curDecade.med}</p>
           </div>
           <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:18,marginBottom:12}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}><div style={{fontSize:13,color:MUTED,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:CINZEL}}>Hail Mary</div><div style={{fontFamily:CINZEL,fontSize:15,color:beads===10?GOLD:MUTED,fontWeight:600}}>{beads}/10</div></div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}><div style={{fontSize:13,color:MUTED,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:CINZEL}}>Hail Mary</div><div style={{fontFamily:CINZEL,fontSize:15,color:beads===10?GOLD_TEXT:MUTED,fontWeight:600}}>{beads}/10</div></div>
             <div style={{display:"flex",gap:7,flexWrap:"wrap",justifyContent:"center",marginBottom:beads===10?12:0}}>{Array.from({length:10},(_,i)=><div key={i} onClick={()=>setBeads(beads===i+1?i:i+1)} style={{width:30,height:30,borderRadius:"50%",background:i<beads?GOLD:SURFACE,border:`1.5px solid ${i<beads?GOLD_BRIGHT:BORDER}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.15s",fontSize:12,color:i<beads?"#FFFFFF":MUTED,fontWeight:700,fontFamily:CINZEL}}>{i+1}</div>)}</div>
-            {beads===10&&<div style={{textAlign:"center",paddingTop:4}}><div style={{fontSize:14,color:GOLD,fontFamily:CINZEL,letterSpacing:"0.08em",textShadow:EMBOSS}}>Glory be to the Father, and to the Son, and to the Holy Spirit.</div></div>}
+            {beads===10&&<div style={{textAlign:"center",paddingTop:4}}><div style={{fontSize:14,color:GOLD_TEXT,fontFamily:CINZEL,letterSpacing:"0.08em",textShadow:EMBOSS}}>Glory be to the Father, and to the Son, and to the Holy Spirit.</div></div>}
           </div>
           <div style={{display:"flex",gap:10}}>
             <button onClick={()=>{if(decade>0){setDecade(decade-1);setBeads(0);}}} disabled={decade===0} style={{flex:1,background:CARD,border:`1px solid ${decade===0?BORDER:GOLD+"40"}`,borderRadius:12,padding:"12px 0",cursor:decade===0?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:decade===0?.35:1}}><ChevIco dir="left"/><span style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Previous</span></button>
-            <button onClick={()=>{if(decade<4){setDecade(decade+1);setBeads(0);}}} disabled={decade===4} style={{flex:1,background:decade===4?CARD:SURFACE,border:`1px solid ${decade===4?BORDER:GOLD+"55"}`,borderRadius:12,padding:"12px 0",cursor:decade===4?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:decade===4?.35:1}}><span style={{fontSize:15,color:decade===4?MUTED:GOLD_BRIGHT,fontFamily:"'Lato',sans-serif"}}>{decade===4?"Complete":"Next Decade"}</span>{decade<4&&<ChevIco/>}</button>
+            <button onClick={()=>{if(decade<4){setDecade(decade+1);setBeads(0);}}} disabled={decade===4} style={{flex:1,background:decade===4?CARD:SURFACE,border:`1px solid ${decade===4?BORDER:GOLD+"55"}`,borderRadius:12,padding:"12px 0",cursor:decade===4?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:decade===4?.35:1}}><span style={{fontSize:15,color:decade===4?MUTED:GOLD_TEXT,fontFamily:"'Lato',sans-serif"}}>{decade===4?"Complete":"Next Decade"}</span>{decade<4&&<ChevIco/>}</button>
           </div>
           {decade===4&&beads===10&&<div style={{background:"#E8F5EA",border:`1px solid #4A9A5A50`,borderRadius:16,padding:20,marginTop:14,textAlign:"center"}}><div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,fontWeight:600,letterSpacing:"0.08em",marginBottom:8,textShadow:EMBOSS}}>Mystery Complete</div><p style={{fontSize:15,color:"#2A7A30",lineHeight:1.75,fontFamily:"'Lato',sans-serif"}}>You have completed the {mysteryType} Mysteries. May Our Lady carry your intentions before the throne of God. Amen.</p></div>}
         </>
@@ -1055,14 +1056,14 @@ function MassTab() {
 
       {/* Stream list */}
       <div style={{ padding: "18px 20px 0" }}>
-        <div style={{ fontSize: 10, color: GOLD_BRIGHT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 12 }}>Available Streams</div>
+        <div style={{ fontSize: 10, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 12 }}>Available Streams</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
           {STREAMS.map((stream, i) => (
             <button key={i} onClick={() => { setSelected(i); setLoaded(false); }} style={{ background: selected === i ? "linear-gradient(135deg,#FFFCF5,#FFF3D6)" : CARD, border: `1.5px solid ${selected === i ? GOLD : BORDER}`, borderRadius: 16, padding: "14px 16px", cursor: "pointer", textAlign: "left", transition: "all 0.2s", boxShadow: selected === i ? CARD_SHADOW_STRONG : CARD_SHADOW }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{ width: 38, height: 38, borderRadius: 10, background: selected === i ? `${GOLD}20` : SURFACE, border: `1px solid ${selected === i ? GOLD + "60" : BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>{stream.icon}</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: CINZEL, fontSize: 13, color: selected === i ? GOLD_BRIGHT : WHITE, fontWeight: 600, letterSpacing: "0.05em", textShadow: selected === i ? EMBOSS : "none", marginBottom: 3 }}>{stream.label}</div>
+                  <div style={{ fontFamily: CINZEL, fontSize: 13, color: selected === i ? GOLD_TEXT : WHITE, fontWeight: 600, letterSpacing: "0.05em", textShadow: selected === i ? EMBOSS : "none", marginBottom: 3 }}>{stream.label}</div>
                   <div style={{ fontSize: 11, color: MUTED, fontFamily: "'Lato',sans-serif", lineHeight: 1.5 }}>{stream.note}</div>
                 </div>
                 {selected === i && <div style={{ width: 8, height: 8, borderRadius: "50%", background: GOLD, flexShrink: 0 }} />}
@@ -1074,7 +1075,7 @@ function MassTab() {
         {/* Player */}
         {activeStream ? (
           <>
-            <div style={{ fontSize: 10, color: GOLD_BRIGHT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 10 }}>Now Watching</div>
+            <div style={{ fontSize: 10, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 10 }}>Now Watching</div>
             <div style={{ position: "relative", width: "100%", paddingTop: "56.25%", borderRadius: 16, overflow: "hidden", border: `1.5px solid ${BORDER}`, background: "#0A0806", boxShadow: CARD_SHADOW_STRONG, marginBottom: 14 }}>
               {!loaded && (
                 <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
@@ -1111,7 +1112,7 @@ function MassTab() {
 
         {/* Spiritual note */}
         <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}50`, borderRadius: 16, padding: 16, boxShadow: CARD_SHADOW }}>
-          <div style={{ fontSize: 10, color: GOLD_BRIGHT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 8 }}>A Note on Virtual Mass</div>
+          <div style={{ fontSize: 10, color: GOLD_TEXT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 8 }}>A Note on Virtual Mass</div>
           <p style={{ fontSize: 12, color: CREAM, lineHeight: 1.78, fontFamily: "'Lato',sans-serif" }}>
             The Church encourages physical attendance at Mass whenever possible, since it is there we receive Christ truly present in the Eucharist. Watching a live stream is a meaningful act of worship when in-person attendance is not possible. If you are able, please attend Mass at your local parish.
           </p>
@@ -1135,7 +1136,7 @@ function SoulCheckTab({ favorites, onFav }) {
       </div>
 
       <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}50`, borderRadius: 18, padding: 20, marginBottom: 16, boxShadow: CARD_SHADOW }}>
-        <div style={{ fontSize: 12, color: GOLD_BRIGHT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 10 }}>A Moment of Honesty</div>
+        <div style={{ fontSize: 12, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 10 }}>A Moment of Honesty</div>
         <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>
           Pause for a moment. Name what you are carrying, and let God's Word meet you there. Choose the word that best describes your heart right now.
         </p>
@@ -1154,14 +1155,14 @@ function SoulCheckTab({ favorites, onFav }) {
 
       {feeling && (
         <>
-          <div style={{ fontSize: 13, color: GOLD_BRIGHT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 12 }}>The Word for {feelingLabel}</div>
+          <div style={{ fontSize: 13, color: GOLD_TEXT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 12 }}>The Word for {feelingLabel}</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
             {matched.map(v => (
               <VerseCard key={v.id} verse={v} expanded={expandedId === v.id} onToggle={() => setExpandedId(expandedId === v.id ? null : v.id)} isFav={favorites.has(v.id)} onFav={onFav} />
             ))}
           </div>
           <div style={{ background: SURFACE, borderLeft: `3px solid ${GOLD}`, borderRadius: "0 10px 10px 0", padding: "13px 16px", marginBottom: 16 }}>
-            <div style={{ fontSize: 12, color: GOLD, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 6, fontWeight: 700 }}>A Closing Prayer</div>
+            <div style={{ fontSize: 12, color: GOLD_TEXT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 6, fontWeight: 700 }}>A Closing Prayer</div>
             <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.85, fontFamily: "'Lato',sans-serif", fontWeight: 500, fontStyle: "italic" }}>
               Lord, You know my heart better than I know it myself. Take what I am feeling today and draw me closer to You through it. Amen.
             </p>

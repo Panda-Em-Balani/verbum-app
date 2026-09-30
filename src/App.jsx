@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import LoginPage from "./LoginPage.jsx";
 import { requestNotificationPermission, initNotifications, getNotificationPermission } from "./notifications.js";
 import { supabase } from "./supabase.js";
@@ -10,30 +10,6 @@ import { isStandalone, isIOS, isInAppBrowser } from "./device.js";
 import { track } from "./analytics.js";
 
 import { GOLD, GOLD_BRIGHT, GOLD_TEXT, DARK, SURFACE, CARD, BORDER, CREAM, MUTED, WHITE, CINZEL, R, EMBOSS, CARD_SHADOW, CARD_SHADOW_STRONG, HEADER_SHADOW, NAV_SHADOW, HEADER_BG, HEADER_H } from "./theme.js";
-
-//  MASS STREAM CONFIG 
-// Update MASS_STREAM_URL to your parish's YouTube channel live stream URL.
-// Format: https://www.youtube.com/embed/LIVE_VIDEO_ID?autoplay=0
-// For a live channel stream use: https://www.youtube.com/embed/live_stream?channel=CHANNEL_ID
-// Vatican News fallback is used by default — replace with your parish stream.
-const MASS_STREAMS = [
-  {
-    label: "Vatican — Papal Mass",
-    url: "https://www.youtube.com/embed/live_stream?channel=UCz6g_U1LHLQNR6vT0ENPMbA",
-    note: "Live Masses from the Vatican, including Papal celebrations and daily Mass from St. Peter's Basilica.",
-  },
-  {
-    label: "EWTN — Global Catholic Network",
-    url: "https://www.youtube.com/embed/7RbAWZRMqBI",
-    note: "EWTN broadcasts daily Mass, the Rosary, and Catholic programming 24 hours a day.",
-  },
-  {
-    label: "Salt + Light — Catholic TV",
-    url: "https://www.youtube.com/embed/live_stream?channel=UCHHmjz7kliVPUCkqMxRLWlA",
-    note: "Canada-based Catholic channel with daily Mass, news, and spiritual programming.",
-  },
-];
-// Add your parish stream here as the first entry in MASS_STREAMS if you have one.
 
 //  VERSES 
 const VERSES = [
@@ -224,17 +200,7 @@ const CATEGORIES = [
   {id:"wisdom",label:"Wisdom",sym:""},{id:"renewal",label:"Renewal",sym:""},
 ];
 
-//  ALL BOOKS OF THE CATHOLIC BIBLE 
-const BIBLE_BOOKS = {
-  OT: ["Genesis","Exodus","Leviticus","Numbers","Deuteronomy","Joshua","Judges","Ruth","1 Samuel","2 Samuel","1 Kings","2 Kings","1 Chronicles","2 Chronicles","Ezra","Nehemiah","Tobit","Judith","Esther","1 Maccabees","2 Maccabees","Job","Psalms","Proverbs","Ecclesiastes","Song of Songs","Wisdom","Sirach","Isaiah","Jeremiah","Lamentations","Baruch","Ezekiel","Daniel","Hosea","Joel","Amos","Obadiah","Jonah","Micah","Nahum","Habakkuk","Zephaniah","Haggai","Zechariah","Malachi"],
-  NT: ["Matthew","Mark","Luke","John","Acts","Romans","1 Corinthians","2 Corinthians","Galatians","Ephesians","Philippians","Colossians","1 Thessalonians","2 Thessalonians","1 Timothy","2 Timothy","Titus","Philemon","Hebrews","James","1 Peter","2 Peter","1 John","2 John","3 John","Jude","Revelation"],
-};
-
 //  HELPERS 
-function getDailyVerse() {
-  const day = Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/86400000);
-  return VERSES[day%VERSES.length];
-}
 function getSaintOfDay() {
   const now = new Date(); const m=now.getMonth()+1, d=now.getDate();
   // First: exact feast day match for today
@@ -278,8 +244,6 @@ const ChatIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none
 const BookIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3-7 3V4z" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
 const PrayIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none"/><circle cx="11" cy="11" r="3" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none"/><line x1="11" y1="3" x2="11" y2="8" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5"/><line x1="11" y1="14" x2="11" y2="19" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5"/><line x1="3" y1="11" x2="8" y2="11" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5"/><line x1="14" y1="11" x2="19" y2="11" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5"/></svg>;
 const MassIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="13" rx="2" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none"/><path d="M9 9l5 2.5L9 14V9z" fill={on?GOLD_BRIGHT:"#7A7A7A"}/><line x1="7" y1="2" x2="7" y2="5" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" strokeLinecap="round"/><line x1="15" y1="2" x2="15" y2="5" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" strokeLinecap="round"/></svg>;
-const RefreshIco=()=><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 0110.7-3.7" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><path d="M14 8a6 6 0 01-10.7 3.7" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><polyline points="13,3.5 13,7 9.5,7" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><polyline points="3,12.5 3,9 6.5,9" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const SendIco=()=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9l14-7-7 14V9H2z" fill={GOLD}/></svg>;
 const HeartIco=({filled})=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15S2 10.5 2 5.5A3.5 3.5 0 019 3.7 3.5 3.5 0 0116 5.5C16 10.5 9 15 9 15z" stroke={filled?GOLD:"#A0A0A0"} strokeWidth="1.5" fill={filled?GOLD:"none"}/></svg>;
 const ChevIco=({dir="right"})=><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{transform:dir==="left"?"rotate(180deg)":"none"}}><path d="M5 3l4 4-4 4" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 const BellIco=({on})=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 00-5 5v4l-1.5 2h13L14 11V7a5 5 0 00-5-5z" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none"/><path d="M7 15a2 2 0 004 0" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/></svg>;
@@ -372,27 +336,6 @@ function InstallBanner({ onInstall, onDismiss }) {
           <button onClick={onDismiss} style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: "13px 16px", color: MUTED, fontSize: 14, cursor: "pointer", fontFamily: "'Lato',sans-serif" }}>
             Later
           </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-//  PAID USER WARNING MODAL 
-function PaidUserModal({ onClose, onProceed }) {
-  return (
-    <div style={{position:"fixed",inset:0,zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",background:"rgba(200,180,150,0.5)",backdropFilter:"blur(8px)"}}>
-      <div role="dialog" aria-modal="true" aria-label="Soul Check" style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:R.lg,padding:32,maxWidth:360,width:"100%",position:"relative",boxShadow:CARD_SHADOW_STRONG}}>
-        <div style={{position:"absolute",top:-1,left:"50%",transform:"translateX(-50%)",width:120,height:2,background:`linear-gradient(90deg,transparent,${GOLD},transparent)`,borderRadius:2}}/>
-        <div style={{textAlign:"center",marginBottom:24}}>
-          <div style={{width:56,height:56,borderRadius:"50%",background:`${GOLD}15`,border:`1.5px solid ${GOLD}50`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}><LockIco/></div>
-          <div style={{fontFamily:CINZEL,fontSize:20,color:WHITE,fontWeight:600,letterSpacing:"0.08em",marginBottom:8,textShadow:EMBOSS}}>Soul Check</div>
-          <div style={{fontSize:13,color:GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:16}}>Premium Feature</div>
-          <p style={{fontSize:16,color:CREAM,lineHeight:1.85,fontFamily:"'Lato',sans-serif"}}>Soul Check is available to <strong style={{color:WHITE}}>Verbum Premium</strong> subscribers.</p>
-        </div>
-        <div style={{display:"flex",flexDirection:"column",gap:10}}>
-          <button onClick={onProceed} style={{width:"100%",background:`linear-gradient(135deg,${GOLD},#B8923C)`,border:"none",borderRadius:R.sm,padding:"13px",color:"#FFFFFF",fontSize:16,fontFamily:CINZEL,fontWeight:600,letterSpacing:"0.08em",cursor:"pointer"}}>Upgrade to Premium</button>
-          <button onClick={onClose} style={{width:"100%",background:"none",border:`1px solid ${BORDER}`,borderRadius:R.sm,padding:"12px",color:MUTED,fontSize:15,fontFamily:"'Lato',sans-serif",cursor:"pointer"}}>Continue as Free User</button>
         </div>
       </div>
     </div>
@@ -521,7 +464,6 @@ function DailyCatholicHappening() {
 
 // ─── SVG ICONS ───────────────────────────────────────────────────────────────
 const CalendarIco = () => <svg width="20" height="20" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="2" stroke={GOLD} strokeWidth="1.5" fill="none"/><line x1="2" y1="7" x2="16" y2="7" stroke={GOLD} strokeWidth="1.5"/><line x1="6" y1="1" x2="6" y2="5" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><line x1="12" y1="1" x2="12" y2="5" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/></svg>;
-const VerseIco = () => <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 2h8l4 4v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke={GOLD} strokeWidth="1.5" fill="none"/><line x1="5" y1="8" x2="13" y2="8" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><line x1="5" y1="11" x2="11" y2="11" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/></svg>;
 const StarIco = () => <svg width="16" height="16" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 4H13l-3.5 2.5 1.3 4L7 9.5 3.2 11.5l1.3-4L1 5h4.5L7 1z" fill="rgba(255,255,255,0.85)"/></svg>;
 const UserIco = () => <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="3" stroke="rgba(255,255,255,0.9)" strokeWidth="1.3" fill="none"/><path d="M2 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="rgba(255,255,255,0.9)" strokeWidth="1.3" strokeLinecap="round" fill="none"/></svg>;
 
@@ -721,26 +663,25 @@ function DailyVerseCard({ onFav, favorites }) {
 
 // ─── SAINT OF THE DAY CARD ────────────────────────────────────────────────────
 function SaintOfDayCard({ saint }) {
-  const [photoUrl, setPhotoUrl] = useState(null);
+  const [fetched, setFetched] = useState({ title: null, url: null });
   const [photoLoaded, setPhotoLoaded] = useState(false);
+  const cacheKey = saint.wikiTitle ? `verbum-saint-photo-${saint.wikiTitle}` : null;
+  const cachedUrl = cacheKey ? sessionStorage.getItem(cacheKey) : null;
+  const photoUrl = cachedUrl || (fetched.title === saint.wikiTitle ? fetched.url : null);
 
   useEffect(() => {
-    if (!saint.wikiTitle) return;
-    const cacheKey = `verbum-saint-photo-${saint.wikiTitle}`;
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) { setPhotoUrl(cached); return; }
-
+    if (!saint.wikiTitle || cachedUrl) return;
     fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(saint.wikiTitle)}`)
       .then(r => r.json())
       .then(data => {
         const url = data.thumbnail?.source || null;
         if (url) {
           sessionStorage.setItem(cacheKey, url);
-          setPhotoUrl(url);
+          setFetched({ title: saint.wikiTitle, url });
         }
       })
       .catch(() => {});
-  }, [saint.wikiTitle]);
+  }, [saint.wikiTitle, cachedUrl, cacheKey]);
 
   const feastDate = new Date(2024, saint.feast.m - 1, saint.feast.d)
     .toLocaleDateString("en-US", { month: "long", day: "numeric" });
@@ -944,11 +885,9 @@ function ThreeOClockView({ onBack }) {
 
 //  PRAYERS TAB 
 function PrayersTab() {
-  const [section,setSection]=useState("prayers"); const [subSection,setSubSection]=useState(null);
-  useEffect(()=>{
-    const deep=localStorage.getItem("verbum_deep_section");
-    if(deep){ localStorage.removeItem("verbum_deep_section"); if(deep==="three-oclock"||deep==="novenas") setSubSection(deep); if(deep==="rosary") setSection("rosary"); }
-  },[]); const [expandedPrayer,setExpandedPrayer]=useState(null); const [mysteryType,setMysteryType]=useState("Joyful"); const [decade,setDecade]=useState(0); const [beads,setBeads]=useState(0);
+  const [deep]=useState(()=>localStorage.getItem("verbum_deep_section"));
+  const [section,setSection]=useState(deep==="rosary"?"rosary":"prayers"); const [subSection,setSubSection]=useState(deep==="three-oclock"||deep==="novenas"?deep:null);
+  useEffect(()=>{ localStorage.removeItem("verbum_deep_section"); },[]); const [expandedPrayer,setExpandedPrayer]=useState(null); const [mysteryType,setMysteryType]=useState("Joyful"); const [decade,setDecade]=useState(0); const [beads,setBeads]=useState(0);
   const PRAYERS=[
     {t:"Our Father",s:"The Lord's Prayer",text:"Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.",note:"Taught by Jesus himself in Matthew 6:9–13, this is the foundational prayer of the Christian faith. The CCC calls it 'the summary of the whole gospel' (CCC 2761)."},
     {t:"Hail Mary",s:"Ave Maria",text:"Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.",note:"Drawn from Luke 1:28 and 1:42. The CCC affirms that Mary's intercession flows from her divine motherhood (CCC 969)."},
@@ -1219,7 +1158,7 @@ export default function BibleApp() {
     }).catch(() => {
       setUserChecked(true)
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") setUser(null)
     })
     return () => subscription.unsubscribe()

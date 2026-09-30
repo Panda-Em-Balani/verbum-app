@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import LoginPage from "./LoginPage.jsx";
 import { requestNotificationPermission, initNotifications, getNotificationPermission } from "./notifications.js";
 import { supabase } from "./supabase.js";
@@ -9,6 +9,7 @@ import InstallPage from "./InstallPage.jsx";
 import { INSTALL_PATH } from "./config.js";
 import { isStandalone, isIOS, isInAppBrowser } from "./device.js";
 import { track } from "./analytics.js";
+import { useProgress, initProgress, resetProgress, toggleFavorite, toggleNovenaDay, saveRosary, getSnapshot } from "./progress.js";
 
 import { GOLD, GOLD_BRIGHT, GOLD_TEXT, DARK, SURFACE, CARD, BORDER, CREAM, MUTED, WHITE, CINZEL, R, EMBOSS, CARD_SHADOW, CARD_SHADOW_STRONG, HEADER_SHADOW, NAV_SHADOW, HEADER_BG, HEADER_H } from "./theme.js";
 
@@ -756,7 +757,7 @@ function ExploreTab({favorites,onFav}) {
 
 //  NOVENA VIEW 
 function NovenaView({ onBack }) {
-  const [selected,setSelected]=useState(null); const [currentDay,setCurrentDay]=useState(0); const [prayedDays,setPrayedDays]=useState(new Set());
+  const [selected,setSelected]=useState(null); const [currentDay,setCurrentDay]=useState(0); const prayedDays=useProgress().novena;
   if (selected) {
     const novena=NOVENAS.find(n=>n.id===selected); const day=novena.days[currentDay]; const hasCompleted=prayedDays.has(`${selected}-${currentDay}`);
     return (
@@ -777,7 +778,7 @@ function NovenaView({ onBack }) {
           <div style={{fontSize:15,color:GOLD_TEXT,fontFamily:CINZEL,letterSpacing:"0.06em",marginBottom:16}}>{day.intention}</div>
           <div style={{borderTop:`1px solid ${BORDER}`,paddingTop:16}}><div style={{fontSize:12,color:GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:CINZEL,marginBottom:10}}>Prayer</div><div style={{fontFamily:CINZEL,fontSize:14,color:CREAM,lineHeight:2.1,textShadow:EMBOSS,whiteSpace:"pre-line"}}>{day.prayer}</div></div>
         </div>
-        <button onClick={()=>setPrayedDays(p=>{const s=new Set(p);hasCompleted?s.delete(`${selected}-${currentDay}`):s.add(`${selected}-${currentDay}`);return s;})} style={{width:"100%",background:hasCompleted?"#EAF6EC":SURFACE,border:`1px solid ${hasCompleted?"#4A9A5A":GOLD+"66"}`,borderRadius:R.sm,padding:"13px",color:hasCompleted?"#2E6B36":GOLD_TEXT,fontSize:15,fontFamily:CINZEL,fontWeight:600,letterSpacing:"0.08em",cursor:"pointer",marginBottom:10}}>{hasCompleted?"\u2713 Prayed Today":"Mark as Prayed"}</button>
+        <button onClick={()=>toggleNovenaDay(`${selected}-${currentDay}`)} style={{width:"100%",background:hasCompleted?"#EAF6EC":SURFACE,border:`1px solid ${hasCompleted?"#4A9A5A":GOLD+"66"}`,borderRadius:R.sm,padding:"13px",color:hasCompleted?"#2E6B36":GOLD_TEXT,fontSize:15,fontFamily:CINZEL,fontWeight:600,letterSpacing:"0.08em",cursor:"pointer",marginBottom:10}}>{hasCompleted?"\u2713 Prayed Today":"Mark as Prayed"}</button>
         <div style={{display:"flex",gap:10}}>
           <button onClick={()=>{if(currentDay>0){setCurrentDay(currentDay-1);}}} disabled={currentDay===0} style={{flex:1,background:CARD,border:`1px solid ${currentDay===0?BORDER:GOLD+"40"}`,borderRadius:R.sm,padding:"12px 0",minHeight:44,cursor:currentDay===0?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===0?.35:1}}><ChevIco dir="left"/><span style={{fontSize:15,color:MUTED,fontFamily:"'Lato',sans-serif",fontWeight:500}}>Previous</span></button>
           <button onClick={()=>{if(currentDay<8)setCurrentDay(currentDay+1);}} disabled={currentDay===8} style={{flex:1,background:currentDay===8?CARD:SURFACE,border:`1px solid ${currentDay===8?BORDER:GOLD+"55"}`,borderRadius:R.sm,padding:"12px 0",minHeight:44,cursor:currentDay===8?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===8?.35:1}}><span style={{fontSize:15,color:currentDay===8?MUTED:GOLD_TEXT,fontFamily:"'Lato',sans-serif"}}>{currentDay===8?"Complete":"Next Day"}</span>{currentDay<8&&<ChevIco/>}</button>
@@ -819,7 +820,15 @@ function ThreeOClockView({ onBack }) {
 function PrayersTab() {
   const [deep]=useState(()=>localStorage.getItem("verbum_deep_section"));
   const [section,setSection]=useState(deep==="rosary"?"rosary":"prayers"); const [subSection,setSubSection]=useState(deep==="three-oclock"||deep==="novenas"?deep:null);
-  useEffect(()=>{ localStorage.removeItem("verbum_deep_section"); },[]); const [expandedPrayer,setExpandedPrayer]=useState(null); const [mysteryType,setMysteryType]=useState("Joyful"); const [decade,setDecade]=useState(0); const [beads,setBeads]=useState(0);
+  useEffect(()=>{ localStorage.removeItem("verbum_deep_section"); },[]); const [expandedPrayer,setExpandedPrayer]=useState(null); const [saved]=useState(()=>getSnapshot().rosary); const [mysteryType,setMysteryType]=useState(saved?.mystery||"Joyful"); const [decade,setDecade]=useState(saved?.decade||0); const [beads,setBeads]=useState(saved?.beads||0);
+  // Remember the rosary in progress (cleared when finished or reset).
+  const rosaryReady=useRef(false);
+  useEffect(()=>{
+    if(!rosaryReady.current){rosaryReady.current=true;return;}
+    const done=decade===4&&beads===10; const fresh=decade===0&&beads===0;
+    const t=setTimeout(()=>saveRosary(done||fresh?null:{mystery:mysteryType,decade,beads}),700);
+    return()=>clearTimeout(t);
+  },[mysteryType,decade,beads]);
   const PRAYERS=[
     {t:"Our Father",s:"The Lord's Prayer",text:"Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.",note:"Taught by Jesus himself in Matthew 6:9–13, this is the foundational prayer of the Christian faith. The CCC calls it 'the summary of the whole gospel' (CCC 2761)."},
     {t:"Hail Mary",s:"Ave Maria",text:"Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.",note:"Drawn from Luke 1:28 and 1:42. The CCC affirms that Mary's intercession flows from her divine motherhood (CCC 969)."},
@@ -1058,7 +1067,7 @@ export default function BibleApp() {
   const [userChecked, setUserChecked] = useState(false)
   const [needsName, setNeedsName] = useState(false)
   const [tab, setTab] = useState("home")
-  const [favorites, setFavorites] = useState(new Set())
+  const favorites = useProgress().favorites
   const [hasNewFavorites, setHasNewFavorites] = useState(false)
   const [showNotifBanner, setShowNotifBanner] = useState(false)
   const [installPrompt, setInstallPrompt] = useState(null)
@@ -1097,6 +1106,13 @@ export default function BibleApp() {
     })
     return () => subscription.unsubscribe()
   }, [])
+
+  //  Load saved progress for the signed-in user, clear it on sign out 
+  const signedIn = !!user
+  useEffect(() => {
+    if (!signedIn) { resetProgress(); return }
+    supabase.auth.getSession().then(({ data }) => { if (data?.session?.user?.id) initProgress(data.session.user.id) }).catch(() => {})
+  }, [signedIn])
 
   //  PWA Install prompt 
   useEffect(() => {
@@ -1175,12 +1191,7 @@ export default function BibleApp() {
     }
   }, [])
 
-  const onFav = (id) => setFavorites(prev => {
-    const next = new Set(prev);
-    if (next.has(id)) { next.delete(id); } 
-    else { next.add(id); setHasNewFavorites(true); }
-    return next;
-  })
+  const onFav = (id) => { if (toggleFavorite(id)) setHasNewFavorites(true) }
 
   // Fires the native install prompt when the browser offers one. Resolves to the outcome.
   const installViaPrompt = async () => {

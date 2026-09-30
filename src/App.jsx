@@ -288,11 +288,11 @@ function isThreeOClockHour() { return new Date().getHours() === 15; }
 
 //  ICONS 
 const Cross=({size=20})=><svg width={size} height={size} viewBox="0 0 20 20" fill="none"><rect x="8.5" y="2" width="3" height="16" rx="1" fill={GOLD}/><rect x="2" y="7.5" width="16" height="3" rx="1" fill={GOLD}/></svg>;
-const HomeIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 9v11h5v-6h6v6h5V9L11 2z" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
-const ChatIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 5a2 2 0 012-2h12a2 2 0 012 2v9a2 2 0 01-2 2H8l-5 4V5z" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
-const BookIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3-7 3V4z" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
-const PrayIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none"/><circle cx="11" cy="11" r="3" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none"/><line x1="11" y1="3" x2="11" y2="8" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/><line x1="11" y1="14" x2="11" y2="19" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/><line x1="3" y1="11" x2="8" y2="11" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/><line x1="14" y1="11" x2="19" y2="11" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5"/></svg>;
-const MassIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="13" rx="2" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" fill="none"/><path d="M9 9l5 2.5L9 14V9z" fill={on?GOLD:"#A0A0A0"}/><line x1="7" y1="2" x2="7" y2="5" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" strokeLinecap="round"/><line x1="15" y1="2" x2="15" y2="5" stroke={on?GOLD:"#A0A0A0"} strokeWidth="1.5" strokeLinecap="round"/></svg>;
+const HomeIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 9v11h5v-6h6v6h5V9L11 2z" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
+const ChatIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 5a2 2 0 012-2h12a2 2 0 012 2v9a2 2 0 01-2 2H8l-5 4V5z" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
+const BookIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3-7 3V4z" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none" strokeLinejoin="round"/></svg>;
+const PrayIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none"/><circle cx="11" cy="11" r="3" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none"/><line x1="11" y1="3" x2="11" y2="8" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5"/><line x1="11" y1="14" x2="11" y2="19" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5"/><line x1="3" y1="11" x2="8" y2="11" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5"/><line x1="14" y1="11" x2="19" y2="11" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5"/></svg>;
+const MassIco=({on})=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="13" rx="2" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" fill="none"/><path d="M9 9l5 2.5L9 14V9z" fill={on?GOLD_BRIGHT:"#7A7A7A"}/><line x1="7" y1="2" x2="7" y2="5" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" strokeLinecap="round"/><line x1="15" y1="2" x2="15" y2="5" stroke={on?GOLD_BRIGHT:"#7A7A7A"} strokeWidth="1.5" strokeLinecap="round"/></svg>;
 const RefreshIco=()=><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 0110.7-3.7" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><path d="M14 8a6 6 0 01-10.7 3.7" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round"/><polyline points="13,3.5 13,7 9.5,7" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><polyline points="3,12.5 3,9 6.5,9" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 const SendIco=()=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9l14-7-7 14V9H2z" fill={GOLD}/></svg>;
 const HeartIco=({filled})=><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15S2 10.5 2 5.5A3.5 3.5 0 019 3.7 3.5 3.5 0 0116 5.5C16 10.5 9 15 9 15z" stroke={filled?GOLD:"#A0A0A0"} strokeWidth="1.5" fill={filled?GOLD:"none"}/></svg>;
@@ -599,22 +599,22 @@ function AppHeader({ tab, user, onSignOut }) {
       <div style={{ position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 430, background: HEADER_BG, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 16, paddingRight: 16, paddingTop: 'env(safe-area-inset-top)', minHeight: HEADER_H, boxShadow: '0 2px 20px rgba(0,0,0,0.30)' }}>
         <div style={{ width: 105 }}>
           {tab === 'home' && (
-            <button onClick={() => setShowPremiumModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 20, padding: '6px 11px', cursor: 'pointer' }}>
+            <button onClick={() => setShowPremiumModal(true)} aria-label="Verbum Premium" style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 22, padding: '0 12px', minHeight: 44, cursor: 'pointer' }}>
               <StarIco />
-              <span style={{ fontSize: 12, color: '#F5E6C8', fontFamily: CINZEL, letterSpacing: '0.07em', fontWeight: 600 }}>Premium</span>
+              <span style={{ fontSize: 13, color: '#F5E6C8', fontFamily: CINZEL, letterSpacing: '0.07em', fontWeight: 600 }}>Premium</span>
             </button>
           )}
         </div>
         <div style={{ fontFamily: CINZEL, fontSize: 17, color: '#F5E6C8', fontWeight: 600, letterSpacing: '0.2em', textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>VERBUM</div>
         <div style={{ width: 105, display: 'flex', justifyContent: 'flex-end' }}>
           {tab === 'home' ? (
-            <button onClick={onSignOut} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 20, padding: '6px 11px', cursor: 'pointer' }}>
+            <button onClick={onSignOut} aria-label={firstName ? `Sign out ${firstName}` : 'Sign out'} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 22, padding: '0 12px', minHeight: 44, cursor: 'pointer' }}>
               <UserIco />
-              <span style={{ fontSize: 12, color: '#F5E6C8', fontFamily: CINZEL, letterSpacing: '0.06em', fontWeight: 600 }}>{firstName}</span>
+              <span style={{ fontSize: 13, color: '#F5E6C8', fontFamily: CINZEL, letterSpacing: '0.06em', fontWeight: 600 }}>{firstName}</span>
             </button>
           ) : (
-            <button onClick={onSignOut} style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 20, padding: '6px 12px', cursor: 'pointer' }}>
-              <span style={{ fontSize: 12, color: '#F5E6C8', fontFamily: CINZEL, letterSpacing: '0.06em', fontWeight: 600 }}>Sign out</span>
+            <button onClick={onSignOut} aria-label="Sign out" style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 22, padding: '0 14px', minHeight: 44, cursor: 'pointer' }}>
+              <span style={{ fontSize: 13, color: '#F5E6C8', fontFamily: CINZEL, letterSpacing: '0.06em', fontWeight: 600 }}>Sign out</span>
             </button>
           )}
         </div>
@@ -1418,7 +1418,7 @@ export default function BibleApp() {
       `}</style>
 
       <AppHeader tab={tab} user={user} onSignOut={handleSignOut} />
-      <div style={{ overflowY: "auto", paddingBottom: 84 }}>
+      <div style={{ overflowY: "auto", paddingBottom: "calc(88px + env(safe-area-inset-bottom))" }}>
         {showInstallBanner && tab === "home" && (
           <InstallBanner
             onInstall={handleInstall}
@@ -1444,14 +1444,14 @@ export default function BibleApp() {
       </div>
 
       {/* Bottom nav */}
-      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(14px)", borderTop: `1px solid ${BORDER}`, display: "flex", padding: "8px 0 12px", boxShadow: "0 -2px 12px rgba(0,0,0,0.07)" }}>
+      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(14px)", borderTop: `1px solid ${BORDER}`, display: "flex", padding: "8px 0 calc(8px + env(safe-area-inset-bottom))", boxShadow: "0 -2px 12px rgba(0,0,0,0.07)", zIndex: 150 }}>
         {TABS.map(({ id, label, I }) => (
-          <button key={id} onClick={() => handleTabChange(id)} style={{ flex: 1, background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "4px 0", position: "relative" }}>
+          <button key={id} onClick={() => handleTabChange(id)} aria-current={tab === id ? "page" : undefined} style={{ flex: 1, minHeight: 48, background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, padding: "4px 0", position: "relative" }}>
             {id === "explore" && hasNewFavorites && (
-              <div style={{ position: "absolute", top: 2, right: "calc(50% - 14px)", width: 9, height: 9, borderRadius: "50%", background: "#E53E3E" }} />
+              <div role="status" aria-label="New saved verse" style={{ position: "absolute", top: 2, right: "calc(50% - 14px)", width: 9, height: 9, borderRadius: "50%", background: "#E53E3E" }} />
             )}
             <I on={tab === id} />
-            <span style={{ fontSize: 9, color: tab === id ? GOLD : MUTED, letterSpacing: "0.05em", fontWeight: tab === id ? 700 : 400 }}>{label}</span>
+            <span style={{ fontSize: 11, color: tab === id ? GOLD_TEXT : MUTED, letterSpacing: "0.04em", fontWeight: tab === id ? 700 : 500 }}>{label}</span>
           </button>
         ))}
       </div>

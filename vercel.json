@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/og.js": {
-      "includeFiles": "public/{fonts/Cinzel-Bold.woff,icon-192.png}"
+      "includeFiles": "{public/fonts/Cinzel-Bold.woff,public/icon-192.png,node_modules/harfbuzzjs/*.wasm}"
     },
     "api/install.js": {
       "includeFiles": "dist/index.html"

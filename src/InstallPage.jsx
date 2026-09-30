@@ -4,20 +4,11 @@ import { SITE_URL, INSTALL_PATH } from "./config.js";
 import { detectPlatform, isAndroid, isIPad } from "./device.js";
 import { copyText } from "./share.js";
 import { track } from "./analytics.js";
+import { GOLD, GOLD_BRIGHT, GOLD_TEXT, CARD, BORDER, CREAM, MUTED, CINZEL, LATO, R, CARD_SHADOW, CARD_SHADOW_STRONG, WHITE } from "./theme.js";
 
-const GOLD = "#DAA520";
-const GOLD_BRIGHT = "#B8860B";
-const GOLD_TEXT = "#8A6508";
-const CARD = "#FFFFFF";
-const BORDER = "#C0C0C0";
-const TEXT = "#3B1E08";
-const CREAM = "#5D3A1A";
-const MUTED = "#75603F";
-const CINZEL = "'Cinzel', serif";
-const LATO = "'Lato',sans-serif";
 
-const primaryBtn = { display: "block", width: "100%", textAlign: "center", textDecoration: "none", background: `linear-gradient(135deg,${GOLD},${GOLD_BRIGHT})`, border: "none", borderRadius: 16, padding: "16px", color: "#FFFFFF", fontSize: 17, fontFamily: CINZEL, fontWeight: 700, letterSpacing: "0.07em", cursor: "pointer" };
-const secondaryBtn = { display: "block", width: "100%", textAlign: "center", textDecoration: "none", background: "none", border: `1px solid ${BORDER}`, borderRadius: 14, padding: "13px", color: MUTED, fontSize: 14, fontFamily: LATO, fontWeight: 700, cursor: "pointer" };
+const primaryBtn = { display: "block", width: "100%", textAlign: "center", textDecoration: "none", background: `linear-gradient(135deg,${GOLD},${GOLD_BRIGHT})`, border: "none", borderRadius: R.md, padding: "16px", color: "#FFFFFF", fontSize: 17, fontFamily: CINZEL, fontWeight: 700, letterSpacing: "0.07em", cursor: "pointer" };
+const secondaryBtn = { display: "block", width: "100%", textAlign: "center", textDecoration: "none", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: "13px", color: MUTED, fontSize: 14, fontFamily: LATO, fontWeight: 700, cursor: "pointer" };
 
 function Step({ n, children }) {
   return (
@@ -41,7 +32,7 @@ function QrCode({ url }) {
   qr.addData(url);
   qr.make();
   const svg = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
-  return <div style={{ width: 180, height: 180, margin: "0 auto", background: "#fff", padding: 8, borderRadius: 12, border: `1px solid ${BORDER}` }} role="img" aria-label="QR code to install Verbum" dangerouslySetInnerHTML={{ __html: svg }} />;
+  return <div style={{ width: 180, height: 180, margin: "0 auto", background: "#fff", padding: 8, borderRadius: R.sm, border: `1px solid ${BORDER}` }} role="img" aria-label="QR code to install Verbum" dangerouslySetInnerHTML={{ __html: svg }} />;
 }
 
 export default function InstallPage({ verse, installPrompt, onInstall, installed }) {
@@ -73,24 +64,24 @@ export default function InstallPage({ verse, installPrompt, onInstall, installed
   const intentUrl = `intent://${host}${INSTALL_PATH}?ref=inapp#Intent;scheme=https;end`;
 
   return (
-    <div style={{ background: "#F5F5F5", minHeight: "100vh", fontFamily: LATO, color: TEXT, display: "flex", justifyContent: "center" }}>
+    <div style={{ background: "#F5F5F5", minHeight: "100vh", fontFamily: LATO, color: WHITE, display: "flex", justifyContent: "center" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@400;500;700&display=swap');*{box-sizing:border-box}body{margin:0}@keyframes vbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}`}</style>
       <main style={{ width: "100%", maxWidth: 430, padding: "calc(28px + env(safe-area-inset-top)) 20px calc(80px + env(safe-area-inset-bottom))" }}>
         <div style={{ textAlign: "center", marginBottom: 22 }}>
           <img src="/icon-192.png" alt="Verbum" width="72" height="72" style={{ borderRadius: 18, marginBottom: 12 }} />
-          <h1 style={{ margin: 0, fontFamily: CINZEL, fontSize: 26, letterSpacing: "0.2em", color: TEXT }}>VERBUM</h1>
+          <h1 style={{ margin: 0, fontFamily: CINZEL, fontSize: 26, letterSpacing: "0.2em", color: WHITE }}>VERBUM</h1>
           <p style={{ margin: "6px 0 0", fontSize: 15, color: MUTED, fontWeight: 500 }}>A Catholic companion for daily Scripture and prayer</p>
         </div>
 
         {verse && (
-          <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}60`, borderRadius: 20, padding: 22, marginBottom: 22, boxShadow: "0 4px 16px rgba(0,0,0,0.09)" }}>
+          <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}60`, borderRadius: R.lg, padding: 22, marginBottom: 22, boxShadow: CARD_SHADOW_STRONG }}>
             <div style={{ fontSize: 12, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10, fontFamily: CINZEL }}>Today's Verse</div>
             <div style={{ fontFamily: CINZEL, fontSize: 17, lineHeight: 1.9, fontWeight: 600, marginBottom: 10 }}>"{verse.text}"</div>
             <div style={{ fontFamily: CINZEL, fontSize: 13, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.14em" }}>— {verse.ref}</div>
           </div>
         )}
 
-        <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 22, boxShadow: "0 1px 8px rgba(0,0,0,0.07)" }}>
+        <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 22, boxShadow: CARD_SHADOW }}>
           {kind === "installed" && (
             <>
               <h2 style={h2}>Verbum is installed</h2>
@@ -124,7 +115,7 @@ export default function InstallPage({ verse, installPrompt, onInstall, installed
               <Step n="3">Tap <b>Add</b> at the top right</Step>
               <p style={hint}>Open Verbum from your Home Screen to turn on daily notifications.</p>
               {!isIPad() && (
-                <div aria-hidden="true" style={{ position: "fixed", bottom: 12, left: "50%", transform: "translateX(-50%)", background: "#007AFF", color: "#fff", borderRadius: 20, padding: "8px 18px", fontSize: 14, fontWeight: 700, animation: "vbounce 1.2s infinite", pointerEvents: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>Tap Share below ↓</div>
+                <div aria-hidden="true" style={{ position: "fixed", bottom: 12, left: "50%", transform: "translateX(-50%)", background: "#007AFF", color: "#fff", borderRadius: R.lg, padding: "8px 18px", fontSize: 14, fontWeight: 700, animation: "vbounce 1.2s infinite", pointerEvents: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>Tap Share below ↓</div>
               )}
             </>
           )}

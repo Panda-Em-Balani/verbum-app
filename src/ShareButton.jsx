@@ -1,15 +1,8 @@
 import { useState } from "react";
 import { buildMessage, shareLinks, nativeShare, copyText, canNativeShare } from "./share.js";
 import { track } from "./analytics.js";
+import { GOLD, GOLD_BRIGHT, GOLD_TEXT, CARD, BORDER, MUTED, CINZEL, R, CARD_SHADOW_STRONG, WHITE } from "./theme.js";
 
-const GOLD = "#DAA520";
-const GOLD_BRIGHT = "#B8860B";
-const GOLD_TEXT = "#8A6508";
-const CARD = "#FFFFFF";
-const BORDER = "#C0C0C0";
-const TEXT = "#3B1E08";
-const MUTED = "#75603F";
-const CINZEL = "'Cinzel', serif";
 
 function ShareIcon({ size = 16, color = GOLD_BRIGHT }) {
   return (
@@ -63,20 +56,20 @@ export default function ShareButton({ text, verseRef, source = "share", label = 
       </button>
       {open && (
         <div onClick={close} style={{ position: "fixed", inset: 0, zIndex: 1100, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)", cursor: "default" }}>
-          <div onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Share Verbum" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 24, padding: 22, width: "calc(100% - 32px)", maxWidth: 414, margin: "0 0 24px", boxShadow: "0 4px 16px rgba(0,0,0,0.09)" }}>
-            <div style={{ fontFamily: CINZEL, fontSize: 17, fontWeight: 700, color: TEXT, letterSpacing: "0.06em", marginBottom: 14 }}>Share Verbum</div>
+          <div onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Share Verbum" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 22, width: "calc(100% - 32px)", maxWidth: 414, margin: "0 0 24px", boxShadow: CARD_SHADOW_STRONG }}>
+            <div style={{ fontFamily: CINZEL, fontSize: 17, fontWeight: 700, color: WHITE, letterSpacing: "0.06em", marginBottom: 14 }}>Share Verbum</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
               {shareLinks(message).map((l) => (
-                <a key={l.id} href={l.href} target="_blank" rel="noopener noreferrer" onClick={() => track("share_complete", { source, via: l.id })} style={{ textAlign: "center", textDecoration: "none", border: `1px solid ${BORDER}`, borderRadius: 14, padding: "12px 8px", color: TEXT, fontSize: 14, fontFamily: "'Lato',sans-serif", fontWeight: 700 }}>
+                <a key={l.id} href={l.href} target="_blank" rel="noopener noreferrer" onClick={() => track("share_complete", { source, via: l.id })} style={{ textAlign: "center", textDecoration: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: "12px 8px", color: WHITE, fontSize: 14, fontFamily: "'Lato',sans-serif", fontWeight: 700 }}>
                   {l.label}
                 </a>
               ))}
-              <button type="button" onClick={onCopy} style={{ border: `1px solid ${GOLD}`, background: `${GOLD}18`, borderRadius: 14, padding: "12px 8px", color: TEXT, fontSize: 14, fontFamily: "'Lato',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+              <button type="button" onClick={onCopy} style={{ border: `1px solid ${GOLD}`, background: `${GOLD}18`, borderRadius: R.sm, padding: "12px 8px", color: WHITE, fontSize: 14, fontFamily: "'Lato',sans-serif", fontWeight: 700, cursor: "pointer" }}>
                 {copied ? "Copied!" : "Copy link"}
               </button>
             </div>
             <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif", wordBreak: "break-all", marginBottom: 14 }}>{message.url}</div>
-            <button type="button" onClick={close} style={{ width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: 14, padding: 12, color: MUTED, fontSize: 14, cursor: "pointer" }}>Close</button>
+            <button type="button" onClick={close} style={{ width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: 12, color: MUTED, fontSize: 14, cursor: "pointer" }}>Close</button>
           </div>
         </div>
       )}

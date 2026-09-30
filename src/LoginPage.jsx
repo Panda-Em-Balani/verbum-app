@@ -100,7 +100,7 @@ export default function LoginPage({ onLogin }) {
         <img
           src="/verbum-logo-clean.png"
           alt="Verbum"
-          style={{ width: 110, height: 110, borderRadius: 24, marginBottom: 16, boxShadow: "0 4px 24px rgba(154,107,31,0.18)" }}
+          style={{ width: 110, height: 110, borderRadius: 20, marginBottom: 16, boxShadow: "0 4px 24px rgba(154,107,31,0.18)" }}
         />
         <div style={{ fontFamily: CINZEL, fontSize: 26, color: WHITE, fontWeight: 600, letterSpacing: "0.12em", textShadow: EMBOSS, marginBottom: 4 }}>VERBUM</div>
         <div style={{ fontSize: 13, color: GOLD, letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: CINZEL }}>The Word</div>
@@ -110,11 +110,11 @@ export default function LoginPage({ onLogin }) {
       <div style={{
         background: CARD,
         border: `1px solid ${BORDER}`,
-        borderRadius: 24,
+        borderRadius: 20,
         padding: "28px 24px",
         width: "100%",
         maxWidth: 380,
-        boxShadow: "0 4px 32px rgba(0,0,0,0.08)",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.09), 0 2px 4px rgba(0,0,0,0.05)",
         position: "relative",
         overflow: "hidden",
       }}>

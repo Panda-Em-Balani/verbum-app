@@ -2,15 +2,8 @@ import { useEffect, useState } from "react";
 import { renderStoryCard } from "./storyCard.js";
 import { buildMessage } from "./share.js";
 import { track } from "./analytics.js";
+import { GOLD, GOLD_BRIGHT, GOLD_TEXT, CARD, BORDER, MUTED, CINZEL, R, WHITE } from "./theme.js";
 
-const GOLD = "#DAA520";
-const GOLD_BRIGHT = "#B8860B";
-const GOLD_TEXT = "#8A6508";
-const CARD = "#FFFFFF";
-const BORDER = "#C0C0C0";
-const TEXT = "#3B1E08";
-const MUTED = "#75603F";
-const CINZEL = "'Cinzel', serif";
 
 function StoryIcon({ size = 16, color = GOLD_BRIGHT }) {
   return (
@@ -101,24 +94,24 @@ export default function StoryShareButton({ text, verseRef, source = "story", lab
       </button>
       {(state === "ready" || state === "error") && (
         <div onClick={close} style={{ position: "fixed", inset: 0, zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)", cursor: "default" }}>
-          <div onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Share as Story" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 24, padding: 18, width: "100%", maxWidth: 380, maxHeight: "calc(100vh - 32px)", overflowY: "auto", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
+          <div onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Share as Story" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 18, width: "100%", maxWidth: 380, maxHeight: "calc(100vh - 32px)", overflowY: "auto", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
             {state === "error" ? (
-              <p style={{ color: TEXT, fontSize: 15, textAlign: "center", margin: "12px 0 16px" }}>Couldn't create the image. Please try again.</p>
+              <p style={{ color: WHITE, fontSize: 15, textAlign: "center", margin: "12px 0 16px" }}>Couldn't create the image. Please try again.</p>
             ) : (
               <>
-                <img src={previewUrl} alt={`Story card for ${verseRef}`} style={{ display: "block", width: "auto", maxWidth: "100%", maxHeight: "52vh", margin: "0 auto 14px", borderRadius: 14, boxShadow: "0 2px 10px rgba(0,0,0,0.2)" }} />
-                <button type="button" onClick={share} style={{ display: "block", width: "100%", background: `linear-gradient(135deg,${GOLD},${GOLD_BRIGHT})`, border: "none", borderRadius: 14, padding: 14, color: "#fff", fontSize: 16, fontFamily: CINZEL, fontWeight: 700, letterSpacing: "0.06em", cursor: "pointer", marginBottom: 8 }}>
+                <img src={previewUrl} alt={`Story card for ${verseRef}`} style={{ display: "block", width: "auto", maxWidth: "100%", maxHeight: "52vh", margin: "0 auto 14px", borderRadius: R.sm, boxShadow: "0 2px 10px rgba(0,0,0,0.2)" }} />
+                <button type="button" onClick={share} style={{ display: "block", width: "100%", background: `linear-gradient(135deg,${GOLD},${GOLD_BRIGHT})`, border: "none", borderRadius: R.sm, padding: 14, color: "#fff", fontSize: 16, fontFamily: CINZEL, fontWeight: 700, letterSpacing: "0.06em", cursor: "pointer", marginBottom: 8 }}>
                   {canShareFiles ? "Share to Story" : "Save image"}
                 </button>
                 {canShareFiles && (
-                  <button type="button" onClick={save} style={{ display: "block", width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: 14, padding: 12, color: TEXT, fontSize: 14, cursor: "pointer", marginBottom: 8 }}>Save image</button>
+                  <button type="button" onClick={save} style={{ display: "block", width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: 12, color: WHITE, fontSize: 14, cursor: "pointer", marginBottom: 8 }}>Save image</button>
                 )}
                 <p style={{ fontSize: 12, color: MUTED, textAlign: "center", lineHeight: 1.6, margin: "6px 0 10px" }}>
                   {note || "The card includes a QR code and link so friends can install Verbum."}
                 </p>
               </>
             )}
-            <button type="button" onClick={close} style={{ display: "block", width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: 14, padding: 12, color: MUTED, fontSize: 14, cursor: "pointer" }}>Close</button>
+            <button type="button" onClick={close} style={{ display: "block", width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: 12, color: MUTED, fontSize: 14, cursor: "pointer" }}>Close</button>
           </div>
         </div>
       )}

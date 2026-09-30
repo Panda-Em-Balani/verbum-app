@@ -1,8 +1,11 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { findVerse } from "../src/verses.js";
 
 // Serves the app shell for /install?v=<verse-slug> with that verse's preview tags,
 // so Facebook, WhatsApp and X show the verse image. Plain /install stays fully static.
-export const config = { runtime: "edge" };
+// Reads the built dist/index.html (bundled via "includeFiles" in vercel.json), so it never
+// depends on fetching the site from itself.
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -11,19 +14,30 @@ function setMeta(html, attr, name, value) {
   return html.replace(re, (_, a, b) => `${a}${esc(value)}${b}`);
 }
 
-export default async function handler(request) {
-  const url = new URL(request.url);
+export default async function handler(req, res) {
+  const url = new URL(req.url, "http://localhost");
   const slug = url.searchParams.get("v");
   const verse = findVerse(slug);
+  const proto = (req.headers["x-forwarded-proto"] || "https").split(",")[0];
+  const host = req.headers["x-forwarded-host"] || req.headers.host || "verbum-app-two.vercel.app";
+  const origin = `${proto}://${host}`;
 
-  const shell = await fetch(new URL("/index.html", url.origin));
-  let html = await shell.text();
+  let html;
+  try {
+    html = await readFile(path.join(process.cwd(), "dist", "index.html"), "utf8");
+  } catch {
+    // Never leave a shared link broken: fall back to the plain, static install page.
+    res.statusCode = 302;
+    res.setHeader("location", "/install?ref=fallback");
+    res.end();
+    return;
+  }
 
   if (verse) {
     const title = `${verse.ref} · Verbum`;
     const desc = `“${verse.text}” Read a verse a day on Verbum.`;
-    const image = `${url.origin}/api/og?v=${encodeURIComponent(slug)}`;
-    const page = `${url.origin}/install?v=${encodeURIComponent(slug)}`;
+    const image = `${origin}/api/og?v=${encodeURIComponent(slug)}`;
+    const page = `${origin}/install?v=${encodeURIComponent(slug)}`;
     html = setMeta(html, "property", "og:title", title);
     html = setMeta(html, "property", "og:description", desc);
     html = setMeta(html, "property", "og:url", page);
@@ -34,11 +48,8 @@ export default async function handler(request) {
     html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
   }
 
-  return new Response(html, {
-    status: shell.status,
-    headers: {
-      "content-type": "text/html; charset=utf-8",
-      "cache-control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
-    },
-  });
+  res.statusCode = 200;
+  res.setHeader("content-type", "text/html; charset=utf-8");
+  res.setHeader("cache-control", "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400");
+  res.end(html);
 }

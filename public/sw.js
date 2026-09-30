@@ -1,8 +1,8 @@
 // Verbum Service Worker
 // Handles push notifications, notification click deep linking, and offline caching.
 
-const CACHE_VERSION = 'verbum-v2';
-const PRECACHE_URLS = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+const CACHE_VERSION = 'verbum-v3';
+const PRECACHE_URLS = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'];
 
 // ─── INSTALL: precache the app shell ─────────────────────────────────────────
 self.addEventListener('install', function(event) {
@@ -21,7 +21,7 @@ self.addEventListener('activate', function(event) {
       .then(keys => Promise.all(
         keys.filter(key => key !== CACHE_VERSION).map(key => caches.delete(key))
       ))
-      .then(() => clients.claim())
+      .then(() => self.clients.claim())
   );
 });
 
@@ -69,10 +69,10 @@ self.addEventListener('fetch', function(event) {
 self.addEventListener('push', function(event) {
   if (!event.data) return;
 
-  let data = {};
+  let data;
   try {
     data = event.data.json();
-  } catch (e) {
+  } catch {
     data = { title: 'Verbum', body: event.data.text(), url: '/' };
   }
 
@@ -102,7 +102,7 @@ self.addEventListener('notificationclick', function(event) {
   const fullUrl = self.location.origin + url;
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
       // If the app is already open, focus it and tell it where to navigate
       for (const client of clientList) {
         if (client.url.startsWith(self.location.origin) && 'focus' in client) {
@@ -112,8 +112,8 @@ self.addEventListener('notificationclick', function(event) {
         }
       }
       // Otherwise open a new window at the deep-linked URL
-      if (clients.openWindow) {
-        return clients.openWindow(fullUrl);
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(fullUrl);
       }
     })
   );

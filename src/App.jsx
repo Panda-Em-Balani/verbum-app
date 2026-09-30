@@ -403,7 +403,7 @@ function PaidUserModal({ onClose, onProceed }) {
 function ThreeOClockBanner() {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div style={{background:"linear-gradient(135deg,#F5EEF8,#EDE0F5)",border:`1px solid #9B59C0`,borderRadius:R.md,padding:18,marginBottom:14,position:"relative",overflow:"hidden",boxShadow:CARD_SHADOW_STRONG}}>
+    <div style={{background:"linear-gradient(135deg,#F5EEF8,#EDE0F5)",border:`1px solid #9B59C0`,borderRadius:R.md,padding:18,marginBottom:16,position:"relative",overflow:"hidden",boxShadow:CARD_SHADOW_STRONG}}>
       <div style={{position:"absolute",top:-30,right:-30,width:100,height:100,borderRadius:"50%",background:"rgba(155,89,192,0.05)"}}/>
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
         <div style={{width:36,height:36,borderRadius:"50%",background:"rgba(155,89,192,0.12)",border:"1px solid rgba(155,89,192,0.35)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{fontSize:19}}>🕒</span></div>
@@ -490,7 +490,7 @@ function DailyCatholicHappening() {
   if (!happening) return null;
 
   return (
-    <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF5DC)", border: `1px solid ${GOLD}50`, borderRadius: R.md, padding: 20, marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: CARD_SHADOW_STRONG }}>
+    <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF5DC)", border: `1px solid ${GOLD}50`, borderRadius: R.md, padding: 20, marginBottom: 16, position: "relative", overflow: "hidden", boxShadow: CARD_SHADOW_STRONG }}>
       <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: "rgba(218,165,32,0.06)" }} />
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
         <div style={{ width: 42, height: 42, borderRadius: R.sm, background: `${GOLD}15`, border: `1px solid ${GOLD}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -508,11 +508,11 @@ function DailyCatholicHappening() {
           <span style={{ fontSize: 12, color: GOLD_TEXT, fontFamily: CINZEL, letterSpacing: "0.1em", fontWeight: 600 }}>{happening.type}</span>
         </div>
       )}
-      <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.88, fontFamily: "'Lato',sans-serif", marginBottom: 12, fontWeight: 500 }}>{happening.body}</p>
+      <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.75, fontFamily: "'Lato',sans-serif", marginBottom: 12, fontWeight: 500 }}>{happening.body}</p>
       {happening.ccc && (
         <div style={{ background: SURFACE, borderLeft: `3px solid ${GOLD}80`, borderRadius: "0 12px 12px 0", padding: "11px 14px" }}>
-          <div style={{ fontSize: 11, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 5, fontWeight: 700 }}>Catechism Connection</div>
-          <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.78, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{happening.ccc}</p>
+          <div style={{ fontSize: 12, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, marginBottom: 5, fontWeight: 700 }}>Catechism Connection</div>
+          <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.7, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{happening.ccc}</p>
         </div>
       )}
     </div>
@@ -688,17 +688,17 @@ function DailyVerseCard({ onFav, favorites }) {
   const isFav = favorites.has(verse.ref);
 
   return (
-    <div style={{ marginBottom: 14 }}>
+    <div style={{ marginBottom: 16 }}>
       <div onClick={() => setExpanded(!expanded)} style={{ background: 'linear-gradient(135deg,#FFFCF5,#FFF3D6)', border: `1px solid ${GOLD}60`, borderRadius: R.lg, padding: 24, position: 'relative', overflow: 'hidden', boxShadow: CARD_SHADOW_STRONG, cursor: 'pointer', transition: 'box-shadow 0.2s' }}>
         <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: 'rgba(218,165,32,0.08)' }} />
         <button type="button" aria-pressed={isFav} aria-label={isFav ? "Remove verse from saved" : "Save verse"} onClick={(e) => { e.stopPropagation(); onFav(verse.ref); }} style={{ position: 'absolute', top: 5, right: 5, zIndex: 2, width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
           <HeartIco filled={isFav} />
         </button>
         <div style={{ fontSize: 13, color: GOLD_TEXT, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 14, fontFamily: CINZEL }}>Daily Verse</div>
-        <div style={{ fontFamily: CINZEL, fontSize: 18, color: WHITE, lineHeight: 2.0, marginBottom: 14, letterSpacing: '0.04em', fontWeight: 600, textShadow: EMBOSS, paddingRight: 28 }}>"{verse.text}"</div>
+        <div style={{ fontFamily: CINZEL, fontSize: 18, color: WHITE, lineHeight: 1.7, marginBottom: 16, letterSpacing: '0.04em', fontWeight: 600, textShadow: EMBOSS, paddingRight: 28 }}>"{verse.text}"</div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontFamily: CINZEL, fontSize: 14, color: GOLD_TEXT, fontWeight: 700, letterSpacing: '0.16em' }}>— {verse.ref}</div>
-          <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif" }}>{expanded ? 'Tap to close' : 'Tap to reflect'}</div>
+          <button type="button" aria-expanded={expanded} onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }} style={{ background: 'none', border: 'none', padding: '12px 0 12px 12px', minHeight: 44, fontSize: 13, color: MUTED, fontFamily: "'Lato',sans-serif", cursor: 'pointer' }}>{expanded ? 'Tap to close' : 'Tap to reflect'}</button>
         </div>
         <div style={{ marginTop: 16, display: "flex", gap: 8, flexWrap: "wrap" }}><ShareButton text={verse.text} verseRef={verse.ref} source="daily-verse" /><StoryShareButton text={verse.text} verseRef={verse.ref} source="daily-verse" /></div>
       </div>
@@ -746,7 +746,7 @@ function SaintOfDayCard({ saint }) {
     .toLocaleDateString("en-US", { month: "long", day: "numeric" });
 
   return (
-    <div style={{ background: CARD, border: `1.5px solid ${BORDER}`, borderRadius: R.md, padding: 20, marginBottom: 14, boxShadow: CARD_SHADOW_STRONG, overflow: "hidden" }}>
+    <div style={{ background: CARD, border: `1.5px solid ${BORDER}`, borderRadius: R.md, padding: 20, marginBottom: 16, boxShadow: CARD_SHADOW_STRONG, overflow: "hidden" }}>
       {/* Header row with photo */}
       <div style={{ display: "flex", gap: 14, marginBottom: 14 }}>
         {/* Photo */}
@@ -765,16 +765,16 @@ function SaintOfDayCard({ saint }) {
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4, fontFamily: CINZEL }}>Saint of the Day</div>
+          <div style={{ fontSize: 12, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4, fontFamily: CINZEL }}>Saint of the Day</div>
           <div style={{ fontFamily: CINZEL, fontSize: 17, color: WHITE, fontWeight: 700, letterSpacing: "0.04em", textShadow: EMBOSS, marginBottom: 4, lineHeight: 1.3 }}>{saint.name}</div>
-          <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>Feast Day: {feastDate}</div>
+          <div style={{ fontSize: 13, color: MUTED, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>Feast Day: {feastDate}</div>
         </div>
       </div>
 
       {/* Patron */}
       {saint.patron && (
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6, fontFamily: CINZEL }}>Patron of</div>
+          <div style={{ fontSize: 12, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6, fontFamily: CINZEL }}>Patron of</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
             {saint.patron.map(p => <Pill key={p} label={p} />)}
           </div>
@@ -787,11 +787,11 @@ function SaintOfDayCard({ saint }) {
       </div>
 
       {/* Bio */}
-      <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.85, marginBottom: 14, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{saint.bio}</p>
+      <p style={{ fontSize: 15, color: CREAM, lineHeight: 1.75, marginBottom: 16, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>{saint.bio}</p>
 
       {/* Quote */}
       <div style={{ borderLeft: `3px solid ${GOLD}`, padding: "11px 14px", background: SURFACE, borderRadius: "0 12px 12px 0" }}>
-        <div style={{ fontFamily: CINZEL, fontSize: 15, color: WHITE, lineHeight: 1.85, fontWeight: 500, textShadow: EMBOSS }}>"{saint.quote}"</div>
+        <div style={{ fontFamily: CINZEL, fontSize: 15, color: WHITE, lineHeight: 1.7, fontWeight: 500, textShadow: EMBOSS }}>"{saint.quote}"</div>
       </div>
       <div style={{ marginTop: 14 }}><ShareButton text={saint.quote} verseRef={saint.name} source="saint" /></div>
     </div>
@@ -802,12 +802,12 @@ function SaintOfDayCard({ saint }) {
 function HomeTab({favorites,onFav,user}) {
   // Note: top padding accounts for fixed header
   const [time,setTime]=useState(new Date());
-  useEffect(()=>{ const t=setInterval(()=>setTime(new Date()),1000); return()=>clearInterval(t); },[]);
+  useEffect(()=>{ const t=setInterval(()=>setTime(new Date()),15000); return()=>clearInterval(t); },[]);
   const saint=getSaintOfDay(); const season=getLiturgicalSeason();
   const h=time.getHours(); const is3oclock=isThreeOClockHour();
   const firstName=user?.name?.split(' ')[0]||''; const moment=h<12?{g:`Good Morning${firstName?`, ${firstName}`:''}`,p:"Morning Prayer",l:"Begin this day in God's presence."}:h<17?{g:"Good Afternoon",p:"Midday Prayer",l:"Pause and rest in the Lord."}:{g:"Good Evening",p:"Evening Prayer",l:"Give thanks for this day."};
   const dateStr=time.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
-  const timeStr=time.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",second:"2-digit",hour12:true});
+  const timeStr=time.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",hour12:true});
   return (
     <div style={{padding:"0 20px 20px"}}>
       <div style={{textAlign:"center",padding:"24px 0 20px",marginTop:"calc(56px + env(safe-area-inset-top))"}}>
@@ -822,19 +822,19 @@ function HomeTab({favorites,onFav,user}) {
       {is3oclock && <ThreeOClockBanner />}
       <DailyCatholicHappening />
       <SaintOfDayCard saint={saint} />
-      <div style={{background:season.bg,border:`1.5px solid ${season.border}`,borderRadius:R.md,padding:"16px 18px",marginBottom:14,boxShadow:CARD_SHADOW}}>
+      <div style={{background:season.bg,border:`1.5px solid ${season.border}`,borderRadius:R.md,padding:"16px 20px",marginBottom:16,boxShadow:CARD_SHADOW}}>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
           <div style={{width:10,height:10,borderRadius:"50%",background:season.light,flexShrink:0}}/>
           <div>
-            <div style={{fontSize:11,color:season.light,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,fontWeight:700,marginBottom:2}}>Liturgical Season</div>
+            <div style={{fontSize:12,color:season.light,letterSpacing:"0.16em",textTransform:"uppercase",fontFamily:CINZEL,fontWeight:700,marginBottom:2}}>Liturgical Season</div>
             <div style={{fontFamily:CINZEL,fontSize:17,color:WHITE,fontWeight:600,letterSpacing:"0.06em",textShadow:EMBOSS}}>{season.name}</div>
           </div>
         </div>
-        <p style={{fontSize:13,color:MUTED,lineHeight:1.75,fontFamily:"'Lato',sans-serif",fontWeight:500,paddingLeft:20}}>{season.desc}</p>
+        <p style={{fontSize:14,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif",fontWeight:500,paddingLeft:20}}>{season.desc}</p>
       </div>
-      <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:R.md,padding:"18px",marginBottom:14,boxShadow:CARD_SHADOW,textAlign:"center"}}>
+      <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:R.md,padding:20,marginBottom:16,boxShadow:CARD_SHADOW,textAlign:"center"}}>
         <div style={{fontFamily:CINZEL,fontSize:16,color:WHITE,fontWeight:700,letterSpacing:"0.06em",marginBottom:6}}>Invite a friend</div>
-        <p style={{fontSize:13,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif",fontWeight:500,marginBottom:12}}>Share Verbum and help someone grow in prayer.</p>
+        <p style={{fontSize:14,color:MUTED,lineHeight:1.7,fontFamily:"'Lato',sans-serif",fontWeight:500,marginBottom:12}}>Share Verbum and help someone grow in prayer.</p>
         <ShareButton source="invite" label="Share Verbum" />
       </div>
     </div>

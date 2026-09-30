@@ -145,7 +145,7 @@ export async function renderStoryCard({ text, ref }) {
   ctx.fillStyle = "#FFF8E7";
   roundRect(ctx, cardX, cardY, cardW, cardH, 36);
   ctx.fill();
-  drawQr(ctx, shareUrl("story-qr"), cardX + 40, cardY + 40, 220);
+  drawQr(ctx, shareUrl("story-qr", ref), cardX + 40, cardY + 40, 220);
   ctx.textAlign = "left";
   ctx.fillStyle = "#3B1E08";
   ctx.font = `700 46px ${SERIF}`;

@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "api/og.js": { "includeFiles": "public/{fonts/Cinzel-Bold.woff,icon-192.png}" }
+  },
   "rewrites": [
     { "source": "/install", "has": [{ "type": "query", "key": "v" }], "destination": "/api/install" },
     { "source": "/install", "destination": "/index.html" }

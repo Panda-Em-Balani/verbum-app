@@ -10,11 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@supabase/supabase-js": "^2.49.8",
-    "@vercel/og": "^1.0.3",
     "qrcode-generator": "^2.0.4",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-dom": "^19.2.5",
+    "satori": "^0.33.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

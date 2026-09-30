@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/install", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/install", "has": [{ "type": "query", "key": "v" }], "destination": "/api/install" },
+    { "source": "/install", "destination": "/index.html" }
+  ]
 }

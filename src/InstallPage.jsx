@@ -35,7 +35,7 @@ function QrCode({ url }) {
   return <div style={{ width: 180, height: 180, margin: "0 auto", background: "#fff", padding: 8, borderRadius: R.sm, border: `1px solid ${BORDER}` }} role="img" aria-label="QR code to install Verbum" dangerouslySetInnerHTML={{ __html: svg }} />;
 }
 
-export default function InstallPage({ verse, installPrompt, onInstall, installed }) {
+export default function InstallPage({ verse, sharedVerse, installPrompt, onInstall, installed }) {
   const [platform] = useState(detectPlatform);
   const [copied, setCopied] = useState(false);
   const [declined, setDeclined] = useState(false);
@@ -75,7 +75,7 @@ export default function InstallPage({ verse, installPrompt, onInstall, installed
 
         {verse && (
           <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}60`, borderRadius: R.lg, padding: 22, marginBottom: 22, boxShadow: CARD_SHADOW_STRONG }}>
-            <div style={{ fontSize: 12, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10, fontFamily: CINZEL }}>Today's Verse</div>
+            <div style={{ fontSize: 12, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10, fontFamily: CINZEL }}>{sharedVerse ? "A verse for you" : "Today's Verse"}</div>
             <div style={{ fontFamily: CINZEL, fontSize: 17, lineHeight: 1.9, fontWeight: 600, marginBottom: 10 }}>"{verse.text}"</div>
             <div style={{ fontFamily: CINZEL, fontSize: 13, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.14em" }}>— {verse.ref}</div>
           </div>

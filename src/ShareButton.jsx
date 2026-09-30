@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { buildMessage, shareLinks, nativeShare, copyText, canNativeShare } from "./share.js";
 import { track } from "./analytics.js";
 import { GOLD, GOLD_BRIGHT, GOLD_TEXT, CARD, BORDER, MUTED, CINZEL, R, CARD_SHADOW_STRONG, WHITE } from "./theme.js";
@@ -43,6 +43,13 @@ export default function ShareButton({ text, verseRef, source = "share", label = 
 
   const close = (e) => { e.stopPropagation(); setOpen(false); setCopied(false); };
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") { setOpen(false); setCopied(false); } };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <>
       <button
@@ -56,7 +63,7 @@ export default function ShareButton({ text, verseRef, source = "share", label = 
       </button>
       {open && (
         <div onClick={close} style={{ position: "fixed", inset: 0, zIndex: 1100, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)", cursor: "default" }}>
-          <div onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Share Verbum" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 22, width: "calc(100% - 32px)", maxWidth: 414, margin: "0 0 24px", boxShadow: CARD_SHADOW_STRONG }}>
+          <div onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Share Verbum" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 22, width: "calc(100% - 32px)", maxWidth: 414, margin: "0 0 max(24px, env(safe-area-inset-bottom))", boxShadow: CARD_SHADOW_STRONG }}>
             <div style={{ fontFamily: CINZEL, fontSize: 17, fontWeight: 700, color: WHITE, letterSpacing: "0.06em", marginBottom: 14 }}>Share Verbum</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
               {shareLinks(message).map((l) => (
@@ -69,7 +76,7 @@ export default function ShareButton({ text, verseRef, source = "share", label = 
               </button>
             </div>
             <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif", wordBreak: "break-all", marginBottom: 14 }}>{message.url}</div>
-            <button type="button" onClick={close} style={{ width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: 12, color: MUTED, fontSize: 14, cursor: "pointer" }}>Close</button>
+            <button type="button" onClick={close} style={{ width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: 12, minHeight: 44, color: MUTED, fontSize: 14, cursor: "pointer" }}>Close</button>
           </div>
         </div>
       )}

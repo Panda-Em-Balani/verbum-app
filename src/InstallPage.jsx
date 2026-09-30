@@ -162,4 +162,4 @@ export default function InstallPage({ verse, installPrompt, onInstall, installed
 }
 
 const h2 = { margin: "0 0 12px", fontFamily: CINZEL, fontSize: 18, fontWeight: 700, letterSpacing: "0.04em" };
-const hint = { margin: "12px 0 0", fontSize: 13, color: MUTED, textAlign: "center", lineHeight: 1.6 };
+const hint = { margin: "12px 0 0", fontSize: 14, color: MUTED, textAlign: "center", lineHeight: 1.6 };

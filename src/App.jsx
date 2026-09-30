@@ -329,7 +329,7 @@ function NotificationBanner({ onGranted, onDismiss }) {
   };
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 900, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)" }}>
-      <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 28, maxWidth: 340, width: "100%", boxShadow: CARD_SHADOW_STRONG, position: "relative" }}>
+      <div role="dialog" aria-modal="true" aria-label="Daily reminders" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 28, maxWidth: 340, width: "100%", boxShadow: CARD_SHADOW_STRONG, position: "relative" }}>
         <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 100, height: 2, background: `linear-gradient(90deg,transparent,${GOLD},transparent)` }} />
         <div style={{ textAlign: "center", marginBottom: 20 }}>
           <div style={{ width: 54, height: 54, borderRadius: "50%", background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
@@ -344,7 +344,7 @@ function NotificationBanner({ onGranted, onDismiss }) {
           <button onClick={handleEnable} disabled={requesting} style={{ width: "100%", background: `linear-gradient(135deg,${GOLD},${GOLD_BRIGHT})`, border: "none", borderRadius: R.sm, padding: "13px", color: "#FFFFFF", fontSize: 15, fontFamily: CINZEL, fontWeight: 600, letterSpacing: "0.08em", cursor: requesting ? "default" : "pointer" }}>
             {requesting ? "Requesting..." : "Enable Notifications"}
           </button>
-          <button onClick={onDismiss} style={{ width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: "12px", color: MUTED, fontSize: 14, fontFamily: "'Lato',sans-serif", cursor: "pointer", fontWeight: 500 }}>
+          <button onClick={onDismiss} style={{ width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: "12px", minHeight: 44, color: MUTED, fontSize: 14, fontFamily: "'Lato',sans-serif", cursor: "pointer", fontWeight: 500 }}>
             Maybe later
           </button>
         </div>
@@ -357,7 +357,7 @@ function NotificationBanner({ onGranted, onDismiss }) {
 function InstallBanner({ onInstall, onDismiss }) {
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 900, display: "flex", alignItems: "flex-end", justifyContent: "center", padding: "0 0 24px", background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)" }}>
-      <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 24, width: "calc(100% - 32px)", maxWidth: 414, boxShadow: CARD_SHADOW_STRONG }}>
+      <div role="dialog" aria-modal="true" aria-label="Add Verbum to Home Screen" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 24, width: "calc(100% - 32px)", maxWidth: 414, boxShadow: CARD_SHADOW_STRONG }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
           <img src="/icon-192.png" alt="Verbum" style={{ width: 56, height: 56, borderRadius: R.sm, flexShrink: 0 }} />
           <div>
@@ -382,7 +382,7 @@ function InstallBanner({ onInstall, onDismiss }) {
 function PaidUserModal({ onClose, onProceed }) {
   return (
     <div style={{position:"fixed",inset:0,zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",background:"rgba(200,180,150,0.5)",backdropFilter:"blur(8px)"}}>
-      <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:R.lg,padding:32,maxWidth:360,width:"100%",position:"relative",boxShadow:CARD_SHADOW_STRONG}}>
+      <div role="dialog" aria-modal="true" aria-label="Soul Check" style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:R.lg,padding:32,maxWidth:360,width:"100%",position:"relative",boxShadow:CARD_SHADOW_STRONG}}>
         <div style={{position:"absolute",top:-1,left:"50%",transform:"translateX(-50%)",width:120,height:2,background:`linear-gradient(90deg,transparent,${GOLD},transparent)`,borderRadius:2}}/>
         <div style={{textAlign:"center",marginBottom:24}}>
           <div style={{width:56,height:56,borderRadius:"50%",background:`${GOLD}15`,border:`1.5px solid ${GOLD}50`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}><LockIco/></div>
@@ -606,7 +606,7 @@ function AppHeader({ tab, user, onSignOut }) {
       </div>
       {showPremiumModal && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)' }}>
-          <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 32, maxWidth: 340, width: '100%', boxShadow: CARD_SHADOW_STRONG, position: 'relative' }}>
+          <div role="dialog" aria-modal="true" aria-label="Verbum Premium" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 32, maxWidth: 340, width: '100%', boxShadow: CARD_SHADOW_STRONG, position: 'relative' }}>
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 100, height: 2, background: `linear-gradient(90deg,transparent,${GOLD},transparent)` }} />
             <div style={{ textAlign: 'center', marginBottom: 20 }}>
               <div style={{ width: 56, height: 56, borderRadius: '50%', background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}><StarIco /></div>

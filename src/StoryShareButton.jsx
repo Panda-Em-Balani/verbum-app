@@ -46,6 +46,14 @@ export default function StoryShareButton({ text, verseRef, source = "story", lab
 
   const close = (e) => { e.stopPropagation(); setState("idle"); setBlob(null); setPreviewUrl(null); setNote(""); };
 
+  const dialogOpen = state === "ready" || state === "error";
+  useEffect(() => {
+    if (!dialogOpen) return;
+    const onKey = (ev) => { if (ev.key === "Escape") { setState("idle"); setBlob(null); setPreviewUrl(null); setNote(""); } };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [dialogOpen]);
+
   const fileName = `verbum-${String(verseRef || "verse").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
 
   const save = (e) => {
@@ -94,7 +102,7 @@ export default function StoryShareButton({ text, verseRef, source = "story", lab
       </button>
       {(state === "ready" || state === "error") && (
         <div onClick={close} style={{ position: "fixed", inset: 0, zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)", cursor: "default" }}>
-          <div onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Share as Story" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 18, width: "100%", maxWidth: 380, maxHeight: "calc(100vh - 32px)", overflowY: "auto", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
+          <div onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Share as Story" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: R.lg, padding: 18, width: "100%", maxWidth: 380, maxHeight: "calc(100vh - 32px)", overflowY: "auto", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
             {state === "error" ? (
               <p style={{ color: WHITE, fontSize: 15, textAlign: "center", margin: "12px 0 16px" }}>Couldn't create the image. Please try again.</p>
             ) : (
@@ -111,7 +119,7 @@ export default function StoryShareButton({ text, verseRef, source = "story", lab
                 </p>
               </>
             )}
-            <button type="button" onClick={close} style={{ display: "block", width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: 12, color: MUTED, fontSize: 14, cursor: "pointer" }}>Close</button>
+            <button type="button" onClick={close} style={{ display: "block", width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: 12, minHeight: 44, color: MUTED, fontSize: 14, cursor: "pointer" }}>Close</button>
           </div>
         </div>
       )}

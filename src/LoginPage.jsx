@@ -7,7 +7,7 @@ const SURFACE = "#EDE5D6"
 const CARD = "#FFFFFF"
 const BORDER = "#D9CEBC"
 const CREAM = "#5A3E1B"
-const MUTED = "#A0907A"
+const MUTED = "#75603F"
 const WHITE = "#2E1F0E"
 const CINZEL = "'Cinzel', serif"
 const EMBOSS = "0 1px 0 rgba(255,255,255,0.8), 0 -1px 0 rgba(0,0,0,0.08)"
@@ -103,7 +103,7 @@ export default function LoginPage({ onLogin }) {
           style={{ width: 110, height: 110, borderRadius: 24, marginBottom: 16, boxShadow: "0 4px 24px rgba(154,107,31,0.18)" }}
         />
         <div style={{ fontFamily: CINZEL, fontSize: 26, color: WHITE, fontWeight: 600, letterSpacing: "0.12em", textShadow: EMBOSS, marginBottom: 4 }}>VERBUM</div>
-        <div style={{ fontSize: 11, color: GOLD, letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: CINZEL }}>The Word</div>
+        <div style={{ fontSize: 13, color: GOLD, letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: CINZEL }}>The Word</div>
       </div>
 
       {/* Card */}
@@ -123,7 +123,7 @@ export default function LoginPage({ onLogin }) {
         {/* Mode toggle */}
         <div style={{ display: "flex", background: SURFACE, borderRadius: 12, padding: 3, marginBottom: 22, border: `1px solid ${BORDER}` }}>
           {[{ id: "signin", label: "Sign In" }, { id: "signup", label: "Create Account" }].map(m => (
-            <button key={m.id} onClick={() => { setMode(m.id); setError("") }} style={{ flex: 1, background: mode === m.id ? CARD : "none", border: mode === m.id ? `1px solid ${GOLD}40` : "1px solid transparent", borderRadius: 10, padding: "8px 0", color: mode === m.id ? GOLD : MUTED, fontSize: 11, cursor: "pointer", fontFamily: CINZEL, letterSpacing: "0.06em", transition: "all 0.2s" }}>
+            <button key={m.id} onClick={() => { setMode(m.id); setError("") }} style={{ flex: 1, background: mode === m.id ? CARD : "none", border: mode === m.id ? `1px solid ${GOLD}40` : "1px solid transparent", borderRadius: 10, padding: "12px 0", color: mode === m.id ? GOLD : MUTED, fontSize: 14, cursor: "pointer", fontFamily: CINZEL, letterSpacing: "0.06em", transition: "all 0.2s" }}>
               {m.label}
             </button>
           ))}
@@ -132,41 +132,47 @@ export default function LoginPage({ onLogin }) {
         {/* Name — only on signup */}
         {isSignUp && (
           <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 10, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Your Name</div>
+            <label htmlFor="v-name" style={{ display: "block", fontSize: 12, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Your Name</label>
             <input
+              id="v-name"
               type="text"
+              autoComplete="name"
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="e.g. Maria Santos"
-              style={{ width: "100%", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "11px 14px", fontSize: 13, color: WHITE, outline: "none" }}
+              style={{ width: "100%", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "13px 14px", fontSize: 16, color: WHITE, outline: "none" }}
             />
           </div>
         )}
 
         {/* Email */}
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 10, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Email Address</div>
+          <label htmlFor="v-email" style={{ display: "block", fontSize: 12, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Email Address</label>
           <input
+            id="v-email"
             type="email"
+            autoComplete="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="your@email.com"
-            style={{ width: "100%", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "11px 14px", fontSize: 13, color: WHITE, outline: "none" }}
+            style={{ width: "100%", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "13px 14px", fontSize: 16, color: WHITE, outline: "none" }}
           />
         </div>
 
         {/* Password */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 10, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Password {isSignUp && <span style={{ color: MUTED, textTransform: "none", fontFamily: "'Lato',sans-serif", letterSpacing: 0 }}>(min. 6 characters)</span>}</div>
+          <label htmlFor="v-password" style={{ display: "block", fontSize: 12, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Password {isSignUp && <span style={{ color: MUTED, textTransform: "none", fontFamily: "'Lato',sans-serif", letterSpacing: 0 }}>(min. 6 characters)</span>}</label>
           <input
+            id="v-password"
             type="password"
+            autoComplete={isSignUp ? "new-password" : "current-password"}
             value={password}
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") isSignUp ? handleSignUp() : handleSignIn() }}
             placeholder="••••••••"
-            style={{ width: "100%", background: SURFACE, border: `1px solid ${error ? "#D04040" : BORDER}`, borderRadius: 12, padding: "11px 14px", fontSize: 13, color: WHITE, outline: "none" }}
+            style={{ width: "100%", background: SURFACE, border: `1px solid ${error ? "#D04040" : BORDER}`, borderRadius: 12, padding: "13px 14px", fontSize: 16, color: WHITE, outline: "none" }}
           />
-          {error && <div style={{ fontSize: 11, color: "#C05050", marginTop: 6, lineHeight: 1.5 }}>{error}</div>}
+          {error && <div style={{ fontSize: 13, color: "#B03030", marginTop: 6, lineHeight: 1.5 }} role="alert">{error}</div>}
         </div>
 
         {/* Submit */}
@@ -180,7 +186,7 @@ export default function LoginPage({ onLogin }) {
             borderRadius: 14,
             padding: "13px",
             color: loading ? MUTED : "#FFFFFF",
-            fontSize: 13,
+            fontSize: 15,
             fontFamily: CINZEL,
             fontWeight: 600,
             letterSpacing: "0.1em",
@@ -195,13 +201,13 @@ export default function LoginPage({ onLogin }) {
 
         {/* Forgot password — only on sign in */}
         {!isSignUp && (
-          <button onClick={handleForgotPassword} style={{ width: "100%", background: "none", border: "none", color: MUTED, fontSize: 11, cursor: "pointer", fontFamily: "'Lato',sans-serif", textAlign: "center", padding: "4px 0" }}>
+          <button onClick={handleForgotPassword} style={{ width: "100%", background: "none", border: "none", color: MUTED, fontSize: 14, cursor: "pointer", fontFamily: "'Lato',sans-serif", textAlign: "center", padding: "12px 0" }}>
             Forgot your password?
           </button>
         )}
       </div>
 
-      <p style={{ fontSize: 11, color: MUTED, textAlign: "center", marginTop: 20, lineHeight: 1.7 }}>
+      <p style={{ fontSize: 13, color: MUTED, textAlign: "center", marginTop: 20, lineHeight: 1.7 }}>
         A Catholic companion for daily prayer and Scripture.
       </p>
     </div>

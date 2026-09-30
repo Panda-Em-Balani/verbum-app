@@ -1046,25 +1046,25 @@ function MassTab() {
       {/* Header */}
       <div style={{ padding: "24px 20px 20px", marginTop: "calc(56px + env(safe-area-inset-top))", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}></div>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: "flex", alignItems: "center", justifyContent: "center" }}><MassIco on /></div>
           <div>
             <div style={{ fontFamily: CINZEL, fontSize: 19, color: WHITE, fontWeight: 600, letterSpacing: "0.07em", textShadow: EMBOSS }}>Virtual Mass</div>
-            <div style={{ fontSize: 12, color: MUTED, fontFamily: "'Lato',sans-serif", marginTop: 2 }}>Join the celebration of the Eucharist</div>
+            <div style={{ fontSize: 13, color: MUTED, fontFamily: "'Lato',sans-serif", marginTop: 2 }}>Join the celebration of the Eucharist</div>
           </div>
         </div>
       </div>
 
       {/* Stream list */}
       <div style={{ padding: "18px 20px 0" }}>
-        <div style={{ fontSize: 10, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 12 }}>Available Streams</div>
+        <div style={{ fontSize: 12, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 12 }}>Available Streams</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
           {STREAMS.map((stream, i) => (
-            <button key={i} onClick={() => { setSelected(i); setLoaded(false); }} style={{ background: selected === i ? "linear-gradient(135deg,#FFFCF5,#FFF3D6)" : CARD, border: `1.5px solid ${selected === i ? GOLD : BORDER}`, borderRadius: 16, padding: "14px 16px", cursor: "pointer", textAlign: "left", transition: "all 0.2s", boxShadow: selected === i ? CARD_SHADOW_STRONG : CARD_SHADOW }}>
+            <button key={i} aria-pressed={selected === i} onClick={() => { setSelected(i); setLoaded(false); }} style={{ background: selected === i ? "linear-gradient(135deg,#FFFCF5,#FFF3D6)" : CARD, border: `1.5px solid ${selected === i ? GOLD : BORDER}`, borderRadius: 16, padding: "14px 16px", cursor: "pointer", textAlign: "left", transition: "all 0.2s", boxShadow: selected === i ? CARD_SHADOW_STRONG : CARD_SHADOW }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{ width: 38, height: 38, borderRadius: 10, background: selected === i ? `${GOLD}20` : SURFACE, border: `1px solid ${selected === i ? GOLD + "60" : BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>{stream.icon}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontFamily: CINZEL, fontSize: 13, color: selected === i ? GOLD_TEXT : WHITE, fontWeight: 600, letterSpacing: "0.05em", textShadow: selected === i ? EMBOSS : "none", marginBottom: 3 }}>{stream.label}</div>
-                  <div style={{ fontSize: 11, color: MUTED, fontFamily: "'Lato',sans-serif", lineHeight: 1.5 }}>{stream.note}</div>
+                  <div style={{ fontSize: 13, color: MUTED, fontFamily: "'Lato',sans-serif", lineHeight: 1.5 }}>{stream.note}</div>
                 </div>
                 {selected === i && <div style={{ width: 8, height: 8, borderRadius: "50%", background: GOLD, flexShrink: 0 }} />}
               </div>
@@ -1075,12 +1075,12 @@ function MassTab() {
         {/* Player */}
         {activeStream ? (
           <>
-            <div style={{ fontSize: 10, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 10 }}>Now Watching</div>
+            <div style={{ fontSize: 12, color: GOLD_TEXT, letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 10 }}>Now Watching</div>
             <div style={{ position: "relative", width: "100%", paddingTop: "56.25%", borderRadius: 16, overflow: "hidden", border: `1.5px solid ${BORDER}`, background: "#0A0806", boxShadow: CARD_SHADOW_STRONG, marginBottom: 14 }}>
               {!loaded && (
                 <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
                   <Cross size={28} />
-                  <div style={{ fontFamily: CINZEL, fontSize: 11, color: MUTED, letterSpacing: "0.1em" }}>Loading stream...</div>
+                  <div style={{ fontFamily: CINZEL, fontSize: 13, color: MUTED, letterSpacing: "0.1em" }}>Loading stream...</div>
                 </div>
               )}
               <iframe
@@ -1096,24 +1096,24 @@ function MassTab() {
           </>
         ) : (
           <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px 20px", textAlign: "center", boxShadow: CARD_SHADOW, marginBottom: 14 }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}></div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><MassIco on /></div>
             <div style={{ fontFamily: CINZEL, fontSize: 14, color: WHITE, fontWeight: 600, letterSpacing: "0.07em", marginBottom: 8, textShadow: EMBOSS }}>Select a Stream Above</div>
-            <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.75, fontFamily: "'Lato',sans-serif" }}>Choose one of the available Catholic streams to begin watching Mass online.</p>
+            <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.75, fontFamily: "'Lato',sans-serif" }}>Choose one of the available Catholic streams to begin watching Mass online.</p>
           </div>
         )}
 
         {/* Parish stream note */}
-        <div style={{ background: "linear-gradient(135deg,#F5EEF8,#EDE0F5)", border: "1px solid #C0A0D8", borderRadius: 16, padding: 16, marginBottom: 14, boxShadow: CARD_SHADOW }}>
-          <div style={{ fontSize: 10, color: "#7040A0", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 8 }}>Parish Stream — Coming Soon</div>
-          <p style={{ fontSize: 12, color: "#4A2870", lineHeight: 1.78, fontFamily: "'Lato',sans-serif" }}>
+        <div style={{ background: "linear-gradient(135deg,#F5EEF8,#EDE0F5)", border: "1px solid #C0A0D8", borderRadius: 16, padding: 20, marginBottom: 14, boxShadow: CARD_SHADOW }}>
+          <div style={{ fontSize: 12, color: "#6A3A98", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 8 }}>Parish Stream — Coming Soon</div>
+          <p style={{ fontSize: 14, color: "#4A2870", lineHeight: 1.78, fontFamily: "'Lato',sans-serif" }}>
             A dedicated stream from your parish will be added here once a platform is confirmed. Check back soon. We are working on bringing your local community's Mass directly into the app.
           </p>
         </div>
 
         {/* Spiritual note */}
-        <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}50`, borderRadius: 16, padding: 16, boxShadow: CARD_SHADOW }}>
-          <div style={{ fontSize: 10, color: GOLD_TEXT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 8 }}>A Note on Virtual Mass</div>
-          <p style={{ fontSize: 12, color: CREAM, lineHeight: 1.78, fontFamily: "'Lato',sans-serif" }}>
+        <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}50`, borderRadius: 16, padding: 20, boxShadow: CARD_SHADOW }}>
+          <div style={{ fontSize: 12, color: GOLD_TEXT, letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: CINZEL, fontWeight: 700, marginBottom: 8 }}>A Note on Virtual Mass</div>
+          <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.78, fontFamily: "'Lato',sans-serif" }}>
             The Church encourages physical attendance at Mass whenever possible, since it is there we receive Christ truly present in the Eucharist. Watching a live stream is a meaningful act of worship when in-person attendance is not possible. If you are able, please attend Mass at your local parish.
           </p>
         </div>

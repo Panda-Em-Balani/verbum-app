@@ -14,9 +14,10 @@ import { initNotifications, getNotificationPermission } from "./notifications.js
 import { useProgress, initProgress, resetProgress, toggleFavorite } from "./progress.js";
 import LoginPage from "./screens/auth/LoginPage.jsx";
 import NamePrompt from "./screens/auth/NamePrompt.jsx";
+import ResetPasswordScreen from "./screens/auth/ResetPasswordScreen.jsx";
+import { useAuth, signOut } from "./auth/useAuth.js";
 import HomeTab from "./screens/home/HomeScreen.jsx";
 import { useRoute, navigate, tabOf, resolveLegacy } from "./router.js";
-import { supabase } from "./supabase.js";
 import { findVerse } from "./verses.js";
 import { Cross } from "./components/Icons.jsx";
 import { PAGE_BG, TEXT, MUTED, FONT_UI } from "./theme.js";
@@ -61,9 +62,7 @@ function shouldShowIosBanner() {
 }
 
 export default function BibleApp() {
-  const [user, setUser] = useState(null)
-  const [userChecked, setUserChecked] = useState(false)
-  const [needsName, setNeedsName] = useState(false)
+  const { status, user } = useAuth()
   const route = useRoute()
   const update = useUpdate()
   const tab = tabOf(route.name) || "home"
@@ -76,43 +75,13 @@ export default function BibleApp() {
   // Keep the shared verse key from first load.
   const [sharedSlug] = useState(() => new URLSearchParams(window.location.search).get("v"))
 
-  //  Check Supabase session on load 
-  useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        try {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("name")
-            .eq("id", session.user.id)
-            .single()
-          if (profile?.name) {
-            setUser({ name: profile.name, email: session.user.email })
-          } else {
-            setUser({ name: "", email: session.user.email })
-            setNeedsName(true)
-          }
-        } catch {
-          setUser({ name: "", email: session.user.email })
-          setNeedsName(true)
-        }
-      }
-      setUserChecked(true)
-    }).catch(() => {
-      setUserChecked(true)
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT") setUser(null)
-    })
-    return () => subscription.unsubscribe()
-  }, [])
-
   //  Load saved progress for the signed-in user, clear it on sign out 
-  const signedIn = !!user
+  const signedIn = status === "signedIn"
+  const userId = user?.id
   useEffect(() => {
-    if (!signedIn) { resetProgress(); return }
-    supabase.auth.getSession().then(({ data }) => { if (data?.session?.user?.id) initProgress(data.session.user.id) }).catch(() => {})
-  }, [signedIn])
+    if (signedIn && userId) initProgress(userId)
+    else if (status === "signedOut") resetProgress()
+  }, [signedIn, userId, status])
 
   //  PWA Install prompt 
   useEffect(() => {
@@ -137,17 +106,15 @@ export default function BibleApp() {
 
   //  Notification setup 
   useEffect(() => {
-    if (!user) return
+    if (!signedIn || !userId) return
     const permission = getNotificationPermission()
     if (permission === "granted") {
-      supabase.auth.getUser().then(({ data }) => {
-        initNotifications(data?.user?.id)
-      }).catch(() => initNotifications())
+      initNotifications(userId)
     } else if (permission === "default" && !localStorage.getItem("verbum_notif_dismissed")) {
       const t = setTimeout(() => setShowNotifBanner(true), 2000)
       return () => clearTimeout(t)
     }
-  }, [user])
+  }, [signedIn, userId])
 
   // A notification tapped while the app is open: the service worker tells us where to go.
   useEffect(() => {
@@ -166,7 +133,9 @@ export default function BibleApp() {
   // Unknown address: go Home (keeping any sign-in token in the hash).
   useEffect(() => {
     if (route.notFound) navigate("/" + window.location.hash, { replace: true })
-  }, [route.notFound])
+    // The reset screen has no place once someone is signed in normally.
+    else if (route.name === "resetPassword" && status === "signedIn") navigate("/", { replace: true })
+  }, [route.notFound, route.name, status])
 
   // Opening Explore clears the "new saved verse" dot.
   if (tab === "explore" && hasNewFavorites) setHasNewFavorites(false)
@@ -189,12 +158,6 @@ export default function BibleApp() {
     window.location.assign(`${INSTALL_PATH}?ref=banner`)
   }
 
-  // The account sheet asks for confirmation before calling this.
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
-  }
-
   //  Public install page (no login needed) 
   if (route.name === "install") {
     const sharedVerse = findVerse(sharedSlug)
@@ -205,32 +168,17 @@ export default function BibleApp() {
     )
   }
 
-  //  Wait for session check 
-  if (!userChecked) {
-    return <Splash />
-  }
-
-  //  Show login if not authenticated 
-  if (!user) {
-    return <LoginPage onLogin={(u) => setUser(u)} />
-  }
-
-  //  Show name prompt if profile has no name 
-  if (needsName) {
-    return (
-      <NamePrompt
-        email={user.email}
-        onComplete={(name) => {
-          setUser(prev => ({ ...prev, name }))
-          setNeedsName(false)
-        }}
-      />
-    )
-  }
+  //  Signed-out and in-between states 
+  if (status === "loading") return <Splash />
+  // A password-reset link: choose a new password before anything else.
+  if (status === "recovery") return <ResetPasswordScreen recovering />
+  if (route.name === "resetPassword" && status === "signedOut") return <ResetPasswordScreen recovering={false} />
+  if (status === "signedOut") return <LoginPage />
+  if (status === "needsName") return <NamePrompt email={user.email} />
 
   return (
     <div style={{ background: PAGE_BG, minHeight: "100vh", width: "100%", maxWidth: 430, margin: "0 auto", fontFamily: FONT_UI, color: TEXT, position: "relative" }}>
-      <AppHeader user={user} onSignOut={handleSignOut} />
+      <AppHeader user={user} onSignOut={signOut} />
       <OfflineBanner />
       <main style={{ paddingBottom: "calc(88px + env(safe-area-inset-bottom))" }}>
         {showInstallBanner && tab === "home" && (
@@ -241,10 +189,9 @@ export default function BibleApp() {
         )}
         {showNotifBanner && tab === "home" && (
           <NotificationBanner
-            onGranted={async () => {
+            onGranted={() => {
               setShowNotifBanner(false)
-              const { data } = await supabase.auth.getUser()
-              if (data?.user?.id) initNotifications(data.user.id)
+              initNotifications(userId)
             }}
             onDismiss={() => { setShowNotifBanner(false); localStorage.setItem("verbum_notif_dismissed", "1") }}
           />

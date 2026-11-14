@@ -58,9 +58,22 @@ holds each user's saved progress.
 
 ## Environment
 
-The Supabase project is currently set in `src/supabase.js`. Environment variables for
-choosing a different project per environment are added in a later phase of the rebuild and
-will be documented here.
+No environment variables are required. Without any, the app uses the production Supabase
+project set in `src/supabase.js`.
+
+| Variable | Purpose |
+|---|---|
+| `VITE_SUPABASE_URL` | Use a different Supabase project (for example one for Vercel Preview deployments) |
+| `VITE_SUPABASE_ANON_KEY` | That project's anon key |
+
+Set both or neither. See `.env.example`.
+
+## Sign-in
+
+Email and password, a sign-in link by email, and password reset. Google sign-in is built but
+switched off: enable the provider in Supabase, then set `AUTH_PROVIDERS.google = true` in
+`src/config.js`. Email links return to the site address, so Supabase must list it under
+Authentication > URL Configuration. Step-by-step instructions are in `docs/owner-setup.md`.
 
 ## Links that must keep working
 

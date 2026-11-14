@@ -79,6 +79,23 @@ async function main() {
       await page.goto(BASE + "/");
       await page.getByText("Sign In").first().waitFor();
     });
+    await step("19-signup", async () => {
+      await page.getByRole("button", { name: "Create account" }).first().click();
+      await page.getByLabel("Your name").waitFor();
+    });
+    await step("20-magic-link", async () => {
+      await page.getByRole("button", { name: "Sign in", exact: true }).first().click();
+      await page.getByRole("button", { name: "Email me a sign-in link instead" }).click();
+      await page.getByRole("button", { name: "Send sign-in link" }).waitFor();
+    });
+    await step("21-reset-expired", async () => {
+      await page.goto(BASE + "/reset-password");
+      await page.getByText("This link can't be used").waitFor();
+    });
+    await step("22-link-expired", async () => {
+      await page.goto(BASE + "/#error=access_denied&error_code=otp_expired&error_description=expired");
+      await page.getByText("This link has expired. Request a new one.").waitFor();
+    });
 
     // Signed-in session stub
     await page.evaluate((s) => {

@@ -1,0 +1,142 @@
+// Local screenshot script: node scripts/screens.cjs <outDir>
+// Serves the existing build (run `npm run build` first) and captures every main screen at
+// phone size with a stubbed signed-in session. Screenshots are for review only; never commit them.
+const { spawn } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { chromium } = require("playwright");
+
+const PORT = 4173;
+const BASE = `http://localhost:${PORT}`;
+const USER_ID = "00000000-0000-0000-0000-000000000001";
+const UA = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36";
+
+const outDir = process.argv[2];
+if (!outDir) {
+  console.error("usage: node scripts/screens.cjs <outDir>");
+  process.exit(2);
+}
+
+async function waitForServer(timeoutMs = 30000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const res = await fetch(BASE + "/");
+      if (res.ok) return;
+    } catch { /* not up yet */ }
+    await new Promise((r) => setTimeout(r, 300));
+  }
+  throw new Error("preview server did not start");
+}
+
+async function main() {
+  fs.mkdirSync(outDir, { recursive: true });
+  const server = spawn("npx", ["vite", "preview", "--port", String(PORT), "--strictPort"], { stdio: "ignore", detached: true });
+  let browser;
+  const failed = [];
+  try {
+    await waitForServer();
+    browser = await chromium.launch();
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, userAgent: UA, serviceWorkers: "block" });
+    const page = await ctx.newPage();
+    page.setDefaultTimeout(8000);
+    const shot = (name) => page.screenshot({ path: path.join(outDir, `${name}.png`) });
+    const step = async (name, fn) => {
+      try {
+        await fn();
+        await page.waitForTimeout(500);
+        await shot(name);
+      } catch (e) {
+        failed.push(name);
+        console.error(`FAILED ${name}: ${String(e.message).split("\n")[0]}`);
+      }
+    };
+    const nav = (label) => page.getByRole("button", { name: label, exact: true }).last().click();
+
+    await step("00-login", async () => {
+      await page.goto(BASE + "/");
+      await page.getByText("Sign In").first().waitFor();
+    });
+
+    // Signed-in session stub
+    const user = { id: USER_ID, email: "test@example.com", aud: "authenticated", role: "authenticated" };
+    const session = { access_token: "x", token_type: "bearer", expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 365 * 86400, refresh_token: "r", user };
+    await page.evaluate((s) => {
+      localStorage.setItem("sb-kfoymqjekxxilqkyfavi-auth-token", JSON.stringify(s));
+      localStorage.setItem("verbum_notif_dismissed", "1");
+      localStorage.setItem("verbum_install_dismissed", String(Date.now()));
+    }, session);
+    const json = (body, status = 200) => (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
+    await ctx.route("**/rest/v1/profiles*", json({ name: "Test" }));
+    await ctx.route("**/rest/v1/user_progress*", json([]));
+    await ctx.route("**/rest/v1/events*", json({}, 201));
+    await ctx.route("**/auth/v1/**", json(user));
+    await ctx.route("**/en.wikipedia.org/**", (route) => route.fulfill({ status: 404, body: "" }));
+
+    await step("01-home", async () => {
+      await page.goto(BASE + "/");
+      await page.getByText("Daily Verse").first().waitFor();
+    });
+    await step("02-home-scrolled", () => page.evaluate(() => window.scrollTo(0, 900)));
+    await step("03-soul", async () => {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await nav("Soul");
+      await page.getByRole("button", { name: "Hope" }).click();
+    });
+    await step("04-explore", async () => {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await nav("Explore");
+      await page.getByText("Verse Library").waitFor();
+    });
+    await step("05-explore-expanded", () => page.getByText("The Lord is my shepherd").first().click());
+    await step("06-prayers", async () => {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await nav("Prayers");
+      await page.getByText("Catholic Prayers").waitFor();
+    });
+    await step("07-rosary", () => page.getByRole("button", { name: "Rosary", exact: true }).click());
+    await step("08-novenas", async () => {
+      await page.getByRole("button", { name: "Prayers", exact: true }).first().click();
+      await page.getByText("Nine Days of Prayer").click();
+      await page.getByText("Back to Prayers").waitFor();
+    });
+    await step("09-novena-day", async () => {
+      await page.getByText("Divine Mercy Novena").first().click();
+      await page.getByText("Back to Novenas").waitFor();
+    });
+    await step("10-three-oclock", async () => {
+      await nav("Home");
+      await nav("Prayers");
+      await page.getByRole("button", { name: /Three O'Clock Prayer/ }).click();
+      await page.getByText("Prayer for the Hour of Mercy").waitFor();
+    });
+    await step("11-mass", async () => {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await nav("Mass");
+      await page.getByText("Virtual Mass").first().waitFor();
+    });
+    await step("12-install", async () => {
+      await page.goto(BASE + "/install");
+      await page.getByText("VERBUM").first().waitFor();
+    });
+    await step("13-share-dialog", async () => {
+      await page.goto(BASE + "/");
+      await page.getByText("Daily Verse").first().waitFor();
+      await page.getByRole("button", { name: "Share this verse" }).first().click();
+      await page.getByRole("dialog", { name: "Share this verse" }).waitFor();
+    });
+  } finally {
+    if (browser) await browser.close();
+    try { process.kill(-server.pid); } catch { /* already gone */ }
+  }
+  if (failed.length) {
+    console.error(`${failed.length} screen(s) failed: ${failed.join(", ")}`);
+    process.exit(1);
+  }
+  console.log(`Screens written to ${outDir}`);
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

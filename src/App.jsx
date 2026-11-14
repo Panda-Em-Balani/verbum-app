@@ -19,8 +19,8 @@ import HomeTab from "./screens/home/HomeScreen.jsx";
 import PrayersTab from "./screens/prayers/PrayersScreen.jsx";
 import { GLOBAL_CSS } from "./styles/globalCss.js";
 import { supabase } from "./supabase.js";
-import { DARK, WHITE } from "./theme.js";
 import { findVerse } from "./verses.js";
+import { PAGE_BG, TEXT, FONT_UI } from "./theme.js";
 
 // Re-show the install banner a week after "Later" instead of hiding it forever.
 const INSTALL_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000
@@ -203,7 +203,7 @@ export default function BibleApp() {
   //  Wait for session check 
   if (!userChecked) {
     return (
-      <div style={{ minHeight: "100vh", background: "#F5F5F5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100vh", background: PAGE_BG, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap')`}</style>
         <div style={{ textAlign: "center" }}>
           <svg width="32" height="32" viewBox="0 0 20 20" fill="none" style={{ marginBottom: 16 }}>
@@ -235,7 +235,7 @@ export default function BibleApp() {
   }
 
   return (
-    <div style={{ background: DARK, minHeight: "100vh", width: "100%", fontFamily: "'Lato',-apple-system,sans-serif", color: WHITE, position: "relative" }}>
+    <div style={{ background: PAGE_BG, minHeight: "100vh", width: "100%", fontFamily:FONT_UI, color: TEXT, position: "relative" }}>
       <style>{GLOBAL_CSS}</style>
 
       <AppHeader tab={tab} user={user} onSignOut={handleSignOut} />

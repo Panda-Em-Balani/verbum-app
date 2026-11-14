@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BellIco } from "./Icons.jsx";
 import { requestNotificationPermission } from "../notifications.js";
-import { GOLD, GOLD_BRIGHT, CARD, BORDER, CREAM, MUTED, WHITE, CINZEL, R, EMBOSS, CARD_SHADOW_STRONG } from "../theme.js";
+import { CARD, BORDER, TEXT, TEXT_BODY, MUTED, GOLD, GOLD_DEEP, FONT_DISPLAY, FONT_UI, R, CARD_SHADOW_STRONG } from "../theme.js";
 
 export default function NotificationBanner({ onGranted, onDismiss }) {
   const [requesting, setRequesting] = useState(false);
@@ -20,16 +20,16 @@ export default function NotificationBanner({ onGranted, onDismiss }) {
           <div style={{ width: 54, height: 54, borderRadius: "50%", background: `${GOLD}18`, border: `1.5px solid ${GOLD}50`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
             <BellIco on />
           </div>
-          <div style={{ fontFamily: CINZEL, fontSize: 19, color: WHITE, fontWeight: 700, letterSpacing: "0.08em", textShadow: EMBOSS, marginBottom: 10 }}>Daily Reminders</div>
-          <p style={{ fontSize: 14, color: CREAM, lineHeight: 1.82, fontFamily: "'Lato',sans-serif", fontWeight: 500 }}>
+          <div style={{ fontFamily: FONT_DISPLAY, fontSize: 19, color: TEXT, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 10 }}>Daily Reminders</div>
+          <p style={{ fontSize: 14, color: TEXT_BODY, lineHeight: 1.82, fontFamily:FONT_UI, fontWeight: 500 }}>
             Stay connected to your faith with daily notifications: a morning verse, the Three O'Clock Prayer, and Catholic feast day reminders.
           </p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <button onClick={handleEnable} disabled={requesting} style={{ width: "100%", background: `linear-gradient(135deg,${GOLD},${GOLD_BRIGHT})`, border: "none", borderRadius: R.sm, padding: "13px", color: "#FFFFFF", fontSize: 15, fontFamily: CINZEL, fontWeight: 600, letterSpacing: "0.08em", cursor: requesting ? "default" : "pointer" }}>
+          <button onClick={handleEnable} disabled={requesting} style={{ width: "100%", background: `linear-gradient(135deg,${GOLD},${GOLD_DEEP})`, border: "none", borderRadius: R.sm, padding: "13px", color: "#FFFFFF", fontSize: 15, fontFamily: FONT_DISPLAY, fontWeight: 600, letterSpacing: "0.08em", cursor: requesting ? "default" : "pointer" }}>
             {requesting ? "Requesting..." : "Enable Notifications"}
           </button>
-          <button onClick={onDismiss} style={{ width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: "12px", minHeight: 44, color: MUTED, fontSize: 14, fontFamily: "'Lato',sans-serif", cursor: "pointer", fontWeight: 500 }}>
+          <button onClick={onDismiss} style={{ width: "100%", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: "12px", minHeight: 44, color: MUTED, fontSize: 14, fontFamily:FONT_UI, cursor: "pointer", fontWeight: 500 }}>
             Maybe later
           </button>
         </div>

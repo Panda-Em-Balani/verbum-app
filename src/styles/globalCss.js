@@ -13,5 +13,5 @@ export const GLOBAL_CSS = `
         select option{background:#FFFFFF;color:#3B1E08}
         html{touch-action:manipulation}
         button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid #B8860B;outline-offset:2px}
-        body{background:#F5F5F5}
+        body{background:#F6F1E7}
       `;

@@ -1,5 +1,5 @@
 import { HomeIco, ChatIco, BookIco, PrayIco, MassIco } from "./Icons.jsx";
-import { GOLD_TEXT, BORDER, MUTED, NAV_SHADOW } from "../theme.js";
+import { BORDER, MUTED, GOLD_TEXT, NAV_SHADOW } from "../theme.js";
 
 const TABS = [
   { id: "home",    label: "Home",    I: HomeIco },

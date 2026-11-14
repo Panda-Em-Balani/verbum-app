@@ -1,14 +1,7 @@
+import { SURFACE, CARD, BORDER, TEXT, MUTED, GOLD_TEXT, FONT_DISPLAY, FONT_UI } from "../../theme.js";
 import { useState } from "react"
 import { supabase } from "../../supabase.js"
 
-const GOLD = "#9A6B1F"
-const SURFACE = "#EDE5D6"
-const CARD = "#FFFFFF"
-const BORDER = "#D9CEBC"
-const MUTED = "#75603F"
-const WHITE = "#2E1F0E"
-const CINZEL = "'Cinzel', serif"
-const EMBOSS = "0 1px 0 rgba(255,255,255,0.8), 0 -1px 0 rgba(0,0,0,0.08)"
 
 export default function LoginPage({ onLogin }) {
   const [mode, setMode] = useState("signin") // "signin" | "signup"
@@ -89,7 +82,7 @@ export default function LoginPage({ onLogin }) {
       alignItems: "center",
       justifyContent: "center",
       padding: "24px 24px 40px",
-      fontFamily: "'Lato', -apple-system, sans-serif",
+      fontFamily:FONT_UI,
     }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Lato:wght@300;400;700&display=swap'); *{box-sizing:border-box;margin:0;padding:0} input{font-family:'Lato',sans-serif}`}</style>
 
@@ -100,8 +93,8 @@ export default function LoginPage({ onLogin }) {
           alt="Verbum"
           style={{ width: 110, height: 110, borderRadius: 20, marginBottom: 16, boxShadow: "0 4px 24px rgba(154,107,31,0.18)" }}
         />
-        <div style={{ fontFamily: CINZEL, fontSize: 26, color: WHITE, fontWeight: 600, letterSpacing: "0.12em", textShadow: EMBOSS, marginBottom: 4 }}>VERBUM</div>
-        <div style={{ fontSize: 13, color: GOLD, letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: CINZEL }}>The Word</div>
+        <div style={{ fontFamily: FONT_DISPLAY, fontSize: 26, color: TEXT, fontWeight: 600, letterSpacing: "0.12em", marginBottom: 4 }}>VERBUM</div>
+        <div style={{ fontSize: 13, color: GOLD_TEXT, letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: FONT_DISPLAY }}>The Word</div>
       </div>
 
       {/* Card */}
@@ -116,12 +109,12 @@ export default function LoginPage({ onLogin }) {
         position: "relative",
         overflow: "hidden",
       }}>
-        <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 120, height: 2, background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)` }} />
+        <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 120, height: 2, background: `linear-gradient(90deg, transparent, ${GOLD_TEXT}, transparent)` }} />
 
         {/* Mode toggle */}
         <div style={{ display: "flex", background: SURFACE, borderRadius: 12, padding: 3, marginBottom: 22, border: `1px solid ${BORDER}` }}>
           {[{ id: "signin", label: "Sign In" }, { id: "signup", label: "Create Account" }].map(m => (
-            <button key={m.id} onClick={() => { setMode(m.id); setError("") }} style={{ flex: 1, background: mode === m.id ? CARD : "none", border: mode === m.id ? `1px solid ${GOLD}40` : "1px solid transparent", borderRadius: 10, padding: "12px 0", color: mode === m.id ? GOLD : MUTED, fontSize: 14, cursor: "pointer", fontFamily: CINZEL, letterSpacing: "0.06em", transition: "all 0.2s" }}>
+            <button key={m.id} onClick={() => { setMode(m.id); setError("") }} style={{ flex: 1, background: mode === m.id ? CARD : "none", border: mode === m.id ? `1px solid ${GOLD_TEXT}40` : "1px solid transparent", borderRadius: 10, padding: "12px 0", color: mode === m.id ? GOLD_TEXT : MUTED, fontSize: 14, cursor: "pointer", fontFamily: FONT_DISPLAY, letterSpacing: "0.06em", transition: "all 0.2s" }}>
               {m.label}
             </button>
           ))}
@@ -130,7 +123,7 @@ export default function LoginPage({ onLogin }) {
         {/* Name — only on signup */}
         {isSignUp && (
           <div style={{ marginBottom: 12 }}>
-            <label htmlFor="v-name" style={{ display: "block", fontSize: 12, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Your Name</label>
+            <label htmlFor="v-name" style={{ display: "block", fontSize: 12, color: GOLD_TEXT, fontFamily: FONT_DISPLAY, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Your Name</label>
             <input
               id="v-name"
               type="text"
@@ -138,14 +131,14 @@ export default function LoginPage({ onLogin }) {
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="e.g. Maria Santos"
-              style={{ width: "100%", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "13px 14px", fontSize: 16, color: WHITE, outline: "none" }}
+              style={{ width: "100%", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "13px 14px", fontSize: 16, color: TEXT, outline: "none" }}
             />
           </div>
         )}
 
         {/* Email */}
         <div style={{ marginBottom: 12 }}>
-          <label htmlFor="v-email" style={{ display: "block", fontSize: 12, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Email Address</label>
+          <label htmlFor="v-email" style={{ display: "block", fontSize: 12, color: GOLD_TEXT, fontFamily: FONT_DISPLAY, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Email Address</label>
           <input
             id="v-email"
             type="email"
@@ -153,13 +146,13 @@ export default function LoginPage({ onLogin }) {
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="your@email.com"
-            style={{ width: "100%", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "13px 14px", fontSize: 16, color: WHITE, outline: "none" }}
+            style={{ width: "100%", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "13px 14px", fontSize: 16, color: TEXT, outline: "none" }}
           />
         </div>
 
         {/* Password */}
         <div style={{ marginBottom: 20 }}>
-          <label htmlFor="v-password" style={{ display: "block", fontSize: 12, color: GOLD, fontFamily: CINZEL, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Password {isSignUp && <span style={{ color: MUTED, textTransform: "none", fontFamily: "'Lato',sans-serif", letterSpacing: 0 }}>(min. 6 characters)</span>}</label>
+          <label htmlFor="v-password" style={{ display: "block", fontSize: 12, color: GOLD_TEXT, fontFamily: FONT_DISPLAY, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>Password {isSignUp && <span style={{ color: MUTED, textTransform: "none", fontFamily:FONT_UI, letterSpacing: 0 }}>(min. 6 characters)</span>}</label>
           <input
             id="v-password"
             type="password"
@@ -168,7 +161,7 @@ export default function LoginPage({ onLogin }) {
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") isSignUp ? handleSignUp() : handleSignIn() }}
             placeholder="••••••••"
-            style={{ width: "100%", background: SURFACE, border: `1px solid ${error ? "#D04040" : BORDER}`, borderRadius: 12, padding: "13px 14px", fontSize: 16, color: WHITE, outline: "none" }}
+            style={{ width: "100%", background: SURFACE, border: `1px solid ${error ? "#D04040" : BORDER}`, borderRadius: 12, padding: "13px 14px", fontSize: 16, color: TEXT, outline: "none" }}
           />
           {error && <div style={{ fontSize: 13, color: "#B03030", marginTop: 6, lineHeight: 1.5 }} role="alert">{error}</div>}
         </div>
@@ -179,17 +172,17 @@ export default function LoginPage({ onLogin }) {
           disabled={loading}
           style={{
             width: "100%",
-            background: loading ? SURFACE : `linear-gradient(135deg, ${GOLD}, #B8923C)`,
+            background: loading ? SURFACE : `linear-gradient(135deg, ${GOLD_TEXT}, #B8923C)`,
             border: "none",
             borderRadius: 14,
             padding: "13px",
             color: loading ? MUTED : "#FFFFFF",
             fontSize: 15,
-            fontFamily: CINZEL,
+            fontFamily: FONT_DISPLAY,
             fontWeight: 600,
             letterSpacing: "0.1em",
             cursor: loading ? "default" : "pointer",
-            boxShadow: loading ? "none" : `0 4px 20px ${GOLD}30`,
+            boxShadow: loading ? "none" : `0 4px 20px ${GOLD_TEXT}30`,
             transition: "all 0.2s",
             marginBottom: 12,
           }}
@@ -199,7 +192,7 @@ export default function LoginPage({ onLogin }) {
 
         {/* Forgot password — only on sign in */}
         {!isSignUp && (
-          <button onClick={handleForgotPassword} style={{ width: "100%", background: "none", border: "none", color: MUTED, fontSize: 14, cursor: "pointer", fontFamily: "'Lato',sans-serif", textAlign: "center", padding: "12px 0" }}>
+          <button onClick={handleForgotPassword} style={{ width: "100%", background: "none", border: "none", color: MUTED, fontSize: 14, cursor: "pointer", fontFamily:FONT_UI, textAlign: "center", padding: "12px 0" }}>
             Forgot your password?
           </button>
         )}

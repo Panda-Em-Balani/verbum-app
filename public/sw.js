@@ -1,17 +1,23 @@
 // Verbum Service Worker
-// Handles push notifications, notification click deep linking, and offline caching.
-
-const CACHE_VERSION = 'verbum-v3';
-const PRECACHE_URLS = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'];
+// Offline support (precached app shell), push notifications, and notification deep links.
+//
+// The two values below are filled in at build time by vite-plugins/precacheManifest.js.
+// In development they stay empty, so nothing is precached.
+const PRECACHE_MANIFEST = [] /*__PRECACHE_MANIFEST__*/;
+const CACHE_VERSION = 'verbum-dev' /*__CACHE_VERSION__*/;
 
 // ─── INSTALL: precache the app shell ─────────────────────────────────────────
+// If any file fails to download the install fails, and the previous version keeps working.
+// A new version waits until the page asks for it (see SKIP_WAITING), so the app never
+// reloads by itself while someone is praying.
 self.addEventListener('install', function(event) {
   event.waitUntil(
-    caches.open(CACHE_VERSION)
-      .then(cache => cache.addAll(PRECACHE_URLS))
-      .catch(() => {}) // never block install on a failed precache
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_VERSION).then(cache => cache.addAll(PRECACHE_MANIFEST))
   );
+});
+
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 // ─── ACTIVATE: clean up old cache versions ───────────────────────────────────
@@ -19,40 +25,37 @@ self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(key => key !== CACHE_VERSION).map(key => caches.delete(key))
+        keys.filter(key => key.startsWith('verbum-') && key !== CACHE_VERSION).map(key => caches.delete(key))
       ))
       .then(() => self.clients.claim())
   );
 });
 
 // ─── FETCH: offline support ──────────────────────────────────────────────────
-// Navigations: network first, fall back to cached shell when offline.
-// Same-origin static assets (JS/CSS/images/fonts): cache first, then network.
+// Page navigations: network first, falling back to the cached app shell when offline.
+// Other same-origin files (JS, CSS, images, fonts): cache first, then network.
 self.addEventListener('fetch', function(event) {
   const request = event.request;
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
+  // Leave other sites (YouTube, Supabase, Wikipedia) and our own API alone.
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/api/')) return;
 
-  // Page navigations
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_VERSION).then(cache => cache.put('/', copy)).catch(() => {});
-          return response;
-        })
-        .catch(() => caches.match('/'))
+      fetch(request).catch(() =>
+        caches.match('/index.html', { ignoreVary: true }).then(shell => shell || caches.match('/', { ignoreVary: true }))
+      )
     );
     return;
   }
 
-  // Same-origin static assets only (leave YouTube embeds, Supabase, Wikipedia alone)
-  if (url.origin !== self.location.origin) return;
-
   event.respondWith(
-    caches.match(request).then(cached => {
+    // ignoreVary: our files are the same for every requester, and some servers add a Vary
+    // header that would otherwise make module and font requests miss the cache.
+    caches.match(request, { ignoreVary: true }).then(cached => {
       if (cached) return cached;
       return fetch(request).then(response => {
         if (response && response.status === 200) {

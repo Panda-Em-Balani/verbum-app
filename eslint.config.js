@@ -20,7 +20,7 @@ export default defineConfig([
   },
   {
     // Scripts, tests and config run on Node (tests also use browser globals under jsdom).
-    files: ['scripts/**/*.{js,mjs,cjs}', 'src/**/*.test.{js,jsx}', 'vite.config.js'],
+    files: ['scripts/**/*.{js,mjs,cjs}', 'vite-plugins/**/*.js', 'src/**/*.test.{js,jsx}', 'vite.config.js'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   {

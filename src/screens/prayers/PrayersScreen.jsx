@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { navigate } from "../../router.js";
 import { ChevIco, ClockIco, BeadsIco } from "../../components/Icons.jsx";
 import { PRAYERS } from "../../content/prayers.js";
 import { isThreeOClockHour } from "../../liturgy/legacy.js";
@@ -12,15 +13,12 @@ import { card, cardTitle, eyebrow, secondary, prayerText, noteBlock, screenWrap,
 const linkCard = { display: "block", width: "100%", textAlign: "left", cursor: "pointer", background: MERCY.bg, border: `1px solid ${MERCY.border}`, borderRadius: R.md, padding: 18, boxShadow: CARD_SHADOW };
 const iconDisc = { width: 40, height: 40, borderRadius: "50%", border: `1px solid ${MERCY.border}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 };
 
-export default function PrayersTab() {
-  const [deep] = useState(() => localStorage.getItem("verbum_deep_section"));
-  const [section, setSection] = useState(deep === "rosary" ? "rosary" : "prayers");
-  const [subSection, setSubSection] = useState(deep === "three-oclock" || deep === "novenas" ? deep : null);
-  useEffect(() => { localStorage.removeItem("verbum_deep_section"); }, []);
+export default function PrayersTab({ route }) {
   const [expandedPrayer, setExpandedPrayer] = useState(null);
+  const section = route.name === "rosary" ? "rosary" : "prayers";
 
-  if (subSection === "novenas") return <div style={{ ...screenWrap, ...subScreenTop }}><NovenaView onBack={() => setSubSection(null)} /></div>;
-  if (subSection === "three-oclock") return <div style={{ ...screenWrap, ...subScreenTop }}><ThreeOClockView onBack={() => setSubSection(null)} /></div>;
+  if (route.name === "novenas" || route.name === "novena") return <div style={{ ...screenWrap, ...subScreenTop }}><NovenaView novenaId={route.params.id} /></div>;
+  if (route.name === "threeOclock") return <div style={{ ...screenWrap, ...subScreenTop }}><ThreeOClockView /></div>;
 
   return (
     <div style={screenWrap}>
@@ -29,12 +27,12 @@ export default function PrayersTab() {
         <div style={screenSub}>{section === "prayers" ? "Traditional prayers of the faith" : "A decade-by-decade guide"}</div>
       </div>
       <div style={{ ...segmentGroup, marginBottom: 18 }}>
-        {[{ id: "prayers", label: "Prayers" }, { id: "rosary", label: "Rosary" }].map((t) => <button key={t.id} type="button" aria-pressed={section === t.id} onClick={() => setSection(t.id)} style={segment(section === t.id)}>{t.label}</button>)}
+        {[{ id: "prayers", path: "/prayers", label: "Prayers" }, { id: "rosary", path: "/prayers/rosary", label: "Rosary" }].map((t) => <button key={t.id} type="button" aria-pressed={section === t.id} onClick={() => navigate(t.path, { replace: true })} style={segment(section === t.id)}>{t.label}</button>)}
       </div>
 
       {section === "prayers" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <button type="button" onClick={() => setSubSection("three-oclock")} style={linkCard}>
+          <button type="button" onClick={() => navigate("/prayers/three-oclock")} style={linkCard}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div style={iconDisc}><ClockIco color={MERCY.accent} /></div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -45,7 +43,7 @@ export default function PrayersTab() {
             </div>
             {isThreeOClockHour() && <div style={{ ...secondary, fontSize: 14, color: MERCY.accent, fontWeight: 700, marginTop: 10 }}>It is the Hour of Mercy now</div>}
           </button>
-          <button type="button" onClick={() => setSubSection("novenas")} style={linkCard}>
+          <button type="button" onClick={() => navigate("/prayers/novenas")} style={linkCard}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div style={iconDisc}><BeadsIco color={MERCY.accent} /></div>
               <div style={{ flex: 1, minWidth: 0 }}>

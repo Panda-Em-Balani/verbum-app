@@ -94,7 +94,8 @@ self.addEventListener('push', function(event) {
 
 // ─── NOTIFICATION CLICK: deep link into the app ──────────────────────────────
 // The url in the push payload should use query params the app understands,
-// e.g. "/?tab=prayers&section=three-oclock" or "/?tab=home".
+// e.g. "/prayers/three-oclock" or "/". Older links such as
+// "/?tab=prayers&section=three-oclock" still work: the app maps them to the new addresses.
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
 

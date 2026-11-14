@@ -2,14 +2,15 @@ import { useState } from "react";
 import { HeartIco } from "../components/Icons.jsx";
 import Pill from "../components/Pill.jsx";
 import VerseCard from "../components/VerseCard.jsx";
+import { navigate } from "../router.js";
 import { CATEGORIES } from "../content/categories.js";
 import { VERSES, DAILY_VERSES } from "../verses.js";
 import { BORDER, DANGER, FONT_UI } from "../theme.js";
 import { chip, segment, segmentGroup } from "../styles/buttons.js";
 import { card, cardTitle, scripture, verseRef, body, secondary, screenWrap, screenHeader, screenTitle, screenSub } from "../styles/text.js";
 
-export default function ExploreTab({ favorites, onFav }) {
-  const [view, setView] = useState("browse");
+export default function ExploreTab({ route, favorites, onFav }) {
+  const view = route.name === "exploreSaved" ? "favorites" : "browse";
   const [selectedCat, setSelectedCat] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
   const filtered = selectedCat ? VERSES.filter((v) => v.category.includes(selectedCat)) : VERSES;
@@ -18,7 +19,7 @@ export default function ExploreTab({ favorites, onFav }) {
   const favDailyVerses = DAILY_VERSES.filter((v) => favorites.has(v.ref)).map((v) => ({ ...v, id: v.ref, category: v.category || [] }));
   const allFavVerses = [...favVerses, ...favDailyVerses];
   const toggle = (id) => setExpandedId(expandedId === id ? null : id);
-  const tabs = [{ id: "browse", label: "Browse" }, { id: "favorites", label: `Saved${allFavVerses.length ? ` (${allFavVerses.length})` : ""}` }];
+  const tabs = [{ id: "browse", path: "/explore", label: "Browse" }, { id: "favorites", path: "/explore/saved", label: `Saved${allFavVerses.length ? ` (${allFavVerses.length})` : ""}` }];
 
   return (
     <div style={screenWrap}>
@@ -28,7 +29,7 @@ export default function ExploreTab({ favorites, onFav }) {
       </div>
 
       <div style={{ ...segmentGroup, marginBottom: 18 }}>
-        {tabs.map((t) => <button key={t.id} type="button" aria-pressed={view === t.id} onClick={() => { setView(t.id); setExpandedId(null); }} style={segment(view === t.id)}>{t.label}</button>)}
+        {tabs.map((t) => <button key={t.id} type="button" aria-pressed={view === t.id} onClick={() => { navigate(t.path, { replace: true }); setExpandedId(null); }} style={segment(view === t.id)}>{t.label}</button>)}
       </div>
 
       {view === "browse" && (

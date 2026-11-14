@@ -12,6 +12,7 @@ import { useProgress, initProgress, resetProgress, toggleFavorite } from "./prog
 import LoginPage from "./screens/auth/LoginPage.jsx";
 import NamePrompt from "./screens/auth/NamePrompt.jsx";
 import HomeTab from "./screens/home/HomeScreen.jsx";
+import { useRoute, navigate, tabOf, resolveLegacy } from "./router.js";
 import { supabase } from "./supabase.js";
 import { findVerse } from "./verses.js";
 import { Cross } from "./components/Icons.jsx";
@@ -60,14 +61,15 @@ export default function BibleApp() {
   const [user, setUser] = useState(null)
   const [userChecked, setUserChecked] = useState(false)
   const [needsName, setNeedsName] = useState(false)
-  const [tab, setTab] = useState("home")
+  const route = useRoute()
+  const tab = tabOf(route.name) || "home"
   const favorites = useProgress().favorites
   const [hasNewFavorites, setHasNewFavorites] = useState(false)
   const [showNotifBanner, setShowNotifBanner] = useState(false)
   const [installPrompt, setInstallPrompt] = useState(null)
   const [showInstallBanner, setShowInstallBanner] = useState(shouldShowIosBanner)
   const [installed, setInstalled] = useState(isStandalone)
-  // The cold-start handler below clears the query string, so keep the shared verse key from first load.
+  // Keep the shared verse key from first load.
   const [sharedSlug] = useState(() => new URLSearchParams(window.location.search).get("v"))
 
   //  Check Supabase session on load 
@@ -143,49 +145,29 @@ export default function BibleApp() {
     }
   }, [user])
 
-  // Deep link navigation from notification tap
+  // A notification tapped while the app is open: the service worker tells us where to go.
   useEffect(() => {
-    const applyDeepLink = (tabId, section) => {
-      if (section) localStorage.setItem("verbum_deep_section", section)
-      if (tabId) setTab(tabId)
-    }
-    const parseUrl = (url) => {
+    if (!("serviceWorker" in navigator)) return
+    const onMessage = (e) => {
+      if (e.data?.type !== "NAVIGATE" || !e.data.url) return
       try {
-        const u = new URL(url, window.location.origin)
-        applyDeepLink(u.searchParams.get("tab"), u.searchParams.get("section"))
+        const url = new URL(e.data.url, window.location.origin)
+        navigate(resolveLegacy(url.href) ?? url.pathname + url.search)
       } catch { /* ignore malformed urls */ }
     }
-
-    // 1) Custom event (from anywhere in the app)
-    const customHandler = (e) => {
-      const { tab: tabId, section } = e.detail || {}
-      applyDeepLink(tabId, section)
-    }
-    window.addEventListener("verbum-navigate", customHandler)
-
-    // 2) Message from the service worker (notification tapped while app is open)
-    const swHandler = (e) => {
-      if (e.data?.type === "NAVIGATE" && e.data.url) parseUrl(e.data.url)
-    }
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.addEventListener("message", swHandler)
-    }
-
-    // 3) Cold start from a notification (app opened with ?tab=...&section=...)
-    if (window.location.search) {
-      parseUrl(window.location.href)
-      window.history.replaceState({}, "", window.location.pathname)
-    }
-
-    return () => {
-      window.removeEventListener("verbum-navigate", customHandler)
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.removeEventListener("message", swHandler)
-      }
-    }
+    navigator.serviceWorker.addEventListener("message", onMessage)
+    return () => navigator.serviceWorker.removeEventListener("message", onMessage)
   }, [])
 
-  const onFav = (id) => { if (toggleFavorite(id)) setHasNewFavorites(true) }
+  // Unknown address: go Home (keeping any sign-in token in the hash).
+  useEffect(() => {
+    if (route.notFound) navigate("/" + window.location.hash, { replace: true })
+  }, [route.notFound])
+
+  // Opening Explore clears the "new saved verse" dot.
+  if (tab === "explore" && hasNewFavorites) setHasNewFavorites(false)
+
+  const onFav = (id) => { if (toggleFavorite(id) && tab !== "explore") setHasNewFavorites(true) }
 
   // Fires the native install prompt when the browser offers one. Resolves to the outcome.
   const installViaPrompt = async () => {
@@ -209,13 +191,8 @@ export default function BibleApp() {
     setUser(null)
   }
 
-  const handleTabChange = (id) => {
-    setTab(id);
-    if (id === "explore") setHasNewFavorites(false);
-  }
-
   //  Public install page (no login needed) 
-  if (window.location.pathname.replace(/\/+$/, "") === INSTALL_PATH) {
+  if (route.name === "install") {
     const sharedVerse = findVerse(sharedSlug)
     return (
       <Suspense fallback={<Splash />}>
@@ -271,12 +248,12 @@ export default function BibleApp() {
         {tab === "home" && <HomeTab favorites={favorites} onFav={onFav} user={user} />}
         <Suspense fallback={<ScreenLoading />}>
           {tab === "soul" && <SoulCheckTab favorites={favorites} onFav={onFav} />}
-          {tab === "explore" && <ExploreTab favorites={favorites} onFav={onFav} />}
-          {tab === "prayers" && <PrayersTab />}
+          {tab === "explore" && <ExploreTab route={route} favorites={favorites} onFav={onFav} />}
+          {tab === "prayers" && <PrayersTab route={route} />}
           {tab === "mass" && <MassTab />}
         </Suspense>
       </main>
-      <BottomNav tab={tab} onChange={handleTabChange} hasNewFavorites={hasNewFavorites} />
+      <BottomNav tab={tab} hasNewFavorites={hasNewFavorites} />
     </div>
   )
 }

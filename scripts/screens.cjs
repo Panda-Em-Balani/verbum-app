@@ -51,6 +51,15 @@ async function main() {
         console.error(`FAILED ${name}: ${String(e.message).split("\n")[0]}`);
       }
     };
+    // A behaviour check with no screenshot.
+    const check = async (name, fn) => {
+      try {
+        if ((await fn()) !== true) throw new Error("check returned false");
+      } catch (e) {
+        failed.push(name);
+        console.error(`FAILED check "${name}": ${String(e.message).split("\n")[0]}`);
+      }
+    };
     const nav = (label) => page.getByRole("button", { name: label, exact: true }).last().click();
 
     await step("00-login", async () => {
@@ -94,20 +103,26 @@ async function main() {
       await nav("Prayers");
       await page.getByText("Catholic Prayers").waitFor();
     });
-    await step("07-rosary", () => page.getByRole("button", { name: "Rosary", exact: true }).click());
+    await step("07-rosary", async () => {
+      await page.getByRole("button", { name: "Rosary", exact: true }).click();
+      await page.waitForURL("**/prayers/rosary");
+    });
     await step("08-novenas", async () => {
-      await page.getByRole("button", { name: "Prayers", exact: true }).first().click();
-      await page.getByText("Nine Days of Prayer").click();
+      await page.goto(BASE + "/prayers/novenas");
       await page.getByText("Back to Prayers").waitFor();
     });
     await step("09-novena-day", async () => {
       await page.getByText("Divine Mercy Novena").first().click();
+      await page.waitForURL("**/prayers/novenas/divine-mercy");
       await page.getByText("Back to Novenas").waitFor();
     });
+    await check("back from a novena returns to the list", async () => {
+      await page.goBack();
+      await page.getByText("Back to Prayers").waitFor();
+      return page.url().endsWith("/prayers/novenas");
+    });
     await step("10-three-oclock", async () => {
-      await nav("Home");
-      await nav("Prayers");
-      await page.getByRole("button", { name: /Three O'Clock Prayer/ }).click();
+      await page.goto(BASE + "/prayers/three-oclock");
       await page.getByText("Prayer for the Hour of Mercy").waitFor();
     });
     await step("11-mass", async () => {
@@ -125,8 +140,36 @@ async function main() {
       await page.getByRole("button", { name: "Share this verse" }).first().click();
       await page.getByRole("dialog", { name: "Share this verse" }).waitFor();
     });
-    await step("14-account", async () => {
+    await step("15-explore-saved", async () => {
       await page.getByRole("dialog").getByRole("button", { name: "Close" }).click();
+      await page.goto(BASE + "/explore/saved");
+      await page.getByRole("heading", { name: "Saved Verses" }).waitFor();
+    });
+    await step("16-legacy-link", async () => {
+      await page.goto(BASE + "/?tab=prayers&section=three-oclock");
+      await page.getByText("Prayer for the Hour of Mercy").waitFor();
+      if (!page.url().endsWith("/prayers/three-oclock")) throw new Error("legacy link was not rewritten: " + page.url());
+    });
+    await check("a new screen starts at the top and Back restores the scroll position", async () => {
+      await page.goto(BASE + "/");
+      await page.getByText("Daily Verse").first().waitFor();
+      const before = await page.evaluate(() => { window.scrollTo(0, 500); return window.scrollY; });
+      await nav("Prayers");
+      await page.getByText("Catholic Prayers").waitFor();
+      const top = await page.evaluate(() => window.scrollY);
+      await page.goBack();
+      await page.getByText("Daily Verse").first().waitFor();
+      await page.waitForTimeout(300);
+      const restored = await page.evaluate(() => window.scrollY);
+      if (before < 300 || top !== 0 || Math.abs(restored - before) > 50) throw new Error(`before=${before} top=${top} restored=${restored}`);
+      return true;
+    });
+    await check("an unknown address goes Home", async () => {
+      await page.goto(BASE + "/does-not-exist");
+      await page.getByText("Daily Verse").first().waitFor();
+      return new URL(page.url()).pathname === "/";
+    });
+    await step("14-account", async () => {
       await page.getByRole("button", { name: "Account" }).click();
       await page.getByRole("dialog", { name: "Account" }).waitFor();
     });

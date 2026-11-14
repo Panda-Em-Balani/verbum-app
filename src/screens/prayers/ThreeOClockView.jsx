@@ -1,15 +1,16 @@
 import { useState } from "react";
+import { goBack } from "../../router.js";
 import { ChevIco, ClockIco } from "../../components/Icons.jsx";
 import { THREE_OCLOCK_PRAYER } from "../../content/threeOclock.js";
 import { MERCY, R } from "../../theme.js";
 import { backLink, secondaryButton } from "../../styles/buttons.js";
 import { card, cardTitle, eyebrow, secondary, prayerText, noteBlock } from "../../styles/text.js";
 
-export default function ThreeOClockView({ onBack }) {
+export default function ThreeOClockView() {
   const [showChaplet, setShowChaplet] = useState(false);
   return (
     <div>
-      <button type="button" onClick={onBack} style={backLink}><ChevIco dir="left" /> Back to Prayers</button>
+      <button type="button" onClick={() => goBack("/prayers")} style={backLink}><ChevIco dir="left" /> Back to Prayers</button>
       <div style={{ background: MERCY.bg, border: `1px solid ${MERCY.border}`, borderRadius: R.lg, padding: 22, marginBottom: 14 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
           <div style={{ width: 44, height: 44, borderRadius: "50%", border: `1px solid ${MERCY.border}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><ClockIco color={MERCY.accent} /></div>

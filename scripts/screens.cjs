@@ -29,6 +29,19 @@ async function waitForServer(timeoutMs = 30000) {
   throw new Error("preview server did not start");
 }
 
+const user = { id: USER_ID, email: "test@example.com", aud: "authenticated", role: "authenticated" };
+const session = { access_token: "x", token_type: "bearer", expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 365 * 86400, refresh_token: "r", user };
+
+// Answers the app's Supabase and Wikipedia requests so no real network is needed.
+async function stubSession(ctx) {
+  const json = (body, status = 200) => (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
+  await ctx.route("**/rest/v1/profiles*", json({ name: "Test" }));
+  await ctx.route("**/rest/v1/user_progress*", json([]));
+  await ctx.route("**/rest/v1/events*", json({}, 201));
+  await ctx.route("**/auth/v1/**", json(user));
+  await ctx.route("**/en.wikipedia.org/**", (route) => route.fulfill({ status: 404, body: "" }));
+}
+
 async function main() {
   fs.mkdirSync(outDir, { recursive: true });
   const server = spawn("npx", ["vite", "preview", "--port", String(PORT), "--strictPort"], { stdio: "ignore", detached: true });
@@ -68,19 +81,12 @@ async function main() {
     });
 
     // Signed-in session stub
-    const user = { id: USER_ID, email: "test@example.com", aud: "authenticated", role: "authenticated" };
-    const session = { access_token: "x", token_type: "bearer", expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 365 * 86400, refresh_token: "r", user };
     await page.evaluate((s) => {
       localStorage.setItem("sb-kfoymqjekxxilqkyfavi-auth-token", JSON.stringify(s));
       localStorage.setItem("verbum_notif_dismissed", "1");
       localStorage.setItem("verbum_install_dismissed", String(Date.now()));
     }, session);
-    const json = (body, status = 200) => (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
-    await ctx.route("**/rest/v1/profiles*", json({ name: "Test" }));
-    await ctx.route("**/rest/v1/user_progress*", json([]));
-    await ctx.route("**/rest/v1/events*", json({}, 201));
-    await ctx.route("**/auth/v1/**", json(user));
-    await ctx.route("**/en.wikipedia.org/**", (route) => route.fulfill({ status: 404, body: "" }));
+    await stubSession(ctx);
 
     await step("01-home", async () => {
       await page.goto(BASE + "/");
@@ -173,6 +179,48 @@ async function main() {
       await page.getByRole("button", { name: "Account" }).click();
       await page.getByRole("dialog", { name: "Account" }).waitFor();
     });
+
+    // Offline: with the service worker allowed, the app must load with the server stopped.
+    // Keep this last, because it stops the preview server.
+    const offlineCtx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, userAgent: UA, serviceWorkers: "allow" });
+    await stubSession(offlineCtx);
+    const offlinePage = await offlineCtx.newPage();
+    offlinePage.setDefaultTimeout(15000);
+    let stage = "start";
+    const problems = [];
+    offlinePage.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
+    offlinePage.on("requestfailed", (r) => problems.push(`requestfailed: ${r.url()}`));
+    try {
+      await offlinePage.goto(BASE + "/");
+      await offlinePage.evaluate((s) => {
+        localStorage.setItem("sb-kfoymqjekxxilqkyfavi-auth-token", JSON.stringify(s));
+        localStorage.setItem("verbum_notif_dismissed", "1");
+        localStorage.setItem("verbum_install_dismissed", String(Date.now()));
+      }, session);
+      await offlinePage.evaluate(() => navigator.serviceWorker.ready.then(() => true));
+      stage = "controlled reload";
+      await offlinePage.reload();
+      await offlinePage.getByText("Daily Verse").first().waitFor();
+      const controlled = await offlinePage.evaluate(() => !!navigator.serviceWorker.controller);
+      if (!controlled) throw new Error("page is not controlled by the service worker");
+      process.kill(-server.pid);
+      await new Promise((r) => setTimeout(r, 800));
+      stage = "offline reload";
+      problems.length = 0;
+      await offlinePage.reload();
+      await offlinePage.getByText("Daily Verse").first().waitFor();
+      const fontsOk = await offlinePage.evaluate(() => document.fonts.ready.then(() => document.fonts.check("600 17px Cinzel") && document.fonts.check("500 21px 'EB Garamond'") && document.fonts.check("400 16px Lato")));
+      if (!fontsOk) throw new Error("fonts did not load offline");
+      // A screen whose code loads on demand must also work offline.
+      await offlinePage.getByRole("button", { name: "Prayers", exact: true }).last().click();
+      await offlinePage.getByText("Catholic Prayers").waitFor();
+      await offlinePage.screenshot({ path: path.join(outDir, "17-offline.png") });
+    } catch (e) {
+      failed.push("17-offline");
+      console.error(`FAILED 17-offline at "${stage}": ${String(e.message).split("\n")[0]}`);
+      problems.slice(0, 8).forEach((p) => console.error("  " + p));
+      await offlinePage.screenshot({ path: path.join(outDir, "17-offline-FAILED.png") }).catch(() => {});
+    }
   } finally {
     if (browser) await browser.close();
     try { process.kill(-server.pid); } catch { /* already gone */ }

@@ -4,6 +4,9 @@ import AppHeader from "./components/AppHeader.jsx";
 import BottomNav from "./components/BottomNav.jsx";
 import InstallBanner from "./components/InstallBanner.jsx";
 import NotificationBanner from "./components/NotificationBanner.jsx";
+import OfflineBanner from "./components/OfflineBanner.jsx";
+import UpdateBanner from "./components/UpdateBanner.jsx";
+import { useUpdate, clearUpdate } from "./pwa/updateStore.js";
 import { INSTALL_PATH } from "./config.js";
 import { getDailyVerseStatic } from "./dailyVerse.js";
 import { isStandalone, isIOS, isInAppBrowser } from "./device.js";
@@ -62,6 +65,7 @@ export default function BibleApp() {
   const [userChecked, setUserChecked] = useState(false)
   const [needsName, setNeedsName] = useState(false)
   const route = useRoute()
+  const update = useUpdate()
   const tab = tabOf(route.name) || "home"
   const favorites = useProgress().favorites
   const [hasNewFavorites, setHasNewFavorites] = useState(false)
@@ -227,6 +231,7 @@ export default function BibleApp() {
   return (
     <div style={{ background: PAGE_BG, minHeight: "100vh", width: "100%", maxWidth: 430, margin: "0 auto", fontFamily: FONT_UI, color: TEXT, position: "relative" }}>
       <AppHeader user={user} onSignOut={handleSignOut} />
+      <OfflineBanner />
       <main style={{ paddingBottom: "calc(88px + env(safe-area-inset-bottom))" }}>
         {showInstallBanner && tab === "home" && (
           <InstallBanner
@@ -253,6 +258,7 @@ export default function BibleApp() {
           {tab === "mass" && <MassTab />}
         </Suspense>
       </main>
+      {update && <UpdateBanner apply={update} onDismiss={clearUpdate} />}
       <BottomNav tab={tab} hasNewFavorites={hasNewFavorites} />
     </div>
   )

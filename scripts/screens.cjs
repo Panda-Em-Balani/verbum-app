@@ -125,6 +125,11 @@ async function main() {
       await page.getByRole("button", { name: "Share this verse" }).first().click();
       await page.getByRole("dialog", { name: "Share this verse" }).waitFor();
     });
+    await step("14-account", async () => {
+      await page.getByRole("dialog").getByRole("button", { name: "Close" }).click();
+      await page.getByRole("button", { name: "Account" }).click();
+      await page.getByRole("dialog", { name: "Account" }).waitFor();
+    });
   } finally {
     if (browser) await browser.close();
     try { process.kill(-server.pid); } catch { /* already gone */ }

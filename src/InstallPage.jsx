@@ -4,17 +4,19 @@ import { SITE_URL, INSTALL_PATH } from "./config.js";
 import { detectPlatform, isAndroid, isIPad } from "./device.js";
 import { copyText } from "./share.js";
 import { track } from "./analytics.js";
-import { PAGE_BG, CARD, BORDER, TEXT, TEXT_BODY, MUTED, GOLD, GOLD_DEEP, GOLD_TEXT, FONT_DISPLAY, FONT_UI, R, CARD_SHADOW, CARD_SHADOW_STRONG } from "./theme.js";
+import { PAGE_BG, SURFACE, CARD, BORDER, TEXT, TEXT_BODY, MUTED, GOLD, GOLD_TEXT, FONT_DISPLAY, FONT_UI, R, CARD_SHADOW } from "./theme.js";
+import { primaryButton, secondaryButton } from "./styles/buttons.js";
+import { goldCard, eyebrow, scripture, verseRef } from "./styles/text.js";
 
 
-const primaryBtn = { display: "block", width: "100%", textAlign: "center", textDecoration: "none", background: `linear-gradient(135deg,${GOLD},${GOLD_DEEP})`, border: "none", borderRadius: R.md, padding: "16px", color: "#FFFFFF", fontSize: 17, fontFamily: FONT_DISPLAY, fontWeight: 700, letterSpacing: "0.07em", cursor: "pointer" };
-const secondaryBtn = { display: "block", width: "100%", textAlign: "center", textDecoration: "none", background: "none", border: `1px solid ${BORDER}`, borderRadius: R.sm, padding: "13px", color: MUTED, fontSize: 14, fontFamily: FONT_UI, fontWeight: 700, cursor: "pointer" };
+const primaryBtn = { ...primaryButton, minHeight: 54, fontSize: 17 };
+const secondaryBtn = secondaryButton;
 
 function Step({ n, children }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 0" }}>
-      <div style={{ width: 32, height: 32, borderRadius: "50%", background: `${GOLD}22`, border: `1.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: FONT_DISPLAY, fontWeight: 700, color: GOLD_TEXT, flexShrink: 0 }}>{n}</div>
-      <div style={{ fontFamily: FONT_UI, fontSize: 16, color: TEXT_BODY, fontWeight: 500, lineHeight: 1.5, textAlign: "left", flex: 1 }}>{children}</div>
+      <div style={{ width: 32, height: 32, borderRadius: "50%", background: SURFACE, border: `1.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: FONT_DISPLAY, fontWeight: 700, color: GOLD_TEXT, flexShrink: 0 }}>{n}</div>
+      <div style={{ fontFamily: FONT_UI, fontSize: 16, color: TEXT_BODY, fontWeight: 400, lineHeight: 1.5, textAlign: "left", flex: 1 }}>{children}</div>
     </div>
   );
 }
@@ -65,19 +67,18 @@ export default function InstallPage({ verse, sharedVerse, installPrompt, onInsta
 
   return (
     <div style={{ background: PAGE_BG, minHeight: "100vh", fontFamily: FONT_UI, color: TEXT, display: "flex", justifyContent: "center" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@400;500;700&display=swap');*{box-sizing:border-box}body{margin:0}@keyframes vbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}`}</style>
       <main style={{ width: "100%", maxWidth: 430, padding: "calc(28px + env(safe-area-inset-top)) 20px calc(80px + env(safe-area-inset-bottom))" }}>
         <div style={{ textAlign: "center", marginBottom: 22 }}>
           <img src="/icon-192.png" alt="Verbum" width="72" height="72" style={{ borderRadius: 18, marginBottom: 12 }} />
           <h1 style={{ margin: 0, fontFamily: FONT_DISPLAY, fontSize: 26, letterSpacing: "0.2em", color: TEXT }}>VERBUM</h1>
-          <p style={{ margin: "6px 0 0", fontSize: 15, color: MUTED, fontWeight: 500 }}>A Catholic companion for daily Scripture and prayer</p>
+          <p style={{ margin: "6px 0 0", fontSize: 15, color: MUTED, fontWeight: 400 }}>A Catholic companion for daily Scripture and prayer</p>
         </div>
 
         {verse && (
-          <div style={{ background: "linear-gradient(135deg,#FFFCF5,#FFF3D6)", border: `1px solid ${GOLD}60`, borderRadius: R.lg, padding: 22, marginBottom: 22, boxShadow: CARD_SHADOW_STRONG }}>
-            <div style={{ fontSize: 12, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10, fontFamily: FONT_DISPLAY }}>{sharedVerse ? "A verse for you" : "Today's Verse"}</div>
-            <div style={{ fontFamily: FONT_DISPLAY, fontSize: 17, lineHeight: 1.9, fontWeight: 600, marginBottom: 10 }}>"{verse.text}"</div>
-            <div style={{ fontFamily: FONT_DISPLAY, fontSize: 13, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.14em" }}>— {verse.ref}</div>
+          <div style={{ ...goldCard, borderRadius: R.lg, padding: 22, marginBottom: 22 }}>
+            <div style={{ ...eyebrow, marginBottom: 10 }}>{sharedVerse ? "A verse for you" : "Today's Verse"}</div>
+            <div style={{ ...scripture(19), marginBottom: 10 }}>“{verse.text}”</div>
+            <div style={verseRef}>{verse.ref}</div>
           </div>
         )}
 

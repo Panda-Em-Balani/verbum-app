@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import InstallPage from "./InstallPage.jsx";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { track } from "./analytics.js";
 import AppHeader from "./components/AppHeader.jsx";
 import BottomNav from "./components/BottomNav.jsx";
@@ -10,17 +9,39 @@ import { getDailyVerseStatic } from "./dailyVerse.js";
 import { isStandalone, isIOS, isInAppBrowser } from "./device.js";
 import { initNotifications, getNotificationPermission } from "./notifications.js";
 import { useProgress, initProgress, resetProgress, toggleFavorite } from "./progress.js";
-import ExploreTab from "./screens/ExploreScreen.jsx";
-import MassTab from "./screens/MassScreen.jsx";
-import SoulCheckTab from "./screens/SoulScreen.jsx";
 import LoginPage from "./screens/auth/LoginPage.jsx";
 import NamePrompt from "./screens/auth/NamePrompt.jsx";
 import HomeTab from "./screens/home/HomeScreen.jsx";
-import PrayersTab from "./screens/prayers/PrayersScreen.jsx";
-import { GLOBAL_CSS } from "./styles/globalCss.js";
 import { supabase } from "./supabase.js";
 import { findVerse } from "./verses.js";
-import { PAGE_BG, TEXT, FONT_UI } from "./theme.js";
+import { Cross } from "./components/Icons.jsx";
+import { PAGE_BG, TEXT, MUTED, FONT_UI } from "./theme.js";
+
+// Screens other than Home load when first opened.
+const InstallPage = lazy(() => import("./InstallPage.jsx"));
+const SoulCheckTab = lazy(() => import("./screens/SoulScreen.jsx"));
+const ExploreTab = lazy(() => import("./screens/ExploreScreen.jsx"));
+const PrayersTab = lazy(() => import("./screens/prayers/PrayersScreen.jsx"));
+const MassTab = lazy(() => import("./screens/MassScreen.jsx"));
+
+// Full-page placeholder while the session is checked.
+function Splash() {
+  return (
+    <div role="status" style={{ minHeight: "100vh", background: PAGE_BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
+      <Cross size={32} />
+      <div style={{ fontFamily: FONT_UI, fontSize: 14, color: MUTED }}>Loading…</div>
+    </div>
+  );
+}
+
+// In-page placeholder while a screen's code loads; sits where screen titles sit.
+function ScreenLoading() {
+  return (
+    <div role="status" aria-label="Loading" style={{ display: "flex", justifyContent: "center", padding: "24px 0", marginTop: "calc(56px + env(safe-area-inset-top))" }}>
+      <Cross size={28} />
+    </div>
+  );
+}
 
 // Re-show the install banner a week after "Later" instead of hiding it forever.
 const INSTALL_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000
@@ -182,11 +203,10 @@ export default function BibleApp() {
     window.location.assign(`${INSTALL_PATH}?ref=banner`)
   }
 
+  // The account sheet asks for confirmation before calling this.
   const handleSignOut = async () => {
-    if (window.confirm("Sign out of Verbum?")) {
-      await supabase.auth.signOut()
-      setUser(null)
-    }
+    await supabase.auth.signOut()
+    setUser(null)
   }
 
   const handleTabChange = (id) => {
@@ -197,23 +217,16 @@ export default function BibleApp() {
   //  Public install page (no login needed) 
   if (window.location.pathname.replace(/\/+$/, "") === INSTALL_PATH) {
     const sharedVerse = findVerse(sharedSlug)
-    return <InstallPage verse={sharedVerse || getDailyVerseStatic()} sharedVerse={!!sharedVerse} installPrompt={installPrompt} onInstall={installViaPrompt} installed={installed} />
+    return (
+      <Suspense fallback={<Splash />}>
+        <InstallPage verse={sharedVerse || getDailyVerseStatic()} sharedVerse={!!sharedVerse} installPrompt={installPrompt} onInstall={installViaPrompt} installed={installed} />
+      </Suspense>
+    )
   }
 
   //  Wait for session check 
   if (!userChecked) {
-    return (
-      <div style={{ minHeight: "100vh", background: PAGE_BG, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap')`}</style>
-        <div style={{ textAlign: "center" }}>
-          <svg width="32" height="32" viewBox="0 0 20 20" fill="none" style={{ marginBottom: 16 }}>
-            <rect x="8.5" y="2" width="3" height="16" rx="1" fill="#DAA520"/>
-            <rect x="2" y="7.5" width="16" height="3" rx="1" fill="#DAA520"/>
-          </svg>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: "#8B7355", letterSpacing: "0.1em" }}>Loading...</div>
-        </div>
-      </div>
-    )
+    return <Splash />
   }
 
   //  Show login if not authenticated 
@@ -235,11 +248,9 @@ export default function BibleApp() {
   }
 
   return (
-    <div style={{ background: PAGE_BG, minHeight: "100vh", width: "100%", fontFamily:FONT_UI, color: TEXT, position: "relative" }}>
-      <style>{GLOBAL_CSS}</style>
-
-      <AppHeader tab={tab} user={user} onSignOut={handleSignOut} />
-      <div style={{ overflowY: "auto", paddingBottom: "calc(88px + env(safe-area-inset-bottom))" }}>
+    <div style={{ background: PAGE_BG, minHeight: "100vh", width: "100%", maxWidth: 430, margin: "0 auto", fontFamily: FONT_UI, color: TEXT, position: "relative" }}>
+      <AppHeader user={user} onSignOut={handleSignOut} />
+      <main style={{ paddingBottom: "calc(88px + env(safe-area-inset-bottom))" }}>
         {showInstallBanner && tab === "home" && (
           <InstallBanner
             onInstall={handleInstall}
@@ -257,16 +268,15 @@ export default function BibleApp() {
           />
         )}
 
-        {tab === "home"    && <HomeTab favorites={favorites} onFav={onFav} user={user} />}
-        {tab === "soul"    && <SoulCheckTab favorites={favorites} onFav={onFav} />}
-        {tab === "explore" && <ExploreTab favorites={favorites} onFav={onFav} />}
-        {tab === "prayers" && <PrayersTab />}
-        {tab === "mass"    && <MassTab />}
-      </div>
-
+        {tab === "home" && <HomeTab favorites={favorites} onFav={onFav} user={user} />}
+        <Suspense fallback={<ScreenLoading />}>
+          {tab === "soul" && <SoulCheckTab favorites={favorites} onFav={onFav} />}
+          {tab === "explore" && <ExploreTab favorites={favorites} onFav={onFav} />}
+          {tab === "prayers" && <PrayersTab />}
+          {tab === "mass" && <MassTab />}
+        </Suspense>
+      </main>
       <BottomNav tab={tab} onChange={handleTabChange} hasNewFavorites={hasNewFavorites} />
-
-
     </div>
   )
 }

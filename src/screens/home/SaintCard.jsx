@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import ShareButton from "../../ShareButton.jsx";
 import { Cross } from "../../components/Icons.jsx";
 import Pill from "../../components/Pill.jsx";
-import { SURFACE, CARD, BORDER, TEXT, TEXT_BODY, MUTED, GOLD, GOLD_TEXT, FONT_DISPLAY, FONT_UI, R, CARD_SHADOW_STRONG } from "../../theme.js";
+import { SURFACE, BORDER, TEXT, FONT_SCRIPTURE, R, CARD_SHADOW_STRONG } from "../../theme.js";
+import { card, cardTitle, eyebrow, body, secondary, noteBlock } from "../../styles/text.js";
 
 export default function SaintOfDayCard({ saint }) {
   const [fetched, setFetched] = useState({ title: null, url: null });
@@ -14,8 +15,8 @@ export default function SaintOfDayCard({ saint }) {
   useEffect(() => {
     if (!saint.wikiTitle || cachedUrl) return;
     fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(saint.wikiTitle)}`)
-      .then(r => r.json())
-      .then(data => {
+      .then((r) => r.json())
+      .then((data) => {
         const url = data.thumbnail?.source || null;
         if (url) {
           sessionStorage.setItem(cacheKey, url);
@@ -25,56 +26,38 @@ export default function SaintOfDayCard({ saint }) {
       .catch(() => {});
   }, [saint.wikiTitle, cachedUrl, cacheKey]);
 
-  const feastDate = new Date(2024, saint.feast.m - 1, saint.feast.d)
-    .toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  const feastDate = new Date(2024, saint.feast.m - 1, saint.feast.d).toLocaleDateString("en-US", { month: "long", day: "numeric" });
 
   return (
-    <div style={{ background: CARD, border: `1.5px solid ${BORDER}`, borderRadius: R.md, padding: 20, marginBottom: 16, boxShadow: CARD_SHADOW_STRONG, overflow: "hidden" }}>
-      {/* Header row with photo */}
+    <div style={{ ...card, marginBottom: 16, boxShadow: CARD_SHADOW_STRONG }}>
       <div style={{ display: "flex", gap: 14, marginBottom: 14 }}>
-        {/* Photo */}
-        <div style={{ width: 80, height: 80, borderRadius: R.sm, overflow: "hidden", flexShrink: 0, background: `linear-gradient(135deg,${GOLD}20,${GOLD}08)`, border: `1.5px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 80, height: 80, borderRadius: R.sm, overflow: "hidden", flexShrink: 0, background: SURFACE, border: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
           {photoUrl ? (
-            <img
-              src={photoUrl}
-              alt={saint.name}
-              onLoad={() => setPhotoLoaded(true)}
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", opacity: photoLoaded ? 1 : 0, transition: "opacity 0.3s" }}
-            />
+            <img src={photoUrl} alt={saint.name} onLoad={() => setPhotoLoaded(true)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", opacity: photoLoaded ? 1 : 0, transition: "opacity 0.3s" }} />
           ) : (
             <Cross size={28} />
           )}
         </div>
-
-        {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4, fontFamily: FONT_DISPLAY }}>Saint of the Day</div>
-          <div style={{ fontFamily: FONT_DISPLAY, fontSize: 17, color: TEXT, fontWeight: 700, letterSpacing: "0.04em", marginBottom: 4, lineHeight: 1.3 }}>{saint.name}</div>
-          <div style={{ fontSize: 13, color: MUTED, fontFamily:FONT_UI, fontWeight: 500 }}>Feast Day: {feastDate}</div>
+          <div style={{ ...eyebrow, marginBottom: 4 }}>Saint of the Day</div>
+          <div style={{ ...cardTitle, fontWeight: 700, marginBottom: 4 }}>{saint.name}</div>
+          <div style={{ ...secondary, fontSize: 14 }}>Feast Day: {feastDate}</div>
         </div>
       </div>
 
-      {/* Patron */}
       {saint.patron && (
-        <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 12, color: GOLD_TEXT, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6, fontFamily: FONT_DISPLAY }}>Patron of</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-            {saint.patron.map(p => <Pill key={p} label={p} />)}
-          </div>
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ ...eyebrow, marginBottom: 6 }}>Patron of</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{saint.patron.map((p) => <Pill key={p} label={p} />)}</div>
         </div>
       )}
 
-      {/* Themes */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 12 }}>
-        {saint.themes.map(t => <Pill key={t} label={t} />)}
-      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>{saint.themes.map((t) => <Pill key={t} label={t} />)}</div>
 
-      {/* Bio */}
-      <p style={{ fontSize: 15, color: TEXT_BODY, lineHeight: 1.75, marginBottom: 16, fontFamily:FONT_UI, fontWeight: 500 }}>{saint.bio}</p>
+      <p style={{ ...body, marginBottom: 16 }}>{saint.bio}</p>
 
-      {/* Quote */}
-      <div style={{ borderLeft: `3px solid ${GOLD}`, padding: "11px 14px", background: SURFACE, borderRadius: "0 12px 12px 0" }}>
-        <div style={{ fontFamily: FONT_DISPLAY, fontSize: 15, color: TEXT, lineHeight: 1.7, fontWeight: 500 }}>"{saint.quote}"</div>
+      <div style={noteBlock}>
+        <div style={{ fontFamily: FONT_SCRIPTURE, fontStyle: "italic", fontWeight: 500, fontSize: 18, lineHeight: 1.5, color: TEXT }}>“{saint.quote}”</div>
       </div>
       <div style={{ marginTop: 14 }}><ShareButton text={saint.quote} verseRef={saint.name} source="saint" /></div>
     </div>

@@ -1,5 +1,8 @@
-import { SURFACE, BORDER, GOLD_TEXT, FONT_UI, R } from "../theme.js";
+import { SURFACE, BORDER, MUTED, FONT_UI } from "../theme.js";
 
-const Pill=({label})=><span style={{fontSize:13,background:SURFACE,color:GOLD_TEXT,padding:"3px 10px",borderRadius:R.lg,letterSpacing:"0.04em",fontFamily:FONT_UI,display:"inline-block",border:`1px solid ${BORDER}`}}>{label}</span>;
+// Small read-only tag (themes, patronages).
+const Pill = ({ label }) => (
+  <span style={{ display: "inline-block", fontFamily: FONT_UI, fontSize: 13, color: MUTED, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "3px 10px", textTransform: "capitalize" }}>{label}</span>
+);
 
 export default Pill;

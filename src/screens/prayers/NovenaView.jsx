@@ -2,45 +2,85 @@ import { useState } from "react";
 import { ChevIco } from "../../components/Icons.jsx";
 import { NOVENAS } from "../../content/novenas.js";
 import { useProgress, toggleNovenaDay } from "../../progress.js";
-import { SURFACE, CARD, BORDER, TEXT, TEXT_BODY, MUTED, GOLD, GOLD_DEEP, GOLD_TEXT, FONT_DISPLAY, FONT_UI, R } from "../../theme.js";
+import { GOLD, GOLD_TEXT, ON_GOLD, CARD, BORDER, MUTED, SUCCESS, SUCCESS_BG, FONT_DISPLAY, R, CARD_SHADOW } from "../../theme.js";
+import { backLink, secondaryButton } from "../../styles/buttons.js";
+import { card, cardTitle, eyebrow, body, secondary, prayerText, screenTitle } from "../../styles/text.js";
+
+const stepButton = (disabled) => ({ ...secondaryButton, flex: 1, width: "auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.4 : 1 });
 
 export default function NovenaView({ onBack }) {
-  const [selected,setSelected]=useState(null); const [currentDay,setCurrentDay]=useState(0); const prayedDays=useProgress().novena;
+  const [selected, setSelected] = useState(null);
+  const [currentDay, setCurrentDay] = useState(0);
+  const prayedDays = useProgress().novena;
+
   if (selected) {
-    const novena=NOVENAS.find(n=>n.id===selected); const day=novena.days[currentDay]; const hasCompleted=prayedDays.has(`${selected}-${currentDay}`);
+    const novena = NOVENAS.find((n) => n.id === selected);
+    const day = novena.days[currentDay];
+    const hasCompleted = prayedDays.has(`${selected}-${currentDay}`);
     return (
       <div>
-        <button onClick={()=>setSelected(null)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:MUTED,fontSize:15,cursor:"pointer",fontFamily:FONT_UI,marginBottom:16,padding:0,minHeight:44}}><ChevIco dir="left"/> Back to Novenas</button>
-        <div style={{background:novena.color,border:`1px solid ${novena.border}`,borderRadius:R.md,padding:20,marginBottom:14}}>
-          <div style={{fontSize:12,color:novena.accent||GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:FONT_DISPLAY,marginBottom:6}}>Novena</div>
-          <div style={{fontFamily:FONT_DISPLAY,fontSize:19,color:TEXT,fontWeight:600,letterSpacing:"0.06em",marginBottom:4}}>{novena.title}</div>
-          <div style={{fontSize:14,color:novena.accent||GOLD_TEXT,fontFamily:FONT_DISPLAY,letterSpacing:"0.08em",marginBottom:12}}>{novena.subtitle}</div>
-          <p style={{fontSize:15,color:TEXT_BODY,lineHeight:1.78,fontFamily:FONT_UI}}>{novena.description}</p>
+        <button type="button" onClick={() => setSelected(null)} style={backLink}><ChevIco dir="left" /> Back to Novenas</button>
+        <div style={{ background: novena.color, border: `1px solid ${novena.border}`, borderRadius: R.md, padding: 20, marginBottom: 14 }}>
+          <div style={{ ...eyebrow, color: novena.accent || GOLD_TEXT, marginBottom: 6 }}>Novena</div>
+          <h1 style={{ ...cardTitle, fontSize: 19, margin: "0 0 2px" }}>{novena.title}</h1>
+          <div style={{ ...secondary, color: novena.accent || GOLD_TEXT, marginBottom: 10 }}>{novena.subtitle}</div>
+          <p style={body}>{novena.description}</p>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(9,1fr)",marginBottom:14}}>
-          {novena.days.map((_,i)=>{const done=prayedDays.has(`${selected}-${i}`);const active=currentDay===i;return<button key={i} aria-label={`Day ${i+1}${done?", prayed":""}`} aria-current={active?"step":undefined} onClick={()=>setCurrentDay(i)} style={{width:34,height:34,margin:"5px auto",borderRadius:"50%",padding:0,background:active?GOLD:done?"#EAF6EC":CARD,border:`1.5px solid ${active?GOLD:done?"#4A9A5A":BORDER}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:active?"#1A1000":done?"#2E6B36":MUTED,fontSize:14,fontFamily:FONT_DISPLAY,fontWeight:active?700:400}}>{done&&!active?"\u2713":i+1}</button>;})}
+
+        <div role="group" aria-label="Days" style={{ display: "grid", gridTemplateColumns: "repeat(9,1fr)", marginBottom: 14 }}>
+          {novena.days.map((_, i) => {
+            const done = prayedDays.has(`${selected}-${i}`);
+            const active = currentDay === i;
+            return (
+              <button key={i} type="button" aria-label={`Day ${i + 1}${done ? ", prayed" : ""}`} aria-current={active ? "step" : undefined} onClick={() => setCurrentDay(i)} style={{ height: 44, padding: 0, background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ width: 34, height: 34, borderRadius: "50%", background: active ? GOLD : done ? SUCCESS_BG : CARD, border: `1.5px solid ${active ? GOLD : done ? SUCCESS : BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", color: active ? ON_GOLD : done ? SUCCESS : MUTED, fontSize: 14, fontFamily: FONT_DISPLAY, fontWeight: 700 }}>{done && !active ? "✓" : i + 1}</span>
+              </button>
+            );
+          })}
         </div>
-        <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:R.md,padding:20,marginBottom:12}}>
-          <div style={{fontSize:12,color:GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:FONT_DISPLAY,marginBottom:6}}>Day {currentDay+1}</div>
-          <div style={{fontFamily:FONT_DISPLAY,fontSize:17,color:TEXT,fontWeight:600,marginBottom:4}}>Intention</div>
-          <div style={{fontSize:15,color:GOLD_TEXT,fontFamily:FONT_DISPLAY,letterSpacing:"0.06em",marginBottom:16}}>{day.intention}</div>
-          <div style={{borderTop:`1px solid ${BORDER}`,paddingTop:16}}><div style={{fontSize:12,color:GOLD_TEXT,letterSpacing:"0.2em",textTransform:"uppercase",fontFamily:FONT_DISPLAY,marginBottom:10}}>Prayer</div><div style={{fontFamily:FONT_DISPLAY,fontSize:14,color:TEXT_BODY,lineHeight:2.1,whiteSpace:"pre-line"}}>{day.prayer}</div></div>
+
+        <div style={{ ...card, marginBottom: 12 }}>
+          <div style={{ ...eyebrow, marginBottom: 6 }}>Day {currentDay + 1} · Intention</div>
+          <div style={{ ...cardTitle, marginBottom: 16 }}>{day.intention}</div>
+          <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 16 }}>
+            <div style={{ ...eyebrow, marginBottom: 8 }}>Prayer</div>
+            <div style={prayerText}>{day.prayer}</div>
+          </div>
         </div>
-        <button onClick={()=>toggleNovenaDay(`${selected}-${currentDay}`)} style={{width:"100%",background:hasCompleted?"#EAF6EC":SURFACE,border:`1px solid ${hasCompleted?"#4A9A5A":GOLD+"66"}`,borderRadius:R.sm,padding:"13px",color:hasCompleted?"#2E6B36":GOLD_TEXT,fontSize:15,fontFamily:FONT_DISPLAY,fontWeight:600,letterSpacing:"0.08em",cursor:"pointer",marginBottom:10}}>{hasCompleted?"\u2713 Prayed Today":"Mark as Prayed"}</button>
-        <div style={{display:"flex",gap:10}}>
-          <button onClick={()=>{if(currentDay>0){setCurrentDay(currentDay-1);}}} disabled={currentDay===0} style={{flex:1,background:CARD,border:`1px solid ${currentDay===0?BORDER:GOLD+"40"}`,borderRadius:R.sm,padding:"12px 0",minHeight:44,cursor:currentDay===0?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===0?.35:1}}><ChevIco dir="left"/><span style={{fontSize:15,color:MUTED,fontFamily:FONT_UI,fontWeight:500}}>Previous</span></button>
-          <button onClick={()=>{if(currentDay<8)setCurrentDay(currentDay+1);}} disabled={currentDay===8} style={{flex:1,background:currentDay===8?CARD:SURFACE,border:`1px solid ${currentDay===8?BORDER:GOLD+"55"}`,borderRadius:R.sm,padding:"12px 0",minHeight:44,cursor:currentDay===8?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:currentDay===8?.35:1}}><span style={{fontSize:15,color:currentDay===8?MUTED:GOLD_TEXT,fontFamily:FONT_UI}}>{currentDay===8?"Complete":"Next Day"}</span>{currentDay<8&&<ChevIco/>}</button>
+
+        <button type="button" aria-pressed={hasCompleted} onClick={() => toggleNovenaDay(`${selected}-${currentDay}`)} style={{ ...secondaryButton, minHeight: 48, marginBottom: 10, background: hasCompleted ? SUCCESS_BG : "none", borderColor: hasCompleted ? SUCCESS : GOLD, color: hasCompleted ? SUCCESS : GOLD_TEXT }}>{hasCompleted ? `✓ Day ${currentDay + 1} prayed` : `Mark day ${currentDay + 1} as prayed`}</button>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button type="button" onClick={() => setCurrentDay(currentDay - 1)} disabled={currentDay === 0} style={stepButton(currentDay === 0)}><ChevIco dir="left" />Previous</button>
+          <button type="button" onClick={() => setCurrentDay(currentDay + 1)} disabled={currentDay === 8} style={stepButton(currentDay === 8)}>Next day<ChevIco /></button>
         </div>
       </div>
     );
   }
+
   return (
     <div>
-      <button onClick={onBack} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:MUTED,fontSize:15,cursor:"pointer",fontFamily:FONT_UI,marginBottom:16,padding:0,minHeight:44}}><ChevIco dir="left"/> Back to Prayers</button>
-      <div style={{fontFamily:FONT_DISPLAY,fontSize:19,color:TEXT,fontWeight:600,letterSpacing:"0.07em",marginBottom:4}}>Novenas</div>
-      <p style={{fontSize:15,color:MUTED,fontFamily:FONT_UI,fontWeight:500,marginBottom:18,lineHeight:1.7}}>A novena is nine days of prayer offered for a particular intention. Select one to begin.</p>
-      <div style={{display:"flex",flexDirection:"column",gap:12}}>
-        {NOVENAS.map(n=><button key={n.id} onClick={()=>{setSelected(n.id);setCurrentDay(0);}} style={{background:n.color,border:`1px solid ${n.border}`,borderRadius:R.md,padding:18,cursor:"pointer",textAlign:"left",width:"100%"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div style={{flex:1}}><div style={{fontFamily:FONT_DISPLAY,fontSize:17,color:TEXT,fontWeight:600,letterSpacing:"0.06em",marginBottom:3}}>{n.title}</div><div style={{fontSize:14,color:n.accent||GOLD_DEEP,fontFamily:FONT_DISPLAY,letterSpacing:"0.08em",marginBottom:10}}>{n.subtitle}</div><p style={{fontSize:14,color:MUTED,lineHeight:1.7,fontFamily:FONT_UI}}>{n.description.substring(0,100)}...</p></div><ChevIco/></div><div style={{marginTop:12,display:"flex",gap:5}}>{Array.from({length:9},(_,i)=><div key={i} style={{width:18,height:4,borderRadius:2,background:prayedDays.has(`${n.id}-${i}`)?"#4A9A5A":BORDER}}/>)}</div></button>)}
+      <button type="button" onClick={onBack} style={backLink}><ChevIco dir="left" /> Back to Prayers</button>
+      <h1 style={{ ...screenTitle, margin: "0 0 4px" }}>Novenas</h1>
+      <p style={{ ...secondary, marginBottom: 18 }}>A novena is nine days of prayer offered for a particular intention. Select one to begin.</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {NOVENAS.map((n) => {
+          const count = n.days.filter((_, i) => prayedDays.has(`${n.id}-${i}`)).length;
+          return (
+            <button key={n.id} type="button" onClick={() => { setSelected(n.id); setCurrentDay(0); }} style={{ background: n.color, border: `1px solid ${n.border}`, borderRadius: R.md, padding: 18, cursor: "pointer", textAlign: "left", width: "100%", boxShadow: CARD_SHADOW }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ ...cardTitle, marginBottom: 2 }}>{n.title}</div>
+                  <div style={{ ...secondary, fontSize: 14, color: n.accent || GOLD_TEXT, marginBottom: 8 }}>{n.subtitle}</div>
+                  <p style={{ ...secondary, fontSize: 14, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{n.description}</p>
+                </div>
+                <ChevIco />
+              </div>
+              <div aria-label={`${count} of 9 days prayed`} role="img" style={{ marginTop: 12, display: "flex", gap: 5 }}>
+                {Array.from({ length: 9 }, (_, i) => <div key={i} style={{ width: 18, height: 4, borderRadius: 2, background: prayedDays.has(`${n.id}-${i}`) ? SUCCESS : BORDER }} />)}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

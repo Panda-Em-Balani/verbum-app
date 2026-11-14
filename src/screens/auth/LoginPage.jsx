@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { supabase } from "./supabase.js"
+import { supabase } from "../../supabase.js"
 
 const GOLD = "#9A6B1F"
 const SURFACE = "#EDE5D6"

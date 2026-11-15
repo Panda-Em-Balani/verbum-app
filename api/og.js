@@ -3,6 +3,7 @@ import path from "node:path";
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import { findVerse } from "../src/verses.js";
+import { SITE_URL } from "../src/config.js";
 
 // Draws the 1200x630 link-preview image for a shared verse: /api/og?v=<verse-slug>
 // Runs on the Node runtime; the font and logo are bundled via "includeFiles" in vercel.json.
@@ -34,7 +35,8 @@ export default async function handler(req, res) {
       publicFile("icon-192.png").catch(() => null),
     ]);
     const logo = icon ? `data:image/png;base64,${icon.toString("base64")}` : null;
-    const host = req.headers["x-forwarded-host"] || req.headers.host || "verbum-app-two.vercel.app";
+    // Always print the public address, never a long preview-deployment hostname.
+    const host = SITE_URL.replace(/^https?:\/\//, "");
 
     const tree = h(
       "div",

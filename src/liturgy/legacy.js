@@ -35,3 +35,19 @@ export function getLiturgicalSeason(date = new Date()) {
   return {name:"Ordinary Time",bg:"#EAF4EE",border:"#5A9A6A",light:"#3A7A4A",desc:"The Church invites us to grow in faith, hope, and love through the teachings of Christ.",cats:["wisdom","trust","love"]};
 }
 export function isThreeOClockHour(date = new Date()) { return date.getHours() === 15; }
+
+// A season-only liturgical day, computed without calendar data. Used for years the
+// generated calendar does not cover.
+const FALLBACK = {
+  "Advent": { season: "advent", color: "purple" },
+  "Christmas": { season: "christmas", color: "white" },
+  "Lent": { season: "lent", color: "purple" },
+  "Easter": { season: "easter", color: "white" },
+  "Ordinary Time": { season: "ordinary", color: "green" },
+};
+export function fallbackDay(date = new Date()) {
+  const name = getLiturgicalSeason(date).name;
+  const pad = (n) => String(n).padStart(2, "0");
+  const dateKey = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  return { dateKey, key: null, name, rank: "FERIA", ...FALLBACK[name], source: "fallback" };
+}

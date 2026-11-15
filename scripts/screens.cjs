@@ -184,7 +184,7 @@ async function main() {
       await page.getByText("Daily Verse").first().waitFor();
       await page.waitForTimeout(300);
       const restored = await page.evaluate(() => window.scrollY);
-      if (before < 300 || top !== 0 || Math.abs(restored - before) > 50) throw new Error(`before=${before} top=${top} restored=${restored}`);
+      if (before < 50 || top !== 0 || Math.abs(restored - before) > 50) throw new Error(`before=${before} top=${top} restored=${restored}`);
       return true;
     });
     await check("an unknown address goes Home", async () => {

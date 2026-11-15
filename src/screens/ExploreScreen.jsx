@@ -4,7 +4,7 @@ import Pill from "../components/Pill.jsx";
 import VerseCard from "../components/VerseCard.jsx";
 import { navigate } from "../router.js";
 import { CATEGORIES } from "../content/categories.js";
-import { VERSES, DAILY_VERSES } from "../verses.js";
+import { LIBRARY, favoriteKey } from "../verses.js";
 import { BORDER, DANGER, FONT_UI } from "../theme.js";
 import { chip, segment, segmentGroup } from "../styles/buttons.js";
 import { card, cardTitle, scripture, verseRef, body, secondary, screenWrap, screenHeader, screenTitle, screenSub } from "../styles/text.js";
@@ -13,11 +13,9 @@ export default function ExploreTab({ route, favorites, onFav }) {
   const view = route.name === "exploreSaved" ? "favorites" : "browse";
   const [selectedCat, setSelectedCat] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
-  const filtered = selectedCat ? VERSES.filter((v) => v.category.includes(selectedCat)) : VERSES;
-  // Library favourites are saved by id, daily-verse favourites by reference.
-  const favVerses = VERSES.filter((v) => favorites.has(v.id));
-  const favDailyVerses = DAILY_VERSES.filter((v) => favorites.has(v.ref)).map((v) => ({ ...v, id: v.ref, category: v.category || [] }));
-  const allFavVerses = [...favVerses, ...favDailyVerses];
+  const filtered = selectedCat ? LIBRARY.filter((v) => v.category.includes(selectedCat)) : LIBRARY;
+  const isSaved = (v) => favorites.has(favoriteKey(v, favorites));
+  const allFavVerses = LIBRARY.filter(isSaved);
   const toggle = (id) => setExpandedId(expandedId === id ? null : id);
   const tabs = [{ id: "browse", path: "/explore", label: "Browse" }, { id: "favorites", path: "/explore/saved", label: `Saved${allFavVerses.length ? ` (${allFavVerses.length})` : ""}` }];
 
@@ -42,7 +40,7 @@ export default function ExploreTab({ route, favorites, onFav }) {
             })}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {filtered.map((v) => <VerseCard key={v.id} verse={v} expanded={expandedId === v.id} onToggle={() => toggle(v.id)} isFav={favorites.has(v.id)} onFav={onFav} />)}
+            {filtered.map((v) => <VerseCard key={v.id} verse={v} expanded={expandedId === v.id} onToggle={() => toggle(v.id)} isFav={isSaved(v)} onFav={() => onFav(favoriteKey(v, favorites))} />)}
           </div>
         </>
       )}
@@ -68,7 +66,7 @@ export default function ExploreTab({ route, favorites, onFav }) {
                 </div>
               )}
               <div style={{ borderTop: `1px solid ${BORDER}`, padding: "8px 16px", display: "flex", justifyContent: "flex-end" }}>
-                <button type="button" onClick={() => onFav(v.id)} style={{ minHeight: 44, padding: "0 14px", background: "none", border: "none", color: DANGER, fontFamily: FONT_UI, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Remove</button>
+                <button type="button" onClick={() => onFav(favoriteKey(v, favorites))} style={{ minHeight: 44, padding: "0 14px", background: "none", border: "none", color: DANGER, fontFamily: FONT_UI, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Remove</button>
               </div>
             </div>
           ))}

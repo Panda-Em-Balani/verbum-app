@@ -4,6 +4,7 @@ import { SITE_URL, INSTALL_PATH } from "./config.js";
 import { detectPlatform, isAndroid, isIPad } from "./device.js";
 import { copyText } from "./share.js";
 import { track } from "./analytics.js";
+import { NABRE_NOTICE } from "./content/credits.js";
 import { PAGE_BG, SURFACE, CARD, BORDER, TEXT, TEXT_BODY, MUTED, GOLD, GOLD_TEXT, FONT_DISPLAY, FONT_UI, R, CARD_SHADOW } from "./theme.js";
 import { primaryButton, secondaryButton } from "./styles/buttons.js";
 import { goldCard, eyebrow, scripture, verseRef } from "./styles/text.js";
@@ -157,6 +158,7 @@ export default function InstallPage({ verse, sharedVerse, installPrompt, onInsta
             Just want a look? <a href="/" style={{ color: GOLD_TEXT, fontWeight: 700 }}>Continue in the browser</a>
           </p>
         )}
+        <p style={{ marginTop: 28, fontSize: 12, lineHeight: 1.5, color: MUTED, textAlign: "center" }}>{NABRE_NOTICE}</p>
       </main>
     </div>
   );

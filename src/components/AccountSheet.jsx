@@ -2,6 +2,7 @@ import { useState } from "react";
 import Dialog from "./Dialog.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import { ChevIco } from "./Icons.jsx";
+import { NABRE_NOTICE } from "../content/credits.js";
 import { BORDER, MUTED, TEXT, FONT_UI } from "../theme.js";
 import { secondaryButton } from "../styles/buttons.js";
 import { cardTitle, secondary } from "../styles/text.js";
@@ -24,6 +25,7 @@ export default function AccountSheet({ open, onClose, user, onSignOut }) {
           <div style={{ padding: "0 2px 14px", borderBottom: `1px solid ${BORDER}` }}>
             <p style={secondary}>Verbum is a Catholic companion for daily Scripture and prayer.</p>
             <p style={{ ...secondary, fontSize: 13, color: MUTED, marginTop: 6 }}>Version {import.meta.env.VITE_APP_VERSION}</p>
+            <p style={{ ...secondary, fontSize: 12, lineHeight: 1.5, color: MUTED, marginTop: 10 }}>{NABRE_NOTICE}</p>
           </div>
         )}
 

@@ -1,0 +1,2 @@
+// Required notice for the Scripture translation quoted in the app.
+export const NABRE_NOTICE = "Scripture texts in this work are taken from the New American Bible, revised edition © 2010, 1991, 1986, 1970 Confraternity of Christian Doctrine, Inc., Washington, DC and are used by permission of the copyright owner. All Rights Reserved. No part of the New American Bible may be reproduced in any form without permission in writing from the copyright owner.";

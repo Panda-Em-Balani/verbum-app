@@ -1,14 +1,14 @@
 import { useState } from "react";
 import VerseCard from "../components/VerseCard.jsx";
 import { CATEGORIES } from "../content/categories.js";
-import { VERSES } from "../verses.js";
+import { LIBRARY, favoriteKey } from "../verses.js";
 import { chip } from "../styles/buttons.js";
 import { goldCard, eyebrow, body, prayerText, noteBlock, screenWrap, screenHeader, screenTitle, screenSub } from "../styles/text.js";
 
 export default function SoulCheckTab({ favorites, onFav }) {
   const [feeling, setFeeling] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
-  const matched = feeling ? VERSES.filter((v) => v.category.includes(feeling)).slice(0, 4) : [];
+  const matched = feeling ? LIBRARY.filter((v) => v.category.includes(feeling)).slice(0, 6) : [];
   const feelingLabel = feeling ? (CATEGORIES.find((c) => c.id === feeling)?.label || feeling) : "";
   return (
     <div style={screenWrap}>
@@ -34,7 +34,7 @@ export default function SoulCheckTab({ favorites, onFav }) {
           <div style={{ ...eyebrow, fontSize: 13, marginBottom: 12 }}>The Word for {feelingLabel}</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
             {matched.map((v) => (
-              <VerseCard key={v.id} verse={v} expanded={expandedId === v.id} onToggle={() => setExpandedId(expandedId === v.id ? null : v.id)} isFav={favorites.has(v.id)} onFav={onFav} />
+              <VerseCard key={v.id} verse={v} expanded={expandedId === v.id} onToggle={() => setExpandedId(expandedId === v.id ? null : v.id)} isFav={favorites.has(favoriteKey(v, favorites))} onFav={() => onFav(favoriteKey(v, favorites))} />
             ))}
           </div>
           <div style={noteBlock}>

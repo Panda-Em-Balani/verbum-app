@@ -5,7 +5,8 @@ import Pill from "../../components/Pill.jsx";
 import { SURFACE, BORDER, TEXT, FONT_SCRIPTURE, R, CARD_SHADOW_STRONG } from "../../theme.js";
 import { card, cardTitle, eyebrow, body, secondary, noteBlock } from "../../styles/text.js";
 
-export default function SaintOfDayCard({ saint }) {
+// `dateKey` is the day the card is shown for ("YYYY-MM-DD").
+export default function SaintOfDayCard({ saint, dateKey }) {
   const [fetched, setFetched] = useState({ title: null, url: null });
   const [photoLoaded, setPhotoLoaded] = useState(false);
   const cacheKey = saint.wikiTitle ? `verbum-saint-photo-${saint.wikiTitle}` : null;
@@ -26,7 +27,8 @@ export default function SaintOfDayCard({ saint }) {
       .catch(() => {});
   }, [saint.wikiTitle, cachedUrl, cacheKey]);
 
-  const feastDate = new Date(2024, saint.feast.m - 1, saint.feast.d).toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const feastDate = new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "long", day: "numeric" });
 
   return (
     <div style={{ ...card, marginBottom: 16, boxShadow: CARD_SHADOW_STRONG }}>
@@ -41,7 +43,7 @@ export default function SaintOfDayCard({ saint }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ ...eyebrow, marginBottom: 4 }}>Saint of the Day</div>
           <div style={{ ...cardTitle, fontWeight: 700, marginBottom: 4 }}>{saint.name}</div>
-          <div style={{ ...secondary, fontSize: 14 }}>Feast Day: {feastDate}</div>
+          <div style={{ ...secondary, fontSize: 14 }}>Feast day: {feastDate}</div>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "./supabase.js";
+import { localDateKey } from "./utils/date.js";
 
 // Saved progress: favourite verses, prayed novena days, and the rosary in progress.
 //
@@ -27,10 +28,7 @@ export const useProgress = () => useSyncExternalStore(subscribe, getSnapshot, ge
 const favToDb = (k) => (typeof k === "number" ? `id:${k}` : `ref:${k}`);
 const dbToFav = (s) => (s.startsWith("id:") ? Number(s.slice(3)) : s.slice(4));
 
-const today = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-};
+const today = () => localDateKey(new Date());
 
 function saveLocal() {
   if (!userId) return;
@@ -100,7 +98,8 @@ export async function initProgress(uid) {
     ready: false,
     favorites: new Set((local.favorites || []).map(dbToFav)),
     novena: new Set(local.novena || []),
-    rosary: local.rosary || null,
+    // Only a rosary started today is resumed.
+    rosary: local.rosary && local.rosary.date === today() ? local.rosary : null,
   });
 
   let rows = null;

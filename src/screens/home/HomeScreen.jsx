@@ -1,26 +1,31 @@
 import { useState, useEffect } from "react";
 import ShareButton from "../../ShareButton.jsx";
 import { Cross } from "../../components/Icons.jsx";
-import { getLiturgicalSeason, getSaintOfDay, isThreeOClockHour } from "../../liturgy/legacy.js";
+import { HAPPENINGS } from "../../content/happenings.js";
+import { SAINTS } from "../../content/saints.js";
+import { isThreeOClockHour } from "../../liturgy/legacy.js";
+import { pickForDay } from "../../liturgy/match.js";
+import TodayCard from "./TodayCard.jsx";
 import DailyVerseCard from "./DailyVerseCard.jsx";
 import SaintOfDayCard from "./SaintCard.jsx";
 import ThreeOClockBanner from "./ThreeOClockBanner.jsx";
 import DailyCatholicHappening from "./TodayInChurchCard.jsx";
-import { TEXT, MUTED, FONT_DISPLAY, FONT_UI, R, CARD_SHADOW } from "../../theme.js";
+import { TEXT, MUTED, FONT_DISPLAY, FONT_UI } from "../../theme.js";
 import { card, cardTitle, eyebrow, secondary, screenWrap } from "../../styles/text.js";
 
-export default function HomeTab({ favorites, onFav, user }) {
+export default function HomeTab({ favorites, onFav, user, day }) {
   const [time, setTime] = useState(new Date());
   useEffect(() => { const t = setInterval(() => setTime(new Date()), 15000); return () => clearInterval(t); }, []);
-  const saint = getSaintOfDay();
-  const season = getLiturgicalSeason();
+  const saint = pickForDay(day, SAINTS);
+  const happening = pickForDay(day, HAPPENINGS);
   const h = time.getHours();
   const firstName = user?.name?.split(" ")[0] || "";
+  const hello = (greeting) => (firstName ? `${greeting}, ${firstName}` : greeting);
   const moment = h < 12
-    ? { g: `Good Morning${firstName ? `, ${firstName}` : ""}`, l: "Begin this day in God's presence." }
+    ? { g: hello("Good Morning"), l: "Begin this day in God's presence." }
     : h < 17
-      ? { g: "Good Afternoon", l: "Pause and rest in the Lord." }
-      : { g: "Good Evening", l: "Give thanks for this day." };
+      ? { g: hello("Good Afternoon"), l: "Pause and rest in the Lord." }
+      : { g: hello("Good Evening"), l: "Give thanks for this day." };
   const dateStr = time.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   const timeStr = time.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
   return (
@@ -35,14 +40,9 @@ export default function HomeTab({ favorites, onFav, user }) {
 
       <DailyVerseCard onFav={onFav} favorites={favorites} />
       {isThreeOClockHour(time) && <ThreeOClockBanner />}
-      <DailyCatholicHappening />
-      <SaintOfDayCard saint={saint} />
-
-      <div style={{ background: season.bg, border: `1.5px solid ${season.border}`, borderRadius: R.md, padding: "16px 20px", marginBottom: 16, boxShadow: CARD_SHADOW }}>
-        <div style={{ ...eyebrow, color: season.light, marginBottom: 2 }}>Liturgical Season</div>
-        <div style={{ ...cardTitle, marginBottom: 6 }}>{season.name}</div>
-        <p style={secondary}>{season.desc}</p>
-      </div>
+      {day && <TodayCard day={day} />}
+      {happening && <DailyCatholicHappening happening={happening.item} />}
+      {saint && <SaintOfDayCard saint={saint.item} dateKey={day.dateKey} />}
 
       <div style={{ ...card, marginBottom: 16, textAlign: "center" }}>
         <div style={{ ...cardTitle, marginBottom: 6 }}>Invite a friend</div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevIco } from "../../components/Icons.jsx";
 import { ROSARY } from "../../content/rosary.js";
+import { mysteryForDate } from "../../content/mysteryForDate.js";
 import { saveRosary, getSnapshot } from "../../progress.js";
 import { GOLD, GOLD_DEEP, GOLD_TEXT, ON_GOLD, SURFACE, CARD, BORDER, TEXT, MUTED, SUCCESS, SUCCESS_BG, FONT_DISPLAY, FONT_UI, R } from "../../theme.js";
 import { secondaryButton } from "../../styles/buttons.js";
@@ -12,7 +13,8 @@ const stepButton = (disabled) => ({ ...secondaryButton, flex: 1, width: "auto", 
 // The rosary guide: mystery picker, decade meditation and bead counter.
 export default function RosaryView() {
   const [saved] = useState(() => getSnapshot().rosary);
-  const [mysteryType, setMysteryType] = useState(saved?.mystery || "Joyful");
+  // Resume a rosary in progress; otherwise open on the mysteries for today.
+  const [mysteryType, setMysteryType] = useState(() => saved?.mystery || mysteryForDate(new Date()));
   const [decade, setDecade] = useState(saved?.decade || 0);
   const [beads, setBeads] = useState(saved?.beads || 0);
 
@@ -31,6 +33,7 @@ export default function RosaryView() {
   // Leaving the screen before the delay ends still saves the latest position.
   useEffect(() => () => { if (pending.current) { saveRosary(pending.current.value); pending.current = null; } }, []);
 
+  const todays = mysteryForDate(new Date());
   const myst = ROSARY[mysteryType];
   const curDecade = myst.decades[decade];
   const goTo = (i) => { setDecade(i); setBeads(0); };
@@ -44,7 +47,7 @@ export default function RosaryView() {
           return (
             <button key={t} type="button" aria-pressed={on} onClick={() => { setMysteryType(t); goTo(0); }} style={{ background: on ? m.color : CARD, border: `1px solid ${on ? m.border : BORDER}`, borderRadius: R.sm, padding: "12px", minHeight: 56, cursor: "pointer", textAlign: "left" }}>
               <div style={{ fontFamily: FONT_DISPLAY, fontSize: 15, color: on ? TEXT : MUTED, fontWeight: 600, letterSpacing: "0.05em", marginBottom: 2 }}>{t}</div>
-              <div style={{ fontFamily: FONT_UI, fontSize: 13, color: MUTED }}>{m.day}</div>
+              <div style={{ fontFamily: FONT_UI, fontSize: 13, color: MUTED }}>{m.day}{t === todays ? " · today" : ""}</div>
             </button>
           );
         })}

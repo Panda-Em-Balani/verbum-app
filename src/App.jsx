@@ -20,7 +20,9 @@ import HomeTab from "./screens/home/HomeScreen.jsx";
 import { useRoute, navigate, tabOf, resolveLegacy } from "./router.js";
 import { findVerse } from "./verses.js";
 import { Cross } from "./components/Icons.jsx";
-import { PAGE_BG, TEXT, MUTED, FONT_UI } from "./theme.js";
+import { useLiturgicalDay } from "./liturgy/useLiturgicalDay.js";
+import { seasonTheme } from "./liturgy/seasonTheme.js";
+import { PAGE_BG, TEXT, MUTED, HEADER_BG, FONT_UI } from "./theme.js";
 
 // Screens other than Home load when first opened.
 const InstallPage = lazy(() => import("./InstallPage.jsx"));
@@ -65,6 +67,14 @@ export default function BibleApp() {
   const { status, user } = useAuth()
   const route = useRoute()
   const update = useUpdate()
+  const day = useLiturgicalDay()
+  const headerColor = day ? seasonTheme(day.color).header : HEADER_BG
+
+  // The browser's own top bar follows the header colour while signed in.
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="theme-color"]')
+    if (meta) meta.setAttribute("content", status === "signedIn" ? headerColor : HEADER_BG)
+  }, [headerColor, status])
   const tab = tabOf(route.name) || "home"
   const favorites = useProgress().favorites
   const [hasNewFavorites, setHasNewFavorites] = useState(false)
@@ -178,7 +188,7 @@ export default function BibleApp() {
 
   return (
     <div style={{ background: PAGE_BG, minHeight: "100vh", width: "100%", maxWidth: 430, margin: "0 auto", fontFamily: FONT_UI, color: TEXT, position: "relative" }}>
-      <AppHeader user={user} onSignOut={signOut} />
+      <AppHeader user={user} onSignOut={signOut} background={headerColor} />
       <OfflineBanner />
       <main style={{ paddingBottom: "calc(88px + env(safe-area-inset-bottom))" }}>
         {showInstallBanner && tab === "home" && (
@@ -197,7 +207,7 @@ export default function BibleApp() {
           />
         )}
 
-        {tab === "home" && <HomeTab favorites={favorites} onFav={onFav} user={user} />}
+        {tab === "home" && <HomeTab favorites={favorites} onFav={onFav} user={user} day={day} />}
         <Suspense fallback={<ScreenLoading />}>
           {tab === "soul" && <SoulCheckTab favorites={favorites} onFav={onFav} />}
           {tab === "explore" && <ExploreTab route={route} favorites={favorites} onFav={onFav} />}

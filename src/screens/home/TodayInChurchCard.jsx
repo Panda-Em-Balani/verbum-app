@@ -1,16 +1,9 @@
 import { CalendarIco } from "../../components/Icons.jsx";
-import { HAPPENINGS } from "../../content/happenings.js";
 import { GOLD, SURFACE, R } from "../../theme.js";
 import { goldCard, cardTitle, eyebrow, body, secondary, noteBlock } from "../../styles/text.js";
 
-// Shows today's feast or event, when the calendar has one. Renders nothing on other days.
-export default function DailyCatholicHappening() {
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const day = now.getDate();
-  const happening = HAPPENINGS.find((h) => h.month === month && h.day === day);
-  if (!happening) return null;
-
+// A feast or event of the day, with its Catechism connection.
+export default function DailyCatholicHappening({ happening }) {
   return (
     <div style={{ ...goldCard, marginBottom: 16 }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 12 }}>
@@ -18,7 +11,7 @@ export default function DailyCatholicHappening() {
           <CalendarIco />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ ...eyebrow, marginBottom: 4 }}>Today in the Church{happening.year ? ` · ${happening.year}` : ""}</div>
+          <div style={{ ...eyebrow, marginBottom: 4 }}>About this day{happening.year ? ` · ${happening.year}` : ""}</div>
           <div style={cardTitle}>{happening.title}</div>
           {happening.type && <div style={{ ...secondary, fontSize: 14, marginTop: 2 }}>{happening.type}</div>}
         </div>

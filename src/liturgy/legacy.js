@@ -1,21 +1,3 @@
-import { SAINTS } from "../content/saints.js";
-
-export function getSaintOfDay(date = new Date()) {
-  const now = date; const m=now.getMonth()+1, d=now.getDate();
-  // First: exact feast day match for today
-  const exact = SAINTS.find(s=>s.feast.m===m&&s.feast.d===d);
-  if (exact) return exact;
-  // Second: find the most recent feast day in the past 7 days
-  for (let i=1; i<=7; i++) {
-    const past = new Date(now); past.setDate(past.getDate()-i);
-    const pm=past.getMonth()+1, pd=past.getDate();
-    const recent = SAINTS.find(s=>s.feast.m===pm&&s.feast.d===pd);
-    if (recent) return recent;
-  }
-  // Fallback: rotation by day of year
-  const day = Math.floor((now.getTime()-new Date(now.getFullYear(),0,0))/86400000);
-  return SAINTS[day%SAINTS.length];
-}
 export function getEaster(y) {
   const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),dy=((h+l-7*m+114)%31)+1;
   return new Date(y,mo-1,dy);

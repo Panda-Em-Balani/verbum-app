@@ -4,12 +4,13 @@ import { UserIco } from "./Icons.jsx";
 import { HEADER_BG, HEADER_TEXT, HEADER_H, HEADER_SHADOW, FONT_DISPLAY } from "../theme.js";
 
 // Fixed top bar: wordmark in the middle, account button on the right.
-export default function AppHeader({ user, onSignOut }) {
+// `background` follows the liturgical colour of the day.
+export default function AppHeader({ user, onSignOut, background = HEADER_BG }) {
   const [accountOpen, setAccountOpen] = useState(false);
   const firstName = user?.name?.split(" ")[0] || "";
   return (
     <>
-      <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: HEADER_BG, zIndex: 200, display: "flex", alignItems: "center", justifyContent: "space-between", paddingLeft: 16, paddingRight: 16, paddingTop: "env(safe-area-inset-top)", minHeight: HEADER_H, boxShadow: HEADER_SHADOW }}>
+      <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background, transition: "background-color 0.4s", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "space-between", paddingLeft: 16, paddingRight: 16, paddingTop: "env(safe-area-inset-top)", minHeight: HEADER_H, boxShadow: HEADER_SHADOW }}>
         <div style={{ width: 105 }} />
         <div style={{ fontFamily: FONT_DISPLAY, fontSize: 17, color: HEADER_TEXT, fontWeight: 600, letterSpacing: "0.2em" }}>VERBUM</div>
         <div style={{ width: 105, display: "flex", justifyContent: "flex-end" }}>

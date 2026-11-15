@@ -15,14 +15,17 @@ function fileShareSupported(file) {
 //  - the phone's share sheet with the image AND the link together (Stories, WhatsApp, Messages...)
 //  - a Facebook post: a link whose preview card is the verse image (see /api/og)
 //  - Telegram, X, email, copy link, and saving the image.
-export default function VerseShareButton({ text, verseRef, source = "verse", label = "Share", style }) {
+// verseRef is the stored reference (used for the share link); label is the reference to
+// show when the NABRE numbers the verse differently.
+export default function VerseShareButton({ text, verseRef, label, source = "verse", buttonLabel = "Share", style }) {
+  const shownRef = label || verseRef;
   const [state, setState] = useState("idle"); // idle | loading | ready | error
   const [blob, setBlob] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [note, setNote] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const message = buildMessage({ text, ref: verseRef, source, withVerseLink: true });
+  const message = buildMessage({ text, ref: verseRef, label: shownRef, source, withVerseLink: true });
 
   useEffect(() => () => { if (previewUrl) URL.revokeObjectURL(previewUrl); }, [previewUrl]);
 
@@ -36,7 +39,7 @@ export default function VerseShareButton({ text, verseRef, source = "verse", lab
     try {
       // The card renderer (and its QR library) loads only when someone shares.
       const { renderStoryCard } = await import("./storyCard.js");
-      const b = await renderStoryCard({ text, ref: verseRef });
+      const b = await renderStoryCard({ text, ref: verseRef, label: shownRef });
       setBlob(b);
       setPreviewUrl(URL.createObjectURL(b));
       setState("ready");
@@ -88,14 +91,14 @@ export default function VerseShareButton({ text, verseRef, source = "verse", lab
     <>
       <button type="button" onClick={open} disabled={state === "loading"} aria-label="Share this verse" style={{ ...pillButton, opacity: state === "loading" ? 0.6 : 1, ...style }}>
         <ShareIcon />
-        {state === "loading" ? "Creating…" : label}
+        {state === "loading" ? "Creating…" : buttonLabel}
       </button>
       <Dialog open={state === "ready" || state === "error"} onClose={reset} label="Share this verse">
         {state === "error" ? (
           <p style={{ ...body, textAlign: "center", margin: "12px 0 16px" }}>Couldn't create the image. Please try again.</p>
         ) : (
           <>
-            <img src={previewUrl} alt={`Verse card for ${verseRef}`} style={{ display: "block", width: "auto", maxWidth: "100%", maxHeight: "34vh", margin: "0 auto 14px", borderRadius: R.sm, boxShadow: "0 2px 10px rgba(0,0,0,0.2)" }} />
+            <img src={previewUrl} alt={`Verse card for ${shownRef}`} style={{ display: "block", width: "auto", maxWidth: "100%", maxHeight: "34vh", margin: "0 auto 14px", borderRadius: R.sm, boxShadow: "0 2px 10px rgba(0,0,0,0.2)" }} />
             <button type="button" onClick={shareImage} style={{ ...primaryButton, marginBottom: 12 }}>
               {canShareFiles ? "Share image + link" : "Save image"}
             </button>

@@ -79,7 +79,7 @@ export default function InstallPage({ verse, sharedVerse, installPrompt, onInsta
           <div style={{ ...goldCard, borderRadius: R.lg, padding: 22, marginBottom: 22 }}>
             <div style={{ ...eyebrow, marginBottom: 10 }}>{sharedVerse ? "A verse for you" : "Today's Verse"}</div>
             <div style={{ ...scripture(19), marginBottom: 10 }}>“{verse.text}”</div>
-            <div style={verseRef}>{verse.ref}</div>
+            <div style={verseRef}>{verse.label || verse.displayRef || verse.ref}</div>
           </div>
         )}
 

@@ -33,8 +33,11 @@ describe("pickForDay", () => {
   });
 
   it("matches entries outside the general calendar by date on weekdays and optional memorials", async () => {
-    expect(await saint(2026, 7, 14)).toMatchObject({ by: "date", item: { name: "Saint Kateri Tekakwitha" } });
-    expect(await saint(2026, 7, 18)).toMatchObject({ by: "date", item: { name: "Saint Camillus de Lellis" } });
+    // General Roman Calendar dates (the app's users are mostly outside the United States):
+    // Camillus on 14 July by key; Kateri on 17 April, the date used outside the US.
+    expect(await saint(2026, 7, 14)).toMatchObject({ by: "key", item: { name: "Saint Camillus de Lellis" } });
+    expect(await saint(2026, 7, 18)).toBeNull();
+    expect(await saint(2026, 4, 17)).toMatchObject({ by: "date", item: { name: "Saint Kateri Tekakwitha" } });
     expect(await saint(2026, 10, 5)).toMatchObject({ by: "date", item: { name: "Saint Faustina Kowalska" } });
   });
 

@@ -18,10 +18,10 @@ export default function ThreeOClockBanner() {
       </div>
       <p style={{ ...body, color: MERCY.text, marginBottom: 12 }}>This is the Hour of Mercy, the hour of Christ's death on the Cross. Pause for a moment of prayer.</p>
       <div style={{ ...prayerText, color: MERCY.text, fontStyle: "italic", marginBottom: 12 }}>“{THREE_OCLOCK_PRAYER.shortPrayer}”</div>
-      <button type="button" aria-expanded={expanded} onClick={() => setExpanded(!expanded)} style={{ minHeight: 44, padding: "0 14px", background: "none", border: `1px solid ${MERCY.border}`, borderRadius: R.sm, color: MERCY.accent, fontFamily: FONT_UI, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>{expanded ? "Hide the Chaplet" : "Pray the Chaplet of Mercy"}</button>
+      <button type="button" aria-expanded={expanded} onClick={() => setExpanded(!expanded)} style={{ minHeight: 44, padding: "0 14px", background: "none", border: `1px solid ${MERCY.border}`, borderRadius: R.sm, color: MERCY.accent, fontFamily: FONT_UI, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>{expanded ? "Hide the prayers" : "More prayers for this hour"}</button>
       {expanded && (
         <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${MERCY.border}` }}>
-          <div style={{ ...eyebrow, color: MERCY.accent, marginBottom: 8 }}>Divine Mercy Chaplet</div>
+          <div style={{ ...eyebrow, color: MERCY.accent, marginBottom: 8 }}>Three O'Clock Prayers</div>
           <div style={{ ...prayerText, color: MERCY.text }}>{THREE_OCLOCK_PRAYER.chaplet}</div>
         </div>
       )}

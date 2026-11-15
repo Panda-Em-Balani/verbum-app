@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         ]),
         h("div", { flexDirection: "column" }, [
           h("div", { fontSize: fontSizeFor(verse.text.length), lineHeight: 1.4, fontWeight: 700 }, `“${verse.text}”`),
-          h("div", { fontSize: 32, letterSpacing: 4, color: "#DAA520", marginTop: 24 }, verse.ref.toUpperCase()),
+          h("div", { fontSize: 32, letterSpacing: 4, color: "#DAA520", marginTop: 24 }, (verse.label || verse.ref).toUpperCase()),
         ]),
         h("div", { fontSize: 26, color: "#F5E6C8" }, `Get Verbum free · ${host}/install`),
       ],

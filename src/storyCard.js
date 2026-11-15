@@ -83,7 +83,8 @@ function drawQr(ctx, url, x, y, size) {
 }
 
 // Renders the verse card to a PNG Blob.
-export async function renderStoryCard({ text, ref }) {
+// ref builds the QR link; label (optional) is the reference printed on the card.
+export async function renderStoryCard({ text, ref, label }) {
   try {
     await Promise.all([document.fonts.load(`700 48px Cinzel`), document.fonts.load(`700 30px Lato`)]);
   } catch {
@@ -138,7 +139,7 @@ export async function renderStoryCard({ text, ref }) {
   ctx.fillStyle = "#DAA520";
   ctx.fillRect(STORY_W / 2 - 60, y - size * 0.5 + 10, 120, 4);
   ctx.font = `700 44px ${SERIF}`;
-  spacedText(ctx, String(ref).toUpperCase(), STORY_W / 2, y + 60, 6);
+  spacedText(ctx, String(label || ref).toUpperCase(), STORY_W / 2, y + 60, 6);
 
   // Install card with QR (kept above the bottom ~270px Stories overlays)
   const cardX = 80, cardY = 1330, cardW = STORY_W - 160, cardH = 300;

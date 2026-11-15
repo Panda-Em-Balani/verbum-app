@@ -34,7 +34,7 @@ export default async function handler(req, res) {
   }
 
   if (verse) {
-    const title = `${verse.ref} · Verbum`;
+    const title = `${verse.label || verse.ref} · Verbum`;
     const desc = `“${verse.text}” Read a verse a day on Verbum.`;
     const image = `${origin}/api/og?v=${encodeURIComponent(slug)}`;
     const page = `${origin}/install?v=${encodeURIComponent(slug)}`;

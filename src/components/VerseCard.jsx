@@ -10,7 +10,7 @@ export default function VerseCard({ verse, expanded, onToggle, isFav, onFav }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ ...scripture(19), marginBottom: 10 }}>“{verse.text}”</div>
-          <div style={verseRef}>{verse.ref}</div>
+          <div style={verseRef}>{verse.displayRef || verse.ref}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0 }}>
           <span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1, color: MUTED }}>{expanded ? "−" : "+"}</span>
@@ -27,7 +27,7 @@ export default function VerseCard({ verse, expanded, onToggle, isFav, onFav }) {
             </div>
           )}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{verse.category.map((c) => <Pill key={c} label={c} />)}</div>
-          <div style={{ marginTop: 14 }}><VerseShareButton text={verse.text} verseRef={verse.ref} source="verse" /></div>
+          <div style={{ marginTop: 14 }}><VerseShareButton text={verse.text} verseRef={verse.ref} label={verse.displayRef} source="verse" /></div>
         </div>
       )}
     </div>

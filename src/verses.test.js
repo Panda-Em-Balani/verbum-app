@@ -64,3 +64,32 @@ describe("verse library", () => {
     for (const v of VERSES) for (const c of v.category) expect(known.has(c), `${v.ref}: ${c}`).toBe(true);
   });
 });
+
+import nabre from "./__fixtures__/nabre.json";
+
+// Compare wording only: ignore case, punctuation, quote marks and the [brackets] the NABRE
+// puts around supplied words.
+const plain = (t) => t.replace(/[‘’]/g, "'").replace(/[^\p{L}\p{N}\s']/gu, " ").toLowerCase().split(/\s+/).filter(Boolean).join(" ");
+
+describe("Scripture wording", () => {
+  it("every verse matches the New American Bible, Revised Edition", () => {
+    // nabre.json holds each passage as published (fetched from BibleGateway's NABRE text,
+    // November 2026). A verse in the app may quote part of its passage; "…" marks a gap.
+    const problems = [];
+    for (const v of [...VERSES, ...DAILY_VERSES]) {
+      const source = nabre[v.ref];
+      if (!source) { problems.push(`${v.ref}: no NABRE text on file`); continue; }
+      if ((v.displayRef || v.ref) !== source.nabreRef) problems.push(`${v.ref}: shown as ${v.displayRef || v.ref}, checked as ${source.nabreRef}`);
+      const whole = plain(source.nabre);
+      for (const part of v.text.split("…")) {
+        if (!whole.includes(plain(part))) problems.push(`${v.ref}: "${part.trim()}" is not NABRE wording`);
+      }
+    }
+    expect(problems).toEqual([]);
+  });
+
+  it("findVerse gives the reference to show", () => {
+    expect(findVerse("psalm-46-10")).toMatchObject({ ref: "Psalm 46:10", label: "Psalm 46:11" });
+    expect(findVerse("john-3-16")).toMatchObject({ ref: "John 3:16", label: "John 3:16" });
+  });
+});

@@ -57,7 +57,7 @@ export default function ExploreTab({ route, favorites, onFav }) {
             <div key={v.id} style={{ ...card, padding: 0, overflow: "hidden" }}>
               <div onClick={() => toggle(v.id)} style={{ padding: "18px 18px 14px", cursor: "pointer" }}>
                 <div style={{ ...scripture(19), marginBottom: 10 }}>“{v.text}”</div>
-                <div style={verseRef}>{v.ref}</div>
+                <div style={verseRef}>{v.displayRef || v.ref}</div>
               </div>
               {expandedId === v.id && (
                 <div style={{ padding: "0 18px 14px" }}>

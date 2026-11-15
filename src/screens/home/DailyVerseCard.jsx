@@ -19,9 +19,9 @@ export default function DailyVerseCard({ onFav, favorites }) {
         </button>
         <div style={{ ...eyebrow, marginBottom: 12 }}>Daily Verse</div>
         <div style={{ ...scripture(21), marginBottom: 12, paddingRight: 24 }}>“{verse.text}”</div>
-        <div style={{ ...verseRef, marginBottom: 14 }}>{verse.ref}</div>
+        <div style={{ ...verseRef, marginBottom: 14 }}>{verse.displayRef || verse.ref}</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <VerseShareButton text={verse.text} verseRef={verse.ref} source="daily-verse" />
+          <VerseShareButton text={verse.text} verseRef={verse.ref} label={verse.displayRef} source="daily-verse" />
           <button type="button" aria-expanded={expanded} onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }} style={{ background: "none", border: "none", padding: "0 0 0 12px", minHeight: 44, fontSize: 14, color: MUTED, fontFamily: FONT_UI, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 3 }}>{expanded ? "Close reflection" : "Read reflection"}</button>
         </div>
       </div>

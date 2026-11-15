@@ -37,7 +37,7 @@ export default function PrayersTab({ route }) {
               <div style={iconDisc}><ClockIco color={MERCY.accent} /></div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ ...cardTitle, color: MERCY.text, marginBottom: 2 }}>Three O'Clock Prayer</div>
-                <div style={{ ...secondary, fontSize: 14, color: MERCY.accent }}>Hour of Mercy and the Divine Mercy Chaplet</div>
+                <div style={{ ...secondary, fontSize: 14, color: MERCY.accent }}>Prayers for the Hour of Mercy</div>
               </div>
               <ChevIco />
             </div>

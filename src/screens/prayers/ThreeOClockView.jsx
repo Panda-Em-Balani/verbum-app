@@ -28,10 +28,10 @@ export default function ThreeOClockView() {
         <div style={prayerText}>{THREE_OCLOCK_PRAYER.shortPrayer}</div>
       </div>
 
-      <button type="button" aria-expanded={showChaplet} onClick={() => setShowChaplet(!showChaplet)} style={{ ...secondaryButton, minHeight: 48, marginBottom: 12 }}>{showChaplet ? "Hide the Chaplet" : "Pray the Divine Mercy Chaplet"}</button>
+      <button type="button" aria-expanded={showChaplet} onClick={() => setShowChaplet(!showChaplet)} style={{ ...secondaryButton, minHeight: 48, marginBottom: 12 }}>{showChaplet ? "Hide the prayers" : "More prayers for this hour"}</button>
       {showChaplet && (
         <div style={{ ...card, marginBottom: 12 }}>
-          <div style={{ ...eyebrow, marginBottom: 10 }}>Divine Mercy Chaplet</div>
+          <div style={{ ...eyebrow, marginBottom: 10 }}>Three O'Clock Prayers</div>
           <div style={prayerText}>{THREE_OCLOCK_PRAYER.chaplet}</div>
         </div>
       )}

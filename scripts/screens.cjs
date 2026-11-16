@@ -102,6 +102,8 @@ async function main() {
       localStorage.setItem("sb-kfoymqjekxxilqkyfavi-auth-token", JSON.stringify(s));
       localStorage.setItem("verbum_notif_dismissed", "1");
       localStorage.setItem("verbum_install_dismissed", String(Date.now()));
+      // Keep the "what's new" notice out of the other screenshots.
+      sessionStorage.setItem("verbum_announce_shown_intentions-2026-11", "1");
     }, session);
     await stubSession(ctx);
 
@@ -215,6 +217,19 @@ async function main() {
       if (opened !== "true" || next !== "Save verse") throw new Error(`opened=${opened} next=${next}`);
       return true;
     });
+    await step("25-whats-new", async () => {
+      await page.evaluate(() => { sessionStorage.removeItem("verbum_announce_shown_intentions-2026-11"); localStorage.removeItem("verbum_announce_intentions-2026-11"); });
+      await page.goto(BASE + "/");
+      await page.getByRole("dialog", { name: "New: My Intentions" }).waitFor();
+    });
+    await check("the notice opens My Intentions and does not return in the same visit", async () => {
+      await page.getByRole("button", { name: "Open My Intentions" }).click();
+      await page.getByRole("heading", { name: "My Intentions" }).waitFor();
+      await page.goto(BASE + "/");
+      await page.getByText("Daily Verse").first().waitFor();
+      await page.waitForTimeout(2000);
+      return (await page.getByRole("dialog").count()) === 0;
+    });
     await step("14-account", async () => {
       await page.goto(BASE + "/");
       await page.getByText("Daily Verse").first().waitFor();
@@ -238,6 +253,8 @@ async function main() {
         localStorage.setItem("sb-kfoymqjekxxilqkyfavi-auth-token", JSON.stringify(s));
         localStorage.setItem("verbum_notif_dismissed", "1");
         localStorage.setItem("verbum_install_dismissed", String(Date.now()));
+      // Keep the "what's new" notice out of the other screenshots.
+      sessionStorage.setItem("verbum_announce_shown_intentions-2026-11", "1");
       }, session);
       await offlinePage.evaluate(() => navigator.serviceWorker.ready.then(() => true));
       stage = "controlled reload";

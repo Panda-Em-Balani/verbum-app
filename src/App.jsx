@@ -6,6 +6,8 @@ import InstallBanner from "./components/InstallBanner.jsx";
 import NotificationBanner from "./components/NotificationBanner.jsx";
 import OfflineBanner from "./components/OfflineBanner.jsx";
 import UpdateBanner from "./components/UpdateBanner.jsx";
+import WhatsNewDialog from "./components/WhatsNewDialog.jsx";
+import { ANNOUNCEMENT, shouldAnnounce, markAnnounced } from "./announcements.js";
 import { useUpdate, clearUpdate } from "./pwa/updateStore.js";
 import { INSTALL_PATH } from "./config.js";
 import { getDailyVerseStatic } from "./dailyVerse.js";
@@ -82,6 +84,8 @@ export default function BibleApp() {
   const [installPrompt, setInstallPrompt] = useState(null)
   const [showInstallBanner, setShowInstallBanner] = useState(shouldShowIosBanner)
   const [installed, setInstalled] = useState(isStandalone)
+  // "What's new" notice: decided once per visit, shown after the app has loaded.
+  const [showWhatsNew, setShowWhatsNew] = useState(false)
   // Keep the shared verse key from first load.
   const [sharedSlug] = useState(() => new URLSearchParams(window.location.search).get("v"))
 
@@ -125,6 +129,18 @@ export default function BibleApp() {
       return () => clearTimeout(t)
     }
   }, [signedIn, userId])
+
+  //  What's new: once per visit, for three days (see announcements.js) 
+  useEffect(() => {
+    if (!signedIn) return
+    const t = setTimeout(() => {
+      if (shouldAnnounce(Date.now(), localStorage, sessionStorage)) {
+        markAnnounced(Date.now(), localStorage, sessionStorage)
+        setShowWhatsNew(true)
+      }
+    }, 1200)
+    return () => clearTimeout(t)
+  }, [signedIn])
 
   // A notification tapped while the app is open: the service worker tells us where to go.
   useEffect(() => {
@@ -178,6 +194,9 @@ export default function BibleApp() {
     )
   }
 
+  // The notice takes turns with the install and notification prompts: it goes first.
+  const whatsNewVisible = showWhatsNew && !!ANNOUNCEMENT
+
   //  Signed-out and in-between states 
   if (status === "loading") return <Splash />
   // A password-reset link: choose a new password before anything else.
@@ -191,13 +210,20 @@ export default function BibleApp() {
       <AppHeader user={user} onSignOut={signOut} background={headerColor} />
       <OfflineBanner />
       <main style={{ paddingBottom: "calc(88px + env(safe-area-inset-bottom))" }}>
-        {showInstallBanner && tab === "home" && (
+        {showInstallBanner && !whatsNewVisible && tab === "home" && (
           <InstallBanner
             onInstall={handleInstall}
             onDismiss={() => { setShowInstallBanner(false); localStorage.setItem("verbum_install_dismissed", String(Date.now())) }}
           />
         )}
-        {showNotifBanner && tab === "home" && (
+        {whatsNewVisible && (
+          <WhatsNewDialog
+            announcement={ANNOUNCEMENT}
+            onOpen={() => { setShowWhatsNew(false); navigate(ANNOUNCEMENT.actionPath) }}
+            onClose={() => setShowWhatsNew(false)}
+          />
+        )}
+        {showNotifBanner && !whatsNewVisible && tab === "home" && (
           <NotificationBanner
             onGranted={() => {
               setShowNotifBanner(false)

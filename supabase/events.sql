@@ -3,7 +3,7 @@
 create table if not exists public.events (
   id bigint generated always as identity primary key,
   event text not null check (char_length(event) <= 64),
-  props jsonb not null default '{}'::jsonb,
+  props jsonb not null default '{}'::jsonb constraint events_props_size check (pg_column_size(props) <= 2048),
   created_at timestamptz not null default now()
 );
 

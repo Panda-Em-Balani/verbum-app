@@ -13,8 +13,10 @@ export function canNativeShare() {
   return typeof navigator !== "undefined" && typeof navigator.share === "function";
 }
 
-export function buildMessage({ text, ref, source, withVerseLink = false }) {
-  const quote = text ? `"${text}"${ref ? ` (${ref})` : ""}` : "";
+// ref builds the link; label (optional) is the reference shown in the message text.
+export function buildMessage({ text, ref, label, source, withVerseLink = false }) {
+  const shown = label || ref;
+  const quote = text ? `"${text}"${shown ? ` (${shown})` : ""}` : "";
   const invite = text ? "Read a verse a day on Verbum:" : "Join me on Verbum, a Catholic companion for daily Scripture and prayer:";
   return { title: "Verbum", body: quote ? `${quote}\n\n${invite}` : invite, url: shareUrl(source, withVerseLink ? ref : undefined) };
 }

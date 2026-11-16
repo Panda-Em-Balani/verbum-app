@@ -7,7 +7,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 export default defineConfig([
   globalIgnores(['dist']),
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx,mjs,cjs}'],
     extends: [
       js.configs.recommended,
       reactHooks.configs.flat.recommended,
@@ -17,6 +17,11 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+  },
+  {
+    // Scripts, tests and config run on Node (tests also use browser globals under jsdom).
+    files: ['scripts/**/*.{js,mjs,cjs}', 'vite-plugins/**/*.js', 'src/**/*.test.{js,jsx}', 'vite.config.js'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   {
     // Vercel functions run on Node / edge, not in the browser.

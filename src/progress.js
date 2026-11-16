@@ -1,22 +1,34 @@
 import { useSyncExternalStore } from "react";
+import { track } from "./analytics.js";
 import { supabase } from "./supabase.js";
 import { localDateKey } from "./utils/date.js";
 
-// Saved progress: favourite verses, prayed novena days, and the rosary in progress.
+// Saved progress: favourite verses, prayed novena days, the rosary in progress, the days
+// prayed (for the streak) and private intentions.
 //
 // Offline-first. Every change updates the UI and a local copy right away, then is sent to the
-// public.user_progress table (see supabase/user_progress.sql). Changes that could not be sent
-// wait in a queue and are retried. On login the server copy is loaded and the queued changes
-// are applied on top, so nothing done offline is lost and removals are not resurrected.
+// public.user_progress table (see supabase/). Changes that could not be sent wait in a queue
+// and are retried. On login the server copy is loaded and the queued changes are applied on
+// top, so nothing done offline is lost and removals are not resurrected.
+//
+// State:
+//   favorites  Set of verse ids (numbers) and references (strings)
+//   novena     Map "<novenaId>-<dayIndex>" -> date prayed ("YYYY-MM-DD"), or null if unknown
+//   rosary     { mystery, decade, beads, date } or null
+//   prayerLog  Map "YYYY-MM-DD" -> ["rosary" | "novena" | "chaplet", ...]
+//   intentions Map id -> { text, createdAt, answeredAt }
 
 const TABLE = "user_progress";
 const cacheKey = (uid) => `verbum_progress_v1_${uid}`;
 
-const EMPTY = { ready: false, favorites: new Set(), novena: new Set(), rosary: null };
-let state = EMPTY;
+const empty = () => ({ ready: false, favorites: new Set(), novena: new Map(), rosary: null, prayerLog: new Map(), intentions: new Map() });
+let state = empty();
 let userId = null;
 let queue = []; // [{ kind, key, action: "put" | "del", value }]
-let flushing = false;
+// Kinds the server refused (database not updated yet). Their data stays on this device and
+// is offered to the server again on the next start.
+let localOnly = new Set();
+let flushing = null;
 const listeners = new Set();
 
 const emit = (next) => { state = next; listeners.forEach((l) => l()); };
@@ -30,24 +42,38 @@ const dbToFav = (s) => (s.startsWith("id:") ? Number(s.slice(3)) : s.slice(4));
 
 const today = () => localDateKey(new Date());
 
+// The local copy keeps the original v1 fields (favorites, novena as a list, rosary, queue)
+// and adds the newer ones beside them.
 function saveLocal() {
   if (!userId) return;
   try {
     localStorage.setItem(cacheKey(userId), JSON.stringify({
       favorites: [...state.favorites].map(favToDb),
-      novena: [...state.novena],
+      novena: [...state.novena.keys()],
+      novenaDates: Object.fromEntries([...state.novena].filter(([, date]) => date)),
       rosary: state.rosary,
+      prayerLog: Object.fromEntries(state.prayerLog),
+      intentions: Object.fromEntries(state.intentions),
+      localOnly: [...localOnly],
       queue,
     }));
   } catch { /* storage unavailable */ }
 }
 
 function loadLocal(uid) {
-  try {
-    const raw = JSON.parse(localStorage.getItem(cacheKey(uid)) || "null");
-    if (raw) return raw;
-  } catch { /* ignore corrupt cache */ }
-  return { favorites: [], novena: [], rosary: null, queue: [] };
+  let raw = null;
+  try { raw = JSON.parse(localStorage.getItem(cacheKey(uid)) || "null"); } catch { /* ignore corrupt cache */ }
+  raw = raw && typeof raw === "object" ? raw : {};
+  const dates = raw.novenaDates || {};
+  return {
+    favorites: new Set((raw.favorites || []).map(dbToFav)),
+    novena: new Map((raw.novena || []).map((k) => [k, dates[k] || null])),
+    rosary: raw.rosary || null,
+    prayerLog: new Map(Object.entries(raw.prayerLog || {})),
+    intentions: new Map(Object.entries(raw.intentions || {})),
+    localOnly: new Set(raw.localOnly || []),
+    queue: Array.isArray(raw.queue) ? raw.queue : [],
+  };
 }
 
 function enqueue(op) {
@@ -56,50 +82,79 @@ function enqueue(op) {
   flush();
 }
 
+// Sends one change. Resolves to { result: "ok" | "retry" | "drop", status }.
+//   retry: no connection, signed-out token, rate limit or server trouble; try again later.
+//   drop:  the server refused this change for good (for example a kind the database does not
+//          accept yet). Keeping it would block every change behind it.
 async function send(op) {
-  if (op.action === "put") {
-    const { error } = await supabase.from(TABLE).upsert(
-      { user_id: userId, kind: op.kind, item_key: op.key, value: op.value ?? null, updated_at: new Date().toISOString() },
-      { onConflict: "user_id,kind,item_key" },
-    );
-    return !error;
+  let response;
+  try {
+    if (op.action === "put") {
+      response = await supabase.from(TABLE).upsert(
+        { user_id: userId, kind: op.kind, item_key: op.key, value: op.value ?? null, updated_at: new Date().toISOString() },
+        { onConflict: "user_id,kind,item_key" },
+      );
+    } else {
+      response = await supabase.from(TABLE).delete().eq("user_id", userId).eq("kind", op.kind).eq("item_key", op.key);
+    }
+  } catch {
+    return { result: "retry", status: 0 };
   }
-  const { error } = await supabase.from(TABLE).delete().eq("kind", op.kind).eq("item_key", op.key);
-  return !error;
+  if (!response?.error) return { result: "ok", status: response?.status ?? 200 };
+  const status = response.status ?? 0;
+  const retry = status === 0 || status === 401 || status === 408 || status === 429 || status >= 500;
+  return { result: retry ? "retry" : "drop", status };
 }
 
-// Sends queued changes in order; stops at the first failure and retries later.
-export async function flush() {
-  if (flushing || !userId) return;
-  flushing = true;
-  try {
-    while (queue.length) {
-      const op = queue[0];
-      let ok = false;
-      try { ok = await send(op); } catch { ok = false; }
-      if (!ok) break;
-      queue = queue.filter((q) => q !== op);
-      saveLocal();
+// One pass over the queue, in order. Stops at the first change that must be retried.
+async function drain() {
+  while (queue.length && userId) {
+    const op = queue[0];
+    const { result, status } = await send(op);
+    if (result === "retry") return;
+    if (result === "drop") {
+      console.warn("[Verbum] sync dropped", op.kind, status);
+      track("sync_drop", { kind: op.kind, status });
+      if (op.action === "put") localOnly.add(op.kind);
+    } else if (op.action === "put") {
+      localOnly.delete(op.kind);
     }
-  } finally {
-    flushing = false;
+    queue = queue.filter((q) => q !== op);
+    saveLocal();
   }
+}
+
+// Sends queued changes. Every call runs its own pass after any pass already under way, so a
+// change made just as a pass ends is never left waiting. Resolves when that pass is done.
+export function flush() {
+  if (!userId) return Promise.resolve();
+  const pass = (flushing || Promise.resolve()).then(drain, drain);
+  flushing = pass;
+  pass.then(() => { if (flushing === pass) flushing = null; });
+  return pass;
 }
 
 if (typeof window !== "undefined") window.addEventListener("online", () => { flush(); });
+
+const novenaDate = (value) => (value && typeof value.date === "string" ? value.date : null);
+const acts = (value) => (value && Array.isArray(value.acts) ? value.acts.filter((a) => typeof a === "string") : []);
+const intention = (value) => ({ text: String(value?.text || ""), createdAt: value?.createdAt || null, answeredAt: value?.answeredAt || null });
 
 // Call when a user signs in (or the session is restored).
 export async function initProgress(uid) {
   if (!uid || uid === userId) return;
   userId = uid;
   const local = loadLocal(uid);
-  queue = local.queue || [];
+  queue = local.queue;
+  localOnly = local.localOnly;
   emit({
     ready: false,
-    favorites: new Set((local.favorites || []).map(dbToFav)),
-    novena: new Set(local.novena || []),
+    favorites: local.favorites,
+    novena: local.novena,
     // Only a rosary started today is resumed.
     rosary: local.rosary && local.rosary.date === today() ? local.rosary : null,
+    prayerLog: local.prayerLog,
+    intentions: local.intentions,
   });
 
   let rows = null;
@@ -111,17 +166,33 @@ export async function initProgress(uid) {
 
   if (!rows) { emit({ ...state, ready: true }); return; }
 
-  const favs = new Set(rows.filter((r) => r.kind === "favorite").map((r) => dbToFav(r.item_key)));
-  const novena = new Set(rows.filter((r) => r.kind === "novena_day").map((r) => r.item_key));
-  let rosary = rows.find((r) => r.kind === "rosary")?.value || null;
+  const of = (kind) => rows.filter((r) => r.kind === kind);
+  const favorites = new Set(of("favorite").map((r) => dbToFav(r.item_key)));
+  const novena = new Map(of("novena_day").map((r) => [r.item_key, novenaDate(r.value)]));
+  let rosary = of("rosary")[0]?.value || null;
+  // Kinds the server has not accepted yet live on this device: keep the local copy.
+  const prayerLog = localOnly.has("prayer_log") ? new Map(state.prayerLog) : new Map(of("prayer_log").map((r) => [r.item_key, acts(r.value)]));
+  const intentions = localOnly.has("intention") ? new Map(state.intentions) : new Map(of("intention").map((r) => [r.item_key, intention(r.value)]));
+
   // Apply changes made on this device that have not reached the server yet.
   for (const op of queue) {
-    if (op.kind === "favorite") (op.action === "put" ? favs.add(dbToFav(op.key)) : favs.delete(dbToFav(op.key)));
-    else if (op.kind === "novena_day") (op.action === "put" ? novena.add(op.key) : novena.delete(op.key));
-    else if (op.kind === "rosary") rosary = op.action === "put" ? op.value : null;
+    const put = op.action === "put";
+    if (op.kind === "favorite") (put ? favorites.add(dbToFav(op.key)) : favorites.delete(dbToFav(op.key)));
+    else if (op.kind === "novena_day") (put ? novena.set(op.key, novenaDate(op.value)) : novena.delete(op.key));
+    else if (op.kind === "rosary") rosary = put ? op.value : null;
+    else if (op.kind === "prayer_log") (put ? prayerLog.set(op.key, acts(op.value)) : prayerLog.delete(op.key));
+    else if (op.kind === "intention") (put ? intentions.set(op.key, intention(op.value)) : intentions.delete(op.key));
   }
   if (rosary && rosary.date !== today()) rosary = null; // only resume a rosary started today
-  emit({ ready: true, favorites: favs, novena, rosary });
+  emit({ ready: true, favorites, novena, rosary, prayerLog, intentions });
+
+  // Offer device-only data to the server again, in case the database has been updated.
+  if (localOnly.has("intention")) {
+    for (const [id, value] of intentions) queue = queue.concat({ kind: "intention", key: id, action: "put", value });
+  }
+  if (localOnly.has("prayer_log")) {
+    for (const [dateKey, list] of [...prayerLog].sort().slice(-60)) queue = queue.concat({ kind: "prayer_log", key: dateKey, action: "put", value: { acts: list } });
+  }
   saveLocal();
   flush();
 }
@@ -130,7 +201,8 @@ export async function initProgress(uid) {
 export function resetProgress() {
   userId = null;
   queue = [];
-  emit(EMPTY);
+  localOnly = new Set();
+  emit(empty());
 }
 
 export function toggleFavorite(key) {
@@ -143,13 +215,29 @@ export function toggleFavorite(key) {
   return adding;
 }
 
+// Records that something was prayed today (once per kind per day). Feeds the streak.
+export function logPrayer(act) {
+  if (!userId) return;
+  const dateKey = today();
+  const current = state.prayerLog.get(dateKey) || [];
+  if (current.includes(act)) return;
+  const list = [...current, act];
+  const next = new Map(state.prayerLog);
+  next.set(dateKey, list);
+  emit({ ...state, prayerLog: next });
+  enqueue({ kind: "prayer_log", key: dateKey, action: "put", value: { acts: list } });
+}
+
+// key: "<novenaId>-<dayIndex>". Marking a day stores today's date.
 export function toggleNovenaDay(key) {
   if (!userId) return;
-  const next = new Set(state.novena);
+  const next = new Map(state.novena);
   const adding = !next.has(key);
-  if (adding) next.add(key); else next.delete(key);
+  const date = today();
+  if (adding) next.set(key, date); else next.delete(key);
   emit({ ...state, novena: next });
-  enqueue({ kind: "novena_day", key, action: adding ? "put" : "del" });
+  enqueue(adding ? { kind: "novena_day", key, action: "put", value: { date } } : { kind: "novena_day", key, action: "del" });
+  if (adding) logPrayer("novena");
 }
 
 // value: { mystery, decade, beads } to remember the rosary in progress, or null to clear it.
@@ -158,4 +246,37 @@ export function saveRosary(value) {
   const stored = value ? { ...value, date: today() } : null;
   emit({ ...state, rosary: stored });
   enqueue({ kind: "rosary", key: "current", action: stored ? "put" : "del", value: stored });
+}
+
+export const INTENTION_MAX = 500;
+
+// Adds a private intention. Returns its id, or null when the text is empty or too long.
+export function addIntention(text) {
+  const trimmed = String(text || "").trim();
+  if (!userId || !trimmed || trimmed.length > INTENTION_MAX) return null;
+  const id = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `i${Date.now()}${Math.random().toString(36).slice(2, 8)}`;
+  const value = { text: trimmed, createdAt: new Date().toISOString(), answeredAt: null };
+  const next = new Map(state.intentions);
+  next.set(id, value);
+  emit({ ...state, intentions: next });
+  enqueue({ kind: "intention", key: id, action: "put", value });
+  return id;
+}
+
+export function toggleIntentionAnswered(id) {
+  const current = state.intentions.get(id);
+  if (!userId || !current) return;
+  const value = { ...current, answeredAt: current.answeredAt ? null : new Date().toISOString() };
+  const next = new Map(state.intentions);
+  next.set(id, value);
+  emit({ ...state, intentions: next });
+  enqueue({ kind: "intention", key: id, action: "put", value });
+}
+
+export function deleteIntention(id) {
+  if (!userId || !state.intentions.has(id)) return;
+  const next = new Map(state.intentions);
+  next.delete(id);
+  emit({ ...state, intentions: next });
+  enqueue({ kind: "intention", key: id, action: "del" });
 }

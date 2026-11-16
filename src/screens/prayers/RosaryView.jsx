@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChevIco } from "../../components/Icons.jsx";
 import { ROSARY } from "../../content/rosary.js";
 import { mysteryForDate } from "../../content/mysteryForDate.js";
-import { saveRosary, getSnapshot } from "../../progress.js";
+import { saveRosary, getSnapshot, logPrayer } from "../../progress.js";
 import { GOLD, GOLD_DEEP, GOLD_TEXT, ON_GOLD, SURFACE, CARD, BORDER, TEXT, MUTED, SUCCESS, SUCCESS_BG, FONT_DISPLAY, FONT_UI, R } from "../../theme.js";
 import { secondaryButton } from "../../styles/buttons.js";
 import { card, cardTitle, eyebrow, verseRef, body, prayerText, secondary } from "../../styles/text.js";
@@ -30,6 +30,10 @@ export default function RosaryView() {
     const t = setTimeout(() => { pending.current = null; saveRosary(value); }, 700);
     return () => clearTimeout(t);
   }, [mysteryType, decade, beads]);
+  // Finishing the fifth decade counts as praying the Rosary today.
+  const complete = decade === 4 && beads === 10;
+  useEffect(() => { if (complete) logPrayer("rosary"); }, [complete]);
+
   // Leaving the screen before the delay ends still saves the latest position.
   useEffect(() => () => { if (pending.current) { saveRosary(pending.current.value); pending.current = null; } }, []);
 
@@ -89,7 +93,7 @@ export default function RosaryView() {
         <button type="button" onClick={() => goTo(decade + 1)} disabled={decade === 4} style={stepButton(decade === 4)}>Next decade<ChevIco /></button>
       </div>
 
-      {decade === 4 && beads === 10 && (
+      {complete && (
         <div role="status" style={{ background: SUCCESS_BG, border: `1px solid ${SUCCESS}`, borderRadius: R.md, padding: 20, marginTop: 14, textAlign: "center" }}>
           <div style={{ ...cardTitle, marginBottom: 8 }}>Mysteries complete</div>
           <p style={{ ...secondary, color: SUCCESS }}>You have completed the {mysteryType} Mysteries. May Our Lady carry your intentions before the throne of God. Amen.</p>

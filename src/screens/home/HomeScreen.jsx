@@ -5,6 +5,7 @@ import { HAPPENINGS } from "../../content/happenings.js";
 import { SAINTS } from "../../content/saints.js";
 import { isThreeOClockHour } from "../../liturgy/legacy.js";
 import { pickForDay } from "../../liturgy/match.js";
+import PrayerWeekStrip from "./PrayerWeekStrip.jsx";
 import TodayCard from "./TodayCard.jsx";
 import DailyVerseCard from "./DailyVerseCard.jsx";
 import SaintOfDayCard from "./SaintCard.jsx";
@@ -13,7 +14,7 @@ import DailyCatholicHappening from "./TodayInChurchCard.jsx";
 import { TEXT, MUTED, FONT_DISPLAY, FONT_UI } from "../../theme.js";
 import { card, cardTitle, eyebrow, secondary, screenWrap } from "../../styles/text.js";
 
-export default function HomeTab({ favorites, onFav, user, day }) {
+export default function HomeTab({ favorites, onFav, user, day, prayerLog }) {
   const [time, setTime] = useState(new Date());
   useEffect(() => { const t = setInterval(() => setTime(new Date()), 15000); return () => clearInterval(t); }, []);
   const saint = pickForDay(day, SAINTS);
@@ -39,6 +40,7 @@ export default function HomeTab({ favorites, onFav, user, day }) {
       </div>
 
       <DailyVerseCard onFav={onFav} favorites={favorites} />
+      <PrayerWeekStrip prayerLog={prayerLog} />
       {isThreeOClockHour(time) && <ThreeOClockBanner />}
       {day && <TodayCard day={day} />}
       {happening && <DailyCatholicHappening happening={happening.item} />}

@@ -15,7 +15,7 @@ describe("matchRoute", () => {
     const cases = {
       "/": "home", "/soul": "soul", "/explore": "explore", "/explore/saved": "exploreSaved",
       "/prayers": "prayers", "/prayers/rosary": "rosary", "/prayers/novenas": "novenas",
-      "/prayers/three-oclock": "threeOclock", "/mass": "mass", "/install": "install", "/reset-password": "resetPassword",
+      "/prayers/three-oclock": "threeOclock", "/prayers/intentions": "intentions", "/mass": "mass", "/install": "install", "/reset-password": "resetPassword",
     };
     for (const [path, name] of Object.entries(cases)) {
       expect(matchRoute(path), path).toEqual({ name, params: {}, notFound: false });
@@ -31,7 +31,7 @@ describe("matchRoute", () => {
 
   it("tabOf groups sub-screens under their tab", () => {
     expect(tabOf("exploreSaved")).toBe("explore");
-    for (const n of ["prayers", "rosary", "novenas", "novena", "threeOclock"]) expect(tabOf(n)).toBe("prayers");
+    for (const n of ["prayers", "rosary", "novenas", "novena", "threeOclock", "intentions"]) expect(tabOf(n)).toBe("prayers");
     expect(tabOf("home")).toBe("home");
     expect(tabOf("install")).toBeNull();
     expect(tabOf("resetPassword")).toBeNull();

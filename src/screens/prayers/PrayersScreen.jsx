@@ -3,6 +3,7 @@ import { navigate } from "../../router.js";
 import { ChevIco, ClockIco, BeadsIco } from "../../components/Icons.jsx";
 import { PRAYERS } from "../../content/prayers.js";
 import { isThreeOClockHour } from "../../liturgy/legacy.js";
+import IntentionsView from "./IntentionsView.jsx";
 import NovenaView from "./NovenaView.jsx";
 import RosaryView from "./RosaryView.jsx";
 import ThreeOClockView from "./ThreeOClockView.jsx";
@@ -18,6 +19,7 @@ export default function PrayersTab({ route }) {
   const section = route.name === "rosary" ? "rosary" : "prayers";
 
   if (route.name === "novenas" || route.name === "novena") return <div style={{ ...screenWrap, ...subScreenTop }}><NovenaView novenaId={route.params.id} /></div>;
+  if (route.name === "intentions") return <div style={{ ...screenWrap, ...subScreenTop }}><IntentionsView /></div>;
   if (route.name === "threeOclock") return <div style={{ ...screenWrap, ...subScreenTop }}><ThreeOClockView /></div>;
 
   return (
@@ -49,6 +51,16 @@ export default function PrayersTab({ route }) {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ ...cardTitle, color: MERCY.text, marginBottom: 2 }}>Novenas</div>
                 <div style={{ ...secondary, fontSize: 14, color: MERCY.accent }}>Nine days of prayer · 4 novenas</div>
+              </div>
+              <ChevIco />
+            </div>
+          </button>
+
+          <button type="button" onClick={() => navigate("/prayers/intentions")} style={{ ...card, display: "block", width: "100%", textAlign: "left", cursor: "pointer" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ ...cardTitle, marginBottom: 2 }}>My Intentions</div>
+                <div style={{ ...secondary, fontSize: 14 }}>A private list of what you are praying for</div>
               </div>
               <ChevIco />
             </div>

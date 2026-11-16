@@ -76,7 +76,7 @@ export default function BibleApp() {
     if (meta) meta.setAttribute("content", status === "signedIn" ? headerColor : HEADER_BG)
   }, [headerColor, status])
   const tab = tabOf(route.name) || "home"
-  const favorites = useProgress().favorites
+  const { favorites, prayerLog } = useProgress()
   const [hasNewFavorites, setHasNewFavorites] = useState(false)
   const [showNotifBanner, setShowNotifBanner] = useState(false)
   const [installPrompt, setInstallPrompt] = useState(null)
@@ -207,7 +207,7 @@ export default function BibleApp() {
           />
         )}
 
-        {tab === "home" && <HomeTab favorites={favorites} onFav={onFav} user={user} day={day} />}
+        {tab === "home" && <HomeTab favorites={favorites} onFav={onFav} user={user} day={day} prayerLog={prayerLog} />}
         <Suspense fallback={<ScreenLoading />}>
           {tab === "soul" && <SoulCheckTab favorites={favorites} onFav={onFav} />}
           {tab === "explore" && <ExploreTab route={route} favorites={favorites} onFav={onFav} />}

@@ -11,6 +11,7 @@ export const ROUTES = [
   { name: "prayers", pattern: "/prayers" },
   { name: "rosary", pattern: "/prayers/rosary" },
   { name: "novenas", pattern: "/prayers/novenas" },
+  { name: "intentions", pattern: "/prayers/intentions" },
   { name: "novena", pattern: "/prayers/novenas/:id" },
   { name: "threeOclock", pattern: "/prayers/three-oclock" },
   { name: "mass", pattern: "/mass" },

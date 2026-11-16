@@ -9,6 +9,13 @@ import { card, cardTitle, eyebrow, body, secondary, prayerText, screenTitle } fr
 
 const stepButton = (disabled) => ({ ...secondaryButton, flex: 1, width: "auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.4 : 1 });
 
+// "2026-11-16" -> "16 Nov"; empty for days marked before dates were recorded.
+function shortDate(dateKey) {
+  if (!dateKey) return "";
+  const [y, m, d] = dateKey.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
 // The list of novenas, or one novena's days when `novenaId` is given.
 export default function NovenaView({ novenaId }) {
   const prayedDays = useProgress().novena;
@@ -32,6 +39,7 @@ function NovenaDays({ novena, prayedDays }) {
   });
   const day = novena.days[currentDay];
   const hasCompleted = prayedDays.has(`${selected}-${currentDay}`);
+  const prayedOn = shortDate(prayedDays.get(`${selected}-${currentDay}`));
   return (
     <div>
       <button type="button" onClick={() => goBack("/prayers/novenas")} style={backLink}><ChevIco dir="left" /> Back to Novenas</button>
@@ -63,7 +71,7 @@ function NovenaDays({ novena, prayedDays }) {
         </div>
       </div>
 
-      <button type="button" aria-pressed={hasCompleted} onClick={() => toggleNovenaDay(`${selected}-${currentDay}`)} style={{ ...secondaryButton, minHeight: 48, marginBottom: 10, background: hasCompleted ? SUCCESS_BG : "none", borderColor: hasCompleted ? SUCCESS : GOLD, color: hasCompleted ? SUCCESS : GOLD_TEXT }}>{hasCompleted ? `✓ Day ${currentDay + 1} prayed` : `Mark day ${currentDay + 1} as prayed`}</button>
+      <button type="button" aria-pressed={hasCompleted} onClick={() => toggleNovenaDay(`${selected}-${currentDay}`)} style={{ ...secondaryButton, minHeight: 48, marginBottom: 10, background: hasCompleted ? SUCCESS_BG : "none", borderColor: hasCompleted ? SUCCESS : GOLD, color: hasCompleted ? SUCCESS : GOLD_TEXT }}>{hasCompleted ? `✓ Day ${currentDay + 1} prayed${prayedOn ? ` · ${prayedOn}` : ""}` : `Mark day ${currentDay + 1} as prayed`}</button>
       <div style={{ display: "flex", gap: 10 }}>
         <button type="button" onClick={() => setCurrentDay(currentDay - 1)} disabled={currentDay === 0} style={stepButton(currentDay === 0)}><ChevIco dir="left" />Previous</button>
         <button type="button" onClick={() => setCurrentDay(currentDay + 1)} disabled={currentDay === 8} style={stepButton(currentDay === 8)}>Next day<ChevIco /></button>

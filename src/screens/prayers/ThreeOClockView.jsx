@@ -2,12 +2,15 @@ import { useState } from "react";
 import { goBack } from "../../router.js";
 import { ChevIco, ClockIco } from "../../components/Icons.jsx";
 import { THREE_OCLOCK_PRAYER } from "../../content/threeOclock.js";
-import { MERCY, R } from "../../theme.js";
+import { useProgress, logPrayer } from "../../progress.js";
+import { localDateKey } from "../../utils/date.js";
+import { MERCY, SUCCESS, SUCCESS_BG, R } from "../../theme.js";
 import { backLink, secondaryButton } from "../../styles/buttons.js";
 import { card, cardTitle, eyebrow, secondary, prayerText, noteBlock } from "../../styles/text.js";
 
 export default function ThreeOClockView() {
   const [showChaplet, setShowChaplet] = useState(false);
+  const prayedToday = (useProgress().prayerLog.get(localDateKey(new Date())) || []).includes("chaplet");
   return (
     <div>
       <button type="button" onClick={() => goBack("/prayers")} style={backLink}><ChevIco dir="left" /> Back to Prayers</button>
@@ -35,6 +38,8 @@ export default function ThreeOClockView() {
           <div style={prayerText}>{THREE_OCLOCK_PRAYER.chaplet}</div>
         </div>
       )}
+
+      <button type="button" aria-pressed={prayedToday} onClick={() => logPrayer("chaplet")} disabled={prayedToday} style={{ ...secondaryButton, minHeight: 48, marginBottom: 12, ...(prayedToday ? { background: SUCCESS_BG, borderColor: SUCCESS, color: SUCCESS, cursor: "default" } : null) }}>{prayedToday ? "✓ Prayed today" : "I prayed these prayers"}</button>
 
       <div style={noteBlock}>
         <div style={{ ...eyebrow, marginBottom: 6 }}>Catechism of the Catholic Church</div>

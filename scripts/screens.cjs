@@ -192,7 +192,32 @@ async function main() {
       await page.getByText("Daily Verse").first().waitFor();
       return new URL(page.url()).pathname === "/";
     });
+    await step("24-intentions", async () => {
+      await page.goto(BASE + "/prayers/intentions");
+      await page.getByRole("heading", { name: "My Intentions" }).waitFor();
+      await page.getByLabel("New intention").fill("For peace at home");
+      await page.getByRole("button", { name: "Add intention" }).click();
+      await page.getByText("For peace at home").waitFor();
+    });
+    await check("a verse card opens from the keyboard and the heart comes next", async () => {
+      await page.goto(BASE + "/explore");
+      await page.getByText("Verse Library").waitFor();
+      let found = false;
+      for (let i = 0; i < 40 && !found; i++) {
+        await page.keyboard.press("Tab");
+        found = await page.evaluate(() => document.activeElement?.hasAttribute("aria-expanded") && /shepherd/.test(document.activeElement.textContent));
+      }
+      if (!found) throw new Error("could not reach the first verse with Tab");
+      await page.keyboard.press("Enter");
+      const opened = await page.evaluate(() => document.activeElement.getAttribute("aria-expanded"));
+      await page.keyboard.press("Tab");
+      const next = await page.evaluate(() => document.activeElement.getAttribute("aria-label"));
+      if (opened !== "true" || next !== "Save verse") throw new Error(`opened=${opened} next=${next}`);
+      return true;
+    });
     await step("14-account", async () => {
+      await page.goto(BASE + "/");
+      await page.getByText("Daily Verse").first().waitFor();
       await page.getByRole("button", { name: "Account" }).click();
       await page.getByRole("dialog", { name: "Account" }).waitFor();
     });

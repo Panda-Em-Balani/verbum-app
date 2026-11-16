@@ -207,6 +207,7 @@ export default function BibleApp() {
           />
         )}
 
+        <div key={route.name === "exploreSaved" ? "explore" : route.name} style={{ animation: "verbum-fade 150ms ease-out" }}>
         {tab === "home" && <HomeTab favorites={favorites} onFav={onFav} user={user} day={day} prayerLog={prayerLog} />}
         <Suspense fallback={<ScreenLoading />}>
           {tab === "soul" && <SoulCheckTab favorites={favorites} onFav={onFav} />}
@@ -214,6 +215,7 @@ export default function BibleApp() {
           {tab === "prayers" && <PrayersTab route={route} />}
           {tab === "mass" && <MassTab />}
         </Suspense>
+        </div>
       </main>
       {update && <UpdateBanner apply={update} onDismiss={clearUpdate} />}
       <BottomNav tab={tab} hasNewFavorites={hasNewFavorites} />

@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import ShareButton from "../../ShareButton.jsx";
 import { Cross } from "../../components/Icons.jsx";
 import Pill from "../../components/Pill.jsx";
-import { SURFACE, BORDER, TEXT, FONT_SCRIPTURE, R, CARD_SHADOW_STRONG } from "../../theme.js";
+import { SURFACE, CARD, BORDER, TEXT, FONT_SCRIPTURE, R, CARD_SHADOW_STRONG } from "../../theme.js";
 import { card, cardTitle, eyebrow, body, secondary, noteBlock } from "../../styles/text.js";
 
 // `dateKey` is the day the card is shown for ("YYYY-MM-DD").
 export default function SaintOfDayCard({ saint, dateKey }) {
   const [fetched, setFetched] = useState({ title: null, url: null });
   const [photoLoaded, setPhotoLoaded] = useState(false);
+  const [photoFailed, setPhotoFailed] = useState(false);
   const cacheKey = saint.wikiTitle ? `verbum-saint-photo-${saint.wikiTitle}` : null;
   const cachedUrl = cacheKey ? sessionStorage.getItem(cacheKey) : null;
   const photoUrl = cachedUrl || (fetched.title === saint.wikiTitle ? fetched.url : null);
@@ -33,9 +34,9 @@ export default function SaintOfDayCard({ saint, dateKey }) {
   return (
     <div style={{ ...card, marginBottom: 16, boxShadow: CARD_SHADOW_STRONG }}>
       <div style={{ display: "flex", gap: 14, marginBottom: 14 }}>
-        <div style={{ width: 80, height: 80, borderRadius: R.sm, overflow: "hidden", flexShrink: 0, background: SURFACE, border: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {photoUrl ? (
-            <img src={photoUrl} alt={saint.name} onLoad={() => setPhotoLoaded(true)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", opacity: photoLoaded ? 1 : 0, transition: "opacity 0.3s" }} />
+        <div style={{ width: 80, height: 80, borderRadius: R.sm, overflow: "hidden", flexShrink: 0, border: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", ...(photoUrl && !photoLoaded && !photoFailed ? { background: `linear-gradient(90deg, ${SURFACE} 25%, ${CARD} 50%, ${SURFACE} 75%)`, backgroundSize: "200% 100%", animation: "verbum-shimmer 1.2s linear infinite" } : { background: SURFACE }) }}>
+          {photoUrl && !photoFailed ? (
+            <img src={photoUrl} alt={saint.name} onLoad={() => setPhotoLoaded(true)} onError={() => setPhotoFailed(true)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", opacity: photoLoaded ? 1 : 0, transition: "opacity 0.3s" }} />
           ) : (
             <Cross size={28} />
           )}

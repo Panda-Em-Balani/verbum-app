@@ -1,5 +1,7 @@
 import { useState } from "react";
+import Collapse from "../components/Collapse.jsx";
 import { HeartIco } from "../components/Icons.jsx";
+import { cardHeaderButton } from "../styles/cardButton.js";
 import Pill from "../components/Pill.jsx";
 import VerseCard from "../components/VerseCard.jsx";
 import { navigate } from "../router.js";
@@ -55,16 +57,16 @@ export default function ExploreTab({ route, favorites, onFav }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {allFavVerses.map((v) => (
             <div key={v.id} style={{ ...card, padding: 0, overflow: "hidden" }}>
-              <div onClick={() => toggle(v.id)} style={{ padding: "18px 18px 14px", cursor: "pointer" }}>
-                <div style={{ ...scripture(19), marginBottom: 10 }}>“{v.text}”</div>
-                <div style={verseRef}>{v.displayRef || v.ref}</div>
-              </div>
-              {expandedId === v.id && (
+              <button type="button" aria-expanded={expandedId === v.id} onClick={() => toggle(v.id)} style={{ ...cardHeaderButton, padding: "18px 18px 14px" }}>
+                <span style={{ ...scripture(19), display: "block", marginBottom: 10 }}>“{v.text}”</span>
+                <span style={{ ...verseRef, display: "block" }}>{v.displayRef || v.ref}</span>
+              </button>
+              <Collapse open={expandedId === v.id}>
                 <div style={{ padding: "0 18px 14px" }}>
                   <p style={{ ...body, marginBottom: 12 }}>{v.explanation}</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{v.category.map((c) => <Pill key={c} label={c} />)}</div>
                 </div>
-              )}
+              </Collapse>
               <div style={{ borderTop: `1px solid ${BORDER}`, padding: "8px 16px", display: "flex", justifyContent: "flex-end" }}>
                 <button type="button" onClick={() => onFav(favoriteKey(v, favorites))} style={{ minHeight: 44, padding: "0 14px", background: "none", border: "none", color: DANGER, fontFamily: FONT_UI, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Remove</button>
               </div>

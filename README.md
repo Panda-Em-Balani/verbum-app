@@ -53,8 +53,8 @@ src/
 ## Database
 
 The SQL in `supabase/` is applied by hand in the Supabase SQL editor; nothing runs it
-automatically. `events.sql` holds anonymous share and install counts; `user_progress.sql`
-holds each user's saved progress.
+automatically. `supabase/README.md` lists each file, which ones the live database still
+needs, and what is not in the repository yet (the push-notification sender).
 
 ## Environment
 

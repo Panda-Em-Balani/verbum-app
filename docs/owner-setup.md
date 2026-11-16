@@ -29,6 +29,22 @@ your phone, and tap the link. You should see "Choose a new password".
 2. Tell Claude it is on, or change `google: false` to `google: true` in `src/config.js`.
    The "Continue with Google" button then appears on the sign-in screen.
 
+## 3b. Supabase: run two database updates (needed before the new version goes live)
+
+Why: the new version saves prayer streak days and private intentions. The database must be
+told to accept them. Until this is done they stay on each person's own device (nothing is
+lost, and they upload by themselves afterwards).
+
+1. Go to https://supabase.com/dashboard and open the Verbum project.
+2. In the left sidebar click **SQL Editor**, then **New query**.
+3. On GitHub, open the file `supabase/migrations/20261113_progress_kinds.sql` in this
+   repository, copy everything in it, paste it into the editor and click **Run**.
+   You should see "Success. No rows returned".
+4. Click **New query** again and do the same with
+   `supabase/migrations/20261113_events_limits.sql`.
+
+Both are safe to run more than once.
+
 ## 4. Vercel: check the preview of this branch (once per phase is enough)
 
 1. Go to https://vercel.com/dashboard and open the Verbum project.

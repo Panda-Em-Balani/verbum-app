@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { goBack } from "../../router.js";
+import Collapse from "../../components/Collapse.jsx";
 import { ChevIco, ClockIco } from "../../components/Icons.jsx";
 import { THREE_OCLOCK_PRAYER } from "../../content/threeOclock.js";
 import { useProgress, logPrayer } from "../../progress.js";
@@ -32,12 +33,12 @@ export default function ThreeOClockView() {
       </div>
 
       <button type="button" aria-expanded={showChaplet} onClick={() => setShowChaplet(!showChaplet)} style={{ ...secondaryButton, minHeight: 48, marginBottom: 12 }}>{showChaplet ? "Hide the prayers" : "More prayers for this hour"}</button>
-      {showChaplet && (
+      <Collapse open={showChaplet}>
         <div style={{ ...card, marginBottom: 12 }}>
           <div style={{ ...eyebrow, marginBottom: 10 }}>Three O'Clock Prayers</div>
           <div style={prayerText}>{THREE_OCLOCK_PRAYER.chaplet}</div>
         </div>
-      )}
+      </Collapse>
 
       <button type="button" aria-pressed={prayedToday} onClick={() => logPrayer("chaplet")} disabled={prayedToday} style={{ ...secondaryButton, minHeight: 48, marginBottom: 12, ...(prayedToday ? { background: SUCCESS_BG, borderColor: SUCCESS, color: SUCCESS, cursor: "default" } : null) }}>{prayedToday ? "✓ Prayed today" : "I prayed these prayers"}</button>
 

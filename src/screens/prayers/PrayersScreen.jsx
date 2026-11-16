@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { navigate } from "../../router.js";
+import Collapse from "../../components/Collapse.jsx";
 import { ChevIco, ClockIco, BeadsIco } from "../../components/Icons.jsx";
 import { PRAYERS } from "../../content/prayers.js";
 import { isThreeOClockHour } from "../../liturgy/legacy.js";
@@ -9,6 +10,7 @@ import RosaryView from "./RosaryView.jsx";
 import ThreeOClockView from "./ThreeOClockView.jsx";
 import { GOLD_DEEP, BORDER, MUTED, MERCY, R, CARD_SHADOW, CARD_SHADOW_STRONG } from "../../theme.js";
 import { segment, segmentGroup } from "../../styles/buttons.js";
+import { cardHeaderButton } from "../../styles/cardButton.js";
 import { card, cardTitle, eyebrow, secondary, prayerText, noteBlock, screenWrap, screenHeader, screenTitle, screenSub, subScreenTop } from "../../styles/text.js";
 
 const linkCard = { display: "block", width: "100%", textAlign: "left", cursor: "pointer", background: MERCY.bg, border: `1px solid ${MERCY.border}`, borderRadius: R.md, padding: 18, boxShadow: CARD_SHADOW };
@@ -69,15 +71,15 @@ export default function PrayersTab({ route }) {
           {PRAYERS.map((p, i) => {
             const open = expandedPrayer === i;
             return (
-              <div key={p.t} onClick={() => setExpandedPrayer(open ? null : i)} style={{ ...card, cursor: "pointer", transition: "border-color 0.2s, box-shadow 0.2s", ...(open ? { borderColor: GOLD_DEEP, boxShadow: CARD_SHADOW_STRONG } : null) }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-                  <div>
-                    <div style={{ ...cardTitle, fontSize: 18, marginBottom: 2 }}>{p.t}</div>
-                    <div style={{ ...secondary, fontSize: 14 }}>{p.s}</div>
-                  </div>
-                  <span aria-hidden="true" style={{ color: MUTED, fontSize: 18, lineHeight: 1 }}>{open ? "−" : "+"}</span>
-                </div>
-                {open && (
+              <div key={p.t} style={{ ...card, transition: "border-color 0.2s, box-shadow 0.2s", ...(open ? { borderColor: GOLD_DEEP, boxShadow: CARD_SHADOW_STRONG } : null) }}>
+                <button type="button" aria-expanded={open} onClick={() => setExpandedPrayer(open ? null : i)} style={{ ...cardHeaderButton, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                  <span>
+                    <span style={{ ...cardTitle, fontSize: 18, display: "block", marginBottom: 2 }}>{p.t}</span>
+                    <span style={{ ...secondary, fontSize: 14, display: "block" }}>{p.s}</span>
+                  </span>
+                  <span aria-hidden="true" style={{ color: MUTED, fontSize: 18, lineHeight: 1 }}>{open ? "\u2212" : "+"}</span>
+                </button>
+                <Collapse open={open}>
                   <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${BORDER}` }}>
                     <div style={{ ...prayerText, marginBottom: 14 }}>{p.text}</div>
                     <div style={noteBlock}>
@@ -85,7 +87,7 @@ export default function PrayersTab({ route }) {
                       <p style={secondary}>{p.note}</p>
                     </div>
                   </div>
-                )}
+                </Collapse>
               </div>
             );
           })}

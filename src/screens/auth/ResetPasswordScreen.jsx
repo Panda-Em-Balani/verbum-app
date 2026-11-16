@@ -1,8 +1,8 @@
 import { useState } from "react";
 import AuthShell from "./AuthShell.jsx";
-import { field, fieldLabel, labelHint } from "./authStyles.js";
+import { field, fieldLabel, labelHint, textLink } from "./authStyles.js";
 import { updatePassword } from "../../auth/authActions.js";
-import { markRecovered } from "../../auth/useAuth.js";
+import { markRecovered, signOut } from "../../auth/useAuth.js";
 import { navigate } from "../../router.js";
 import { DANGER } from "../../theme.js";
 import { primaryButton, secondaryButton, disabledButton } from "../../styles/buttons.js";
@@ -53,6 +53,7 @@ export default function ResetPasswordScreen({ recovering }) {
         </div>
         {error && <div role="alert" style={{ fontSize: 14, color: DANGER, marginBottom: 12, lineHeight: 1.5 }}>{error}</div>}
         <button type="submit" disabled={saving} style={{ ...primaryButton, marginTop: 8, ...(saving ? disabledButton : null) }}>{saving ? "Saving…" : "Save new password"}</button>
+        <button type="button" onClick={() => { signOut(); navigate("/", { replace: true }); }} style={textLink}>Cancel and sign out</button>
       </form>
     </AuthShell>
   );

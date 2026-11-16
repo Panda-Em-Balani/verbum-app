@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './fonts.js'
 import './index.css'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { initRouter } from './router.js'
 import { registerServiceWorker } from './pwa/registerServiceWorker.js'
 import { setUpdate } from './pwa/updateStore.js'
@@ -15,6 +16,8 @@ registerServiceWorker({ onUpdateReady: setUpdate })
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </StrictMode>,
 )

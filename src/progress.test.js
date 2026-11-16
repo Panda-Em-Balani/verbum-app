@@ -31,7 +31,7 @@ vi.mock("./supabase.js", () => {
 });
 vi.mock("./analytics.js", () => ({ track: vi.fn() }));
 
-import { initProgress, resetProgress, getSnapshot, flush, toggleFavorite, toggleNovenaDay, logPrayer, addIntention, toggleIntentionAnswered, deleteIntention } from "./progress.js";
+import { initProgress, resetProgress, getSnapshot, flush, toggleFavorite, toggleNovenaDay, logPrayer, addIntention, toggleIntentionAnswered, deleteIntention, clearPrivateCache } from "./progress.js";
 import { track } from "./analytics.js";
 import { localDateKey } from "./utils/date.js";
 
@@ -213,5 +213,52 @@ describe("intentions", () => {
     expect(h.sent.some((o) => o.kind === "intention" && o.key === id)).toBe(true);
     expect(h.sent.some((o) => o.kind === "prayer_log" && o.key === today)).toBe(true);
     expect(stored().localOnly).toEqual([]);
+  });
+});
+
+describe("device-only kinds are offered to the server with one probe", () => {
+  it("sends a single probe per kind while the server refuses, then uploads everything", async () => {
+    h.select = server([]);
+    const refuse = (op) => (op.kind === "intention" || op.kind === "prayer_log" ? { error: { message: "check constraint" }, status: 400 } : { error: null, status: 201 });
+    h.respond = refuse;
+    await initProgress("u1");
+    const ids = [addIntention("One"), addIntention("Two"), addIntention("Three")];
+    await flush();
+
+    // Next launch, server still refusing: one request for the kind, not one per item.
+    resetProgress();
+    h.sent = [];
+    await initProgress("u1");
+    await flush();
+    expect(h.sent.filter((o) => o.kind === "intention").length).toBe(1);
+    expect(stored().queue).toEqual([]);
+    expect(getSnapshot().intentions.size).toBe(3);
+
+    // Database updated: the probe succeeds and the rest follow, each once.
+    resetProgress();
+    h.sent = [];
+    h.respond = () => ({ error: null, status: 201 });
+    await initProgress("u1");
+    await flush();
+    const uploaded = h.sent.filter((o) => o.kind === "intention").map((o) => o.key).sort();
+    expect(uploaded).toEqual([...ids].sort());
+    expect(stored().localOnly).toEqual([]);
+  });
+
+  it("forgets intentions kept on the device at sign-out once they are safely on the server", async () => {
+    await initProgress("u1");
+    addIntention("Private thing");
+    await flush();
+    clearPrivateCache();
+    expect(JSON.stringify(stored())).not.toContain("Private thing");
+  });
+
+  it("keeps unsent intentions on the device at sign-out", async () => {
+    await initProgress("u1");
+    h.respond = () => new TypeError("Failed to fetch");
+    addIntention("Not sent yet");
+    await flush();
+    clearPrivateCache();
+    expect(JSON.stringify(stored())).toContain("Not sent yet");
   });
 });

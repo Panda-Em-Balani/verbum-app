@@ -12,7 +12,12 @@ import { supabase, openedFromRecoveryLink } from "../supabase.js";
 
 const INITIAL = { status: "loading", user: null };
 let state = INITIAL;
-let recovering = openedFromRecoveryLink;
+// A password reset in progress is remembered for this browser tab, so reloading the
+// "choose a new password" screen cannot skip it.
+const RECOVERY_FLAG = "verbum_recovering";
+const readRecoveryFlag = () => { try { return sessionStorage.getItem(RECOVERY_FLAG) === "1"; } catch { return false; } };
+const setRecoveryFlag = (on) => { try { if (on) sessionStorage.setItem(RECOVERY_FLAG, "1"); else sessionStorage.removeItem(RECOVERY_FLAG); } catch { /* storage unavailable */ } };
+let recovering = openedFromRecoveryLink || readRecoveryFlag();
 let resolvingFor = null;
 let unsubscribe = null;
 const listeners = new Set();
@@ -60,19 +65,40 @@ async function resolveProfile(u) {
   emit(next);
 }
 
+// The session Supabase keeps on this device, if any.
+function savedUser() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(supabase.auth.storageKey) || "null");
+    return raw?.user?.id ? raw.user : null;
+  } catch { return null; }
+}
+
 function handle(event, session) {
   const u = session?.user;
   if (event === "PASSWORD_RECOVERY" && u) {
     recovering = true;
+    setRecoveryFlag(true);
     emit({ status: "recovery", user: basic(u, cachedName(u.id)) });
     return;
   }
+  if (event !== "SIGNED_OUT" && !u) {
+    // Opened with no connection after the sign-in token expired: Supabase reports no session
+    // although one is saved here. Keep the person in, so saved prayers work offline; when
+    // the connection returns Supabase renews the session or signs out for real.
+    const saved = typeof navigator !== "undefined" && navigator.onLine === false ? savedUser() : null;
+    if (saved && !recovering) {
+      emit({ status: "signedIn", user: basic(saved, cachedName(saved.id)) });
+      return;
+    }
+  }
   if (event === "SIGNED_OUT" || !u) {
     recovering = false;
+    setRecoveryFlag(false);
     emit({ status: "signedOut", user: null });
     return;
   }
   if (recovering) {
+    setRecoveryFlag(true);
     emit({ status: "recovery", user: basic(u, cachedName(u.id)) });
     return;
   }
@@ -112,6 +138,7 @@ export async function setProfileName(name) {
 // Call after the new password is saved: the reset is over, carry on as a normal sign-in.
 export function markRecovered() {
   recovering = false;
+  setRecoveryFlag(false);
   const u = state.user;
   if (u) resolveProfile({ id: u.id, email: u.email, user_metadata: {} });
 }
@@ -119,13 +146,15 @@ export function markRecovered() {
 export async function signOut() {
   try { await supabase.auth.signOut(); } catch { /* sign out locally anyway */ }
   recovering = false;
+  setRecoveryFlag(false);
   emit({ status: "signedOut", user: null });
 }
 
 // Tests only.
-export function resetAuthStore() {
+export function resetAuthStore({ keepRecovery = false } = {}) {
   if (unsubscribe) unsubscribe();
   state = INITIAL;
-  recovering = false;
+  if (!keepRecovery) setRecoveryFlag(false);
+  recovering = readRecoveryFlag();
   resolvingFor = null;
 }

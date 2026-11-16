@@ -12,6 +12,7 @@ vi.mock("../supabase.js", () => {
     onAuthStateChange: (cb) => { h.cb = cb; return { data: { subscription: { unsubscribe: () => { h.cb = null; } } } }; },
     signOut: vi.fn(async () => ({ error: null })),
   };
+  auth.storageKey = "sb-test-auth-token";
   return { supabase: { auth, from }, openedFromRecoveryLink: false };
 });
 
@@ -23,6 +24,7 @@ const fire = async (event, session) => { h.cb(event, session); await vi.runAllTi
 beforeEach(() => {
   vi.useFakeTimers();
   localStorage.clear();
+  sessionStorage.clear();
   h.profile = { data: null, error: null };
   h.upsert = { error: null };
   h.upserts = [];
@@ -107,5 +109,51 @@ describe("auth store", () => {
     await fire("SIGNED_IN", { user: user() });
     await fire("SIGNED_OUT", null);
     expect(getAuth()).toEqual({ status: "signedOut", user: null });
+  });
+});
+
+describe("offline start", () => {
+  const stored = { user: { id: "u1", email: "ana@example.com", user_metadata: {} }, refresh_token: "r" };
+  const setOnline = (v) => Object.defineProperty(navigator, "onLine", { configurable: true, get: () => v });
+
+  it("stays signed in when offline and a session is saved on the device", async () => {
+    localStorage.setItem("verbum_profile_name_u1", "Ana");
+    localStorage.setItem("sb-test-auth-token", JSON.stringify(stored));
+    setOnline(false);
+    await fire("INITIAL_SESSION", null);
+    setOnline(true);
+    expect(getAuth()).toEqual({ status: "signedIn", user: { id: "u1", email: "ana@example.com", name: "Ana" } });
+  });
+
+  it("signs out when online and there is no session", async () => {
+    localStorage.setItem("sb-test-auth-token", JSON.stringify(stored));
+    setOnline(true);
+    await fire("INITIAL_SESSION", null);
+    expect(getAuth().status).toBe("signedOut");
+  });
+
+  it("a real SIGNED_OUT always signs out, even offline", async () => {
+    localStorage.setItem("sb-test-auth-token", JSON.stringify(stored));
+    setOnline(false);
+    await fire("SIGNED_OUT", null);
+    setOnline(true);
+    expect(getAuth().status).toBe("signedOut");
+  });
+});
+
+describe("password reset survives a reload", () => {
+  it("remembers the reset for this visit and forgets it once done", async () => {
+    h.profile = { data: { name: "Ana" }, error: null };
+    await fire("PASSWORD_RECOVERY", { user: user() });
+    expect(sessionStorage.getItem("verbum_recovering")).toBe("1");
+    // Reload: a fresh store in the same tab.
+    resetAuthStore({ keepRecovery: true });
+    startAuth();
+    await fire("INITIAL_SESSION", { user: user() });
+    expect(getAuth().status).toBe("recovery");
+    markRecovered();
+    await vi.runAllTimersAsync();
+    expect(sessionStorage.getItem("verbum_recovering")).toBeNull();
+    expect(getAuth().status).toBe("signedIn");
   });
 });

@@ -76,10 +76,22 @@ function loadLocal(uid) {
   };
 }
 
-function enqueue(op) {
+// Adds a change to the queue, replacing any earlier change to the same item.
+function queueOp(op) {
   queue = queue.filter((q) => !(q.kind === op.kind && q.key === op.key)).concat(op);
+}
+
+function enqueue(op) {
+  queueOp(op);
   saveLocal();
   flush();
+}
+
+// Everything of a device-only kind, as queue changes, newest last.
+function localEntries(kind) {
+  if (kind === "intention") return [...state.intentions].map(([key, value]) => ({ kind, key, action: "put", value }));
+  if (kind === "prayer_log") return [...state.prayerLog].sort().map(([key, list]) => ({ kind, key, action: "put", value: { acts: list } }));
+  return [];
 }
 
 // Sends one change. Resolves to { result: "ok" | "retry" | "drop", status }.
@@ -116,8 +128,10 @@ async function drain() {
       console.warn("[Verbum] sync dropped", op.kind, status);
       track("sync_drop", { kind: op.kind, status });
       if (op.action === "put") localOnly.add(op.kind);
-    } else if (op.action === "put") {
+    } else if (op.action === "put" && localOnly.has(op.kind)) {
+      // The server now accepts this kind: send everything that was waiting on the device.
       localOnly.delete(op.kind);
+      for (const entry of localEntries(op.kind)) if (entry.key !== op.key) queueOp(entry);
     }
     queue = queue.filter((q) => q !== op);
     saveLocal();
@@ -186,12 +200,11 @@ export async function initProgress(uid) {
   if (rosary && rosary.date !== today()) rosary = null; // only resume a rosary started today
   emit({ ready: true, favorites, novena, rosary, prayerLog, intentions });
 
-  // Offer device-only data to the server again, in case the database has been updated.
-  if (localOnly.has("intention")) {
-    for (const [id, value] of intentions) queue = queue.concat({ kind: "intention", key: id, action: "put", value });
-  }
-  if (localOnly.has("prayer_log")) {
-    for (const [dateKey, list] of [...prayerLog].sort().slice(-60)) queue = queue.concat({ kind: "prayer_log", key: dateKey, action: "put", value: { acts: list } });
+  // Ask the server once per kind whether it accepts device-only data yet (the newest item
+  // is the probe). If it does, the rest follow; if not, nothing else is sent this time.
+  for (const kind of localOnly) {
+    const probe = localEntries(kind).pop();
+    if (probe && !queue.some((q) => q.kind === kind)) queueOp(probe);
   }
   saveLocal();
   flush();
@@ -203,6 +216,16 @@ export function resetProgress() {
   queue = [];
   localOnly = new Set();
   emit(empty());
+}
+
+// Call just before signing out: removes private intentions from this device's saved copy,
+// unless some have not reached the server yet (those must not be lost). They come back from
+// the server at the next sign-in.
+export function clearPrivateCache() {
+  if (!userId) return;
+  if (localOnly.has("intention") || queue.some((q) => q.kind === "intention")) return;
+  state = { ...state, intentions: new Map() };
+  saveLocal();
 }
 
 export function toggleFavorite(key) {

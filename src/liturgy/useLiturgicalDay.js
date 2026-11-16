@@ -14,7 +14,10 @@ export function useLiturgicalDay() {
       timer = setTimeout(load, msUntilMidnight(now) + 1000);
     };
     load();
-    return () => { active = false; clearTimeout(timer); };
+    // A phone can pause timers while the app is in the background, so also check on return.
+    const onVisible = () => { if (document.visibilityState === "visible") { clearTimeout(timer); load(); } };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => { active = false; clearTimeout(timer); document.removeEventListener("visibilitychange", onVisible); };
   }, []);
   return day;
 }

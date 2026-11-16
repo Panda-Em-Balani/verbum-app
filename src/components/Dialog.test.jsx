@@ -78,3 +78,23 @@ describe("Dialog", () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("Dialog scroll lock", () => {
+  it("unlocks the page when two stacked dialogs close together", () => {
+    function Both() {
+      const [open, setOpen] = useState(true);
+      return (
+        <>
+          <Dialog open={open} onClose={() => {}} label="sheet"><button onClick={() => setOpen(false)}>close both</button></Dialog>
+          <Dialog open={open} onClose={() => {}} label="confirm"><button>x</button></Dialog>
+        </>
+      );
+    }
+    document.body.style.overflow = "";
+    render(<Both />);
+    expect(document.body.style.overflow).toBe("hidden");
+    fireEvent.click(screen.getByText("close both"));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.body.style.overflow).toBe("");
+  });
+});

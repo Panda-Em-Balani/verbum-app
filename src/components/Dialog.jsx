@@ -6,6 +6,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), texta
 
 // Open dialogs, oldest first. Only the last one answers the keyboard.
 const stack = [];
+let pageOverflow = "";
 
 // Modal dialog: traps focus, closes on Escape or a tap outside, and returns focus to
 // whatever opened it. Rendered at the end of <body> so no card can clip it.
@@ -39,13 +40,15 @@ export default function Dialog({ open, onClose, label, placement = "center", chi
       }
     };
     document.addEventListener("keydown", onKey);
-    const previousOverflow = document.body.style.overflow;
+    // The page stops scrolling while any dialog is open and scrolls again when the last
+    // one closes (two dialogs can close in the same moment, in either order).
+    if (stack.length === 1) pageOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     return () => {
       document.removeEventListener("keydown", onKey);
       stack.splice(stack.indexOf(id), 1);
-      document.body.style.overflow = previousOverflow;
+      if (stack.length === 0) document.body.style.overflow = pageOverflow;
       if (opener && typeof opener.focus === "function" && document.contains(opener)) opener.focus();
     };
   }, [open]);

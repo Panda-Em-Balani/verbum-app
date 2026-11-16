@@ -7,7 +7,8 @@ import { primaryButton, secondaryButton } from "../styles/buttons.js";
 import { cardTitle, body } from "../styles/text.js";
 
 // Asks before the browser's own permission prompt, so "Maybe later" costs nothing.
-export default function NotificationBanner({ onGranted, onDismiss }) {
+// onDismiss: the person chose "Maybe later" (remembered). onClose: closed without choosing.
+export default function NotificationBanner({ onGranted, onDismiss, onClose }) {
   const [requesting, setRequesting] = useState(false);
   const handleEnable = async () => {
     setRequesting(true);
@@ -17,7 +18,7 @@ export default function NotificationBanner({ onGranted, onDismiss }) {
     else onDismiss();
   };
   return (
-    <Dialog open onClose={onDismiss} label="Daily reminders">
+    <Dialog open onClose={onClose} label="Daily reminders">
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <div style={{ width: 54, height: 54, borderRadius: "50%", background: SURFACE, border: `1.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
           <BellIco />

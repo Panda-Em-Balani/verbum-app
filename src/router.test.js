@@ -100,3 +100,10 @@ describe("history", () => {
     expect(history.length).toBe(before);
   });
 });
+
+describe("malformed addresses", () => {
+  it("does not throw on a badly encoded path", () => {
+    expect(() => matchRoute("/prayers/novenas/%E0")).not.toThrow();
+    expect(matchRoute("/prayers/novenas/%E0")).toMatchObject({ name: "novena", params: { id: "%E0" } });
+  });
+});

@@ -26,6 +26,8 @@ const TAB_OF = {
 };
 
 const split = (path) => path.split("/").filter(Boolean);
+// A badly encoded address is used as written instead of throwing.
+const safeDecode = (s) => { try { return decodeURIComponent(s); } catch { return s; } };
 
 export function matchRoute(pathname) {
   const parts = split(pathname || "/");
@@ -34,7 +36,7 @@ export function matchRoute(pathname) {
     if (want.length !== parts.length) continue;
     const params = {};
     const ok = want.every((seg, i) => {
-      if (seg.startsWith(":")) { params[seg.slice(1)] = decodeURIComponent(parts[i]); return true; }
+      if (seg.startsWith(":")) { params[seg.slice(1)] = safeDecode(parts[i]); return true; }
       return seg === parts[i];
     });
     if (ok) return { name, params, notFound: false };

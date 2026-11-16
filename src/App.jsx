@@ -13,7 +13,7 @@ import { INSTALL_PATH } from "./config.js";
 import { getDailyVerseStatic } from "./dailyVerse.js";
 import { isStandalone, isIOS, isInAppBrowser } from "./device.js";
 import { initNotifications, getNotificationPermission } from "./notifications.js";
-import { useProgress, initProgress, resetProgress, toggleFavorite } from "./progress.js";
+import { useProgress, initProgress, resetProgress, toggleFavorite, clearPrivateCache } from "./progress.js";
 import LoginPage from "./screens/auth/LoginPage.jsx";
 import NamePrompt from "./screens/auth/NamePrompt.jsx";
 import ResetPasswordScreen from "./screens/auth/ResetPasswordScreen.jsx";
@@ -207,7 +207,7 @@ export default function BibleApp() {
 
   return (
     <div style={{ background: PAGE_BG, minHeight: "100vh", width: "100%", maxWidth: 430, margin: "0 auto", fontFamily: FONT_UI, color: TEXT, position: "relative" }}>
-      <AppHeader user={user} onSignOut={signOut} background={headerColor} />
+      <AppHeader user={user} onSignOut={() => { clearPrivateCache(); signOut() }} background={headerColor} />
       <OfflineBanner />
       <main style={{ paddingBottom: "calc(88px + env(safe-area-inset-bottom))" }}>
         {showInstallBanner && !whatsNewVisible && tab === "home" && (
@@ -230,6 +230,7 @@ export default function BibleApp() {
               initNotifications(userId)
             }}
             onDismiss={() => { setShowNotifBanner(false); localStorage.setItem("verbum_notif_dismissed", "1") }}
+            onClose={() => setShowNotifBanner(false)}
           />
         )}
 

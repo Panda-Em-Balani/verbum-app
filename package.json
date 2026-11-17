@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "screens": "node scripts/screens.cjs",
-    "calendar": "node scripts/build-liturgical-calendar.mjs"
+    "calendar": "node scripts/build-liturgical-calendar.mjs",
+    "push-verses": "node scripts/sync-push-verses.mjs"
   },
   "dependencies": {
     "@fontsource/cinzel": "5.3.0",
